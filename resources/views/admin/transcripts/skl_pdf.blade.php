@@ -18,7 +18,9 @@
         background-color: #fff;
     }
     .modern-container {
-        padding: 5px 10px;
+        position: relative;
+        padding: 8px 18px;
+        border-top: 4px solid #0d9488;
         background-color: #ffffff;
     }
     .print-kop {
@@ -36,23 +38,23 @@
         padding-left: 8px;
         padding-right: 8px;
     }
-    .kop-text h2 {
-        font-size: 8pt;
+    .kop-text .kop-yayasan {
+        font-size: 7.5pt;
         font-weight: 700;
-        color: #111827;
+        color: #0d9488;
         margin: 0 0 1px 0;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+    .kop-text h1 {
+        font-size: 10.5pt;
+        font-weight: 800;
+        color: #1f2937;
+        margin: 0 0 2px 0;
         text-transform: uppercase;
         letter-spacing: 0.3px;
     }
-    .kop-text h1 {
-        font-size: 11pt;
-        font-weight: 800;
-        color: #0f172a;
-        margin: 0 0 2px 0;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-    .kop-text .kop-address {
+    .kop-text .kop-info {
         font-size: 7pt;
         margin: 1px 0;
         color: #4b5563;
@@ -62,11 +64,16 @@
         margin: 0;
         color: #6b7280;
     }
+    .kop-text .kop-detail a {
+        color: #0d9488;
+        text-decoration: none;
+        font-weight: 600;
+    }
     .print-divider {
         border: none;
         height: 0.5px;
-        background-color: #9ca3af;
-        margin: 2px 0 6px 0;
+        background-color: #e5e7eb;
+        margin: 6px 0 10px 0;
     }
     .cert-title {
         text-align: center;
@@ -224,24 +231,31 @@
         <table class="print-kop">
             <tr>
                 @if($logo_path)
-                    <td width="75" align="center" valign="middle">
+                    <td width="60" align="center" valign="middle">
                         <img src="{{ $logo_path }}" class="kop-logo" alt="Logo">
                     </td>
                 @endif
                 <td class="kop-text" valign="middle">
                     @if(!empty($settings['skl_header']))
-                        <div style="font-size: 11pt; font-weight: bold; line-height: 1.3;">
+                        <div style="font-size: 9pt; font-weight: bold; line-height: 1.25;">
                             {!! $settings['skl_header'] !!}
                         </div>
                     @else
-                        <h2>YAYASAN NURUL IHSAN BANJARAN</h2>
+                        <p class="kop-yayasan">LEMBAGA PENDIDIKAN ISLAM &ldquo;RIYADHUL JANNAH&rdquo;</p>
                         <h1>{{ strtoupper($settings['school_name']) }}</h1>
-                        <p class="kop-address">{{ $settings['school_address'] ?: 'Jl. Raya Banjaran No. 123, Banjaran, Bandung, Jawa Barat' }}</p>
+                        <p class="kop-info">
+                            NSS : <strong>{{ $settings['nss'] ?? '202000012010' }}</strong> 
+                            &bull; 
+                            NPSN : <strong>{{ $settings['npsn'] ?? '20233628' }}</strong> 
+                            &bull; 
+                            Akreditasi : <strong>&ldquo;{{ $settings['accreditation'] ?? 'B' }}&rdquo;</strong>
+                        </p>
                         <p class="kop-detail">
                             Website: <a href="http://smpnurulihsanbanjaran.sch.id/">smpnurulihsanbanjaran.sch.id</a>
                             &bull; 
                             E-mail: <a href="mailto:smpnurulihsanbanjaran@gmail.com">smpnurulihsanbanjaran@gmail.com</a>
                         </p>
+                        <p class="kop-detail" style="color: #4b5563; font-weight: 500;">{{ $settings['school_address'] }}</p>
                     @endif
                 </td>
             </tr>

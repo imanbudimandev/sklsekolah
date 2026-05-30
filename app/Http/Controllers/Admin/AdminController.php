@@ -1389,6 +1389,9 @@ class AdminController extends Controller
             'skl_date_format' => Setting::get('skl_date_format', 'd F Y'),
             'skl_header' => Setting::get('skl_header', ''),
             'skl_signature_text' => Setting::get('skl_signature_text', 'Kepala Sekolah'),
+            'nss' => Setting::get('nss', '202000012010'),
+            'npsn' => Setting::get('npsn', '20233628'),
+            'accreditation' => Setting::get('accreditation', 'B'),
         ];
 
         // Use physical path for logo and signature
@@ -1430,6 +1433,9 @@ class AdminController extends Controller
             'skl_date_format' => Setting::get('skl_date_format', 'd F Y'),
             'skl_header' => Setting::get('skl_header', ''),
             'skl_signature_text' => Setting::get('skl_signature_text', 'Kepala Sekolah'),
+            'nss' => Setting::get('nss', '202000012010'),
+            'npsn' => Setting::get('npsn', '20233628'),
+            'accreditation' => Setting::get('accreditation', 'B'),
         ];
 
         // Use physical path for logo and signature
@@ -1479,6 +1485,9 @@ class AdminController extends Controller
             'skl_date_format' => Setting::get('skl_date_format', 'd F Y'),
             'skl_header' => Setting::get('skl_header', ''),
             'skl_signature_text' => Setting::get('skl_signature_text', 'Kepala Sekolah'),
+            'nss' => Setting::get('nss', '202000012010'),
+            'npsn' => Setting::get('npsn', '20233628'),
+            'accreditation' => Setting::get('accreditation', 'B'),
         ];
 
         $logoSetting = $settings['skl_logo'] ?: $settings['school_logo'] ?: Setting::get('transcript_logo');
