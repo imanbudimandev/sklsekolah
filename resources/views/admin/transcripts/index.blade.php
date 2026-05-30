@@ -145,9 +145,6 @@
                 <a href="{{ route('admin.transcripts.bulk_pdf', ['search' => request('search')]) }}" class="btn btn-primary">
                     <i class="fa-solid fa-file-pdf"></i> Unduh Masal Transkip
                 </a>
-                <a href="{{ route('admin.transcripts.settings') }}" class="btn btn-secondary">
-                    <i class="fa-solid fa-gear"></i> Pengaturan Transkrip
-                </a>
             </div>
         </div>
     </div>
