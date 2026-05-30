@@ -114,6 +114,9 @@
         .admin-search-form {
             max-width: 100% !important;
         }
+        .admin-search-form .input-group input[type="text"] {
+            max-width: none;
+        }
         .control-actions {
             width: 100%;
         }
