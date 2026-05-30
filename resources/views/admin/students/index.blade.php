@@ -65,7 +65,7 @@
                                 <td>{{ $student->nisn }}</td>
                                 <td><strong>{{ $student->name }}</strong></td>
                                 <td>{{ $student->birth_place ?? '-' }}</td>
-                                <td>{{ $student->birth_date ?? '-' }}</td>
+                                <td>{{ $student->birth_date_formatted }}</td>
                                 <td>{{ $student->class }}</td>
                                 <td>{{ $student->jurusan ?? '-' }}</td>
                                 <td>
