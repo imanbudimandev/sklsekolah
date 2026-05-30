@@ -329,62 +329,35 @@
 
         <!-- Grade Table -->
         @php
-            $semesterNames = ['Semester 1', 'Semester 2', 'Semester 3', 'Semester 4', 'Semester 5', 'Semester 6'];
             $groupedSubjects = $subjects->groupBy('category');
             $no = 1;
-
-            $semesterTotals = array_fill(0, 6, 0);
-            $semesterCounts = array_fill(0, 6, 0);
             $ijazahTotal = 0;
             $ijazahCount = 0;
         @endphp
         <table class="table-skl-grades">
             <thead>
                 <tr>
-                    <th rowspan="2" width="18">No</th>
-                    <th rowspan="2">Mata Pelajaran</th>
-                    <th colspan="6">Semester</th>
-                    <th rowspan="2" width="45">Nilai Ijazah</th>
-                </tr>
-                <tr>
-                    <th width="26">I</th>
-                    <th width="26">II</th>
-                    <th width="26">III</th>
-                    <th width="26">IV</th>
-                    <th width="26">V</th>
-                    <th width="26">VI</th>
+                    <th width="18">No</th>
+                    <th>Mata Pelajaran</th>
+                    <th width="60">Nilai Ijazah</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($groupedSubjects as $category => $categorySubjects)
                     <tr class="category-row">
-                        <td colspan="8"><strong>{{ $category }}</strong></td>
+                        <td colspan="3"><strong>{{ $category }}</strong></td>
                     </tr>
                     @foreach($categorySubjects as $subject)
                         @php
-                            $subGrades = $student->grades->where('subject_id', $subject->id);
+                            $finalGrade = $student->calculateFinalGradeForSubject($subject->id);
+                            if ($finalGrade !== null) {
+                                $ijazahTotal += $finalGrade;
+                                $ijazahCount++;
+                            }
                         @endphp
                         <tr>
                             <td class="center">{{ $no++ }}</td>
                             <td>{{ $subject->name }}</td>
-                            @foreach($semesterNames as $i => $semName)
-                                @php
-                                    $semGrade = $subGrades->where('semester', $semName)->first();
-                                    $score = $semGrade ? $semGrade->score : null;
-                                    if ($score !== null) {
-                                        $semesterTotals[$i] += $score;
-                                        $semesterCounts[$i]++;
-                                    }
-                                @endphp
-                                <td class="center">{{ $score !== null ? number_format($score, 2) : '-' }}</td>
-                            @endforeach
-                            @php
-                                $finalGrade = $student->calculateFinalGradeForSubject($subject->id);
-                                if ($finalGrade !== null) {
-                                    $ijazahTotal += $finalGrade;
-                                    $ijazahCount++;
-                                }
-                            @endphp
                             <td class="center">{{ $finalGrade !== null ? number_format($finalGrade, 2) : '-' }}</td>
                         </tr>
                     @endforeach
@@ -392,9 +365,6 @@
                 <!-- Average Row -->
                 <tr class="avg-row">
                     <td colspan="2">RATA-RATA</td>
-                    @for($i = 0; $i < 6; $i++)
-                        <td class="center">{{ $semesterCounts[$i] > 0 ? number_format($semesterTotals[$i] / $semesterCounts[$i], 2) : '-' }}</td>
-                    @endfor
                     <td class="center">{{ $ijazahCount > 0 ? number_format($ijazahTotal / $ijazahCount, 2) : '-' }}</td>
                 </tr>
             </tbody>
