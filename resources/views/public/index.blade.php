@@ -5,140 +5,183 @@
 @section('styles')
 <style>
     /* ==========================================================================
-       OFFICIAL & PROFESSIONAL EDUCATION PORTAL SYSTEM
+       THEME: MODERN ACADEMIC — Clean, Airy, Professional
        ========================================================================== */
 
     body {
-        background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-        background-attachment: fixed;
-        color: #1e293b;
+        background: linear-gradient(160deg, #f0f4ff 0%, #e8edf5 50%, #f5f0ff 100%) !important;
+        color: #1e293b !important;
+        font-family: 'Inter', 'Plus Jakarta Sans', -apple-system, sans-serif !important;
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
     }
 
     .public-container {
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 60px 20px;
+        max-width: 820px !important;
+        margin: 0 auto !important;
+        padding: 60px 20px 80px !important;
         min-height: 100vh;
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
+        box-sizing: border-box;
     }
 
-    /* Top Branding Header */
+    /* ── Top Branding ── */
     .public-header {
         text-align: center;
-        margin-bottom: 40px;
+        margin-bottom: 36px;
+        width: 100%;
+    }
+
+    .brand-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        margin-bottom: 14px;
+        flex-wrap: wrap;
     }
 
     .school-logo-container {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 100px;
-        height: 100px;
+        width: 72px;
+        height: 72px;
         background: #ffffff;
-        border-radius: 24px;
-        margin-bottom: 16px;
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+        border-radius: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04), 0 8px 24px -8px rgba(79, 70, 229, 0.12);
         border: 1px solid rgba(226, 232, 240, 0.8);
+        flex-shrink: 0;
     }
 
     .school-logo-img {
-        height: 70px;
-        width: 70px;
+        height: 48px;
+        width: 48px;
         object-fit: contain;
     }
 
     .school-logo-placeholder {
-        font-size: 3rem;
-        color: var(--primary);
+        font-size: 2rem;
+        color: #6366f1;
     }
 
-    .public-header h1 {
-        font-size: 2.2rem;
+    .brand-text {
+        text-align: left;
+    }
+
+    .brand-text h1 {
+        font-size: 1.5rem;
         font-weight: 800;
         color: #0f172a;
-        margin-bottom: 8px;
+        margin: 0;
+        line-height: 1.3;
         letter-spacing: -0.03em;
     }
 
-    .school-address {
-        font-size: 0.9rem;
+    .brand-text .school-address {
+        font-size: 0.8rem;
         color: #64748b;
-        font-weight: 500;
         display: inline-flex;
         align-items: center;
-        gap: 6px;
+        gap: 4px;
+        margin-top: 4px;
     }
 
-    .school-address i {
-        color: var(--primary);
+    .brand-text .school-address i {
+        color: #6366f1;
     }
 
-    /* Clean Official Cards */
-    .card.glass {
+    .brand-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        color: #fff;
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        padding: 4px 14px;
+        border-radius: 99px;
+        margin-top: 8px;
+    }
+
+    /* ── Card ── */
+    .card-glass {
         background: #ffffff;
-        border: 1px solid #e2e8f0;
-        box-shadow: 0 20px 25px -5px rgba(0,0,0,0.05), 0 10px 10px -5px rgba(0,0,0,0.03);
-        border-radius: 20px;
+        border: 1px solid rgba(226, 232, 240, 0.6);
+        border-radius: 24px;
         padding: 40px;
         width: 100%;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        box-sizing: border-box;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02), 0 20px 40px -12px rgba(79, 70, 229, 0.08);
+        transition: box-shadow 0.25s ease;
     }
 
-    .card.glass:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 25px 30px -5px rgba(0,0,0,0.08), 0 15px 15px -5px rgba(0,0,0,0.04);
+    .card-glass:hover {
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02), 0 24px 48px -12px rgba(79, 70, 229, 0.12);
     }
 
-    /* Official Search Input Group */
+    .portal-wrapper {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    /* ── Search ── */
+    .search-card {
+        text-align: center;
+    }
+
     .search-card h2 {
-        font-size: 1.6rem;
-        color: #0f172a;
+        font-size: 1.3rem;
         font-weight: 700;
-        margin-bottom: 8px;
+        color: #0f172a;
+        margin-bottom: 4px;
     }
 
-    .search-card p {
+    .search-card > p {
         color: #64748b;
-        font-size: 0.95rem;
-        margin-bottom: 24px;
+        font-size: 0.875rem;
+        margin-bottom: 28px;
     }
 
     .search-form .input-group {
         display: flex;
         align-items: center;
         background: #f8fafc;
-        border: 1.5px solid #cbd5e1;
+        border: 1.5px solid #e2e8f0;
         border-radius: 16px;
         padding: 4px;
         transition: all 0.2s ease;
-        position: relative;
     }
 
     .search-form .input-group:focus-within {
-        border-color: var(--primary);
-        box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        border-color: #6366f1;
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
         background: #ffffff;
     }
 
     .search-icon {
         color: #94a3b8;
-        font-size: 1.1rem;
+        font-size: 1rem;
         margin-left: 16px;
+        flex-shrink: 0;
     }
 
     .search-form input {
         border: none;
         outline: none;
         background: transparent;
-        padding: 12px 14px;
-        font-size: 1rem;
+        padding: 14px 12px;
+        font-size: 0.95rem;
         color: #0f172a;
         flex-grow: 1;
-        font-family: var(--font-primary);
+        font-family: inherit;
         font-weight: 500;
+        min-width: 0;
     }
 
     .search-form input::placeholder {
@@ -147,48 +190,79 @@
 
     .search-form button {
         border-radius: 12px;
-        padding: 12px 28px;
+        padding: 14px 28px;
         font-weight: 600;
-        font-size: 0.95rem;
-        background: var(--primary);
-        color: white;
+        font-size: 0.85rem;
+        background: #6366f1;
+        color: #fff;
         border: none;
         cursor: pointer;
-        transition: background-color 0.2s ease;
+        transition: all 0.2s ease;
+        flex-shrink: 0;
     }
 
     .search-form button:hover {
-        background: var(--primary-hover);
+        background: #4f46e5;
+        transform: translateY(-1px);
     }
 
-    /* Result Layout Section */
-    .result-card {
-        margin-top: 10px;
+    /* ── Alert ── */
+    .alert {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 14px 18px;
+        border-radius: 14px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        margin-top: 18px;
+        text-align: left;
     }
 
+    .alert-danger {
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        color: #dc2626;
+    }
+
+    .alert-info {
+        background: #f0f4ff;
+        border: 1px solid #c7d2fe;
+        color: #4338ca;
+        justify-content: center;
+    }
+
+    /* ── Student Meta ── */
     .result-header {
         display: flex;
         justify-content: space-between;
-        align-items: center;
-        gap: 20px;
+        align-items: flex-start;
+        gap: 16px;
         flex-wrap: wrap;
+        margin-bottom: 0;
+    }
+
+    .student-meta .selamat-text {
+        color: #059669;
+        font-weight: 700;
+        font-size: 0.85rem;
+        margin-bottom: 4px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
     }
 
     .student-meta h3 {
-        font-size: 1.8rem;
+        font-size: 1.5rem;
         font-weight: 800;
         color: #0f172a;
-        margin-bottom: 6px;
+        margin: 0 0 6px 0;
         letter-spacing: -0.02em;
     }
 
-    .student-meta p {
-        font-size: 0.95rem;
-        color: #64748b;
-        margin-bottom: 0;
+    .student-meta .meta-tags {
         display: flex;
-        align-items: center;
-        gap: 12px;
+        gap: 6px;
         flex-wrap: wrap;
     }
 
@@ -197,60 +271,67 @@
         padding: 4px 12px;
         border-radius: 8px;
         border: 1px solid #e2e8f0;
-        font-size: 0.85rem;
-        font-weight: 500;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #475569;
     }
 
     .meta-tag strong {
         color: #0f172a;
     }
 
-    /* Clear Status Badges */
     .status-badge {
         display: inline-flex;
         align-items: center;
-        gap: 8px;
-        font-size: 1.15rem;
-        font-weight: 700;
-        padding: 10px 24px;
+        gap: 6px;
+        font-size: 0.8rem;
+        font-weight: 800;
+        padding: 8px 20px;
         border-radius: 12px;
-        letter-spacing: 0.02em;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        flex-shrink: 0;
     }
 
     .status-lulus {
-        background-color: #d1fae5;
+        background: #d1fae5;
         color: #065f46;
-        border: 1px solid #a7f3d0;
+        border: 1.5px solid #6ee7b7;
     }
 
     .status-tidak-lulus {
-        background-color: #fee2e2;
+        background: #fee2e2;
         color: #991b1b;
-        border: 1px solid #fecaca;
+        border: 1.5px solid #fca5a5;
     }
 
-    /* Grades Table Customization */
-    .grades-section {
-        margin-top: 10px;
+    .divider {
+        border: 0;
+        height: 1px;
+        background: #e2e8f0;
+        margin: 24px 0;
     }
 
+    /* ── Grades Table ── */
     .grades-section h4 {
-        font-size: 1rem;
+        font-size: 0.8rem;
         text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: #475569;
+        letter-spacing: 0.06em;
+        color: #64748b;
         margin-bottom: 16px;
         font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 6px;
     }
 
     .grades-section h4 i {
-        color: var(--primary);
-        margin-right: 6px;
+        color: #6366f1;
     }
 
     .table-responsive {
-        border-radius: 12px;
-        overflow: hidden;
+        border-radius: 16px;
+        overflow-x: auto;
         border: 1px solid #e2e8f0;
         background: #ffffff;
     }
@@ -259,33 +340,38 @@
         width: 100%;
         border-collapse: collapse;
         color: #334155;
+        min-width: 640px;
     }
 
     .table-grades th {
         background: #f8fafc;
         color: #475569;
         font-weight: 700;
-        font-size: 0.8rem;
+        font-size: 0.7rem;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        padding: 14px 16px;
+        padding: 14px 10px;
         border-bottom: 1.5px solid #e2e8f0;
         text-align: left;
+        white-space: nowrap;
+    }
+
+    .table-grades th.text-center {
+        text-align: center;
     }
 
     .table-grades td {
-        padding: 12px 16px;
+        padding: 12px 10px;
         border-bottom: 1px solid #f1f5f9;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
     }
 
     .table-grades tbody tr:last-child td {
         border-bottom: none;
     }
 
-    .subject-cell {
-        display: flex;
-        flex-direction: column;
+    .table-grades tbody tr:hover {
+        background: #f8fafc;
     }
 
     .subject-name {
@@ -294,16 +380,26 @@
     }
 
     .subject-code {
-        font-size: 0.75rem;
+        font-size: 0.65rem;
         color: #94a3b8;
         font-weight: 500;
     }
 
+    .text-center {
+        text-align: center;
+    }
+
+    .text-right {
+        text-align: right;
+    }
+
     .td-score-val {
         font-weight: 700;
-        font-size: 0.95rem;
-        color: #0f172a;
+        font-size: 0.85rem;
+        color: #6366f1;
         text-align: center;
+        background: #f8faff;
+        border-left: 1px solid #e2e8f0;
     }
 
     .row-average {
@@ -312,78 +408,88 @@
 
     .row-average td {
         border-top: 1.5px solid #cbd5e1;
-        padding: 16px;
+        padding: 16px 10px;
+        font-weight: 700;
+        color: #0f172a;
     }
 
     .score-avg {
-        font-size: 1.15rem;
-        color: var(--primary);
-        font-weight: 800;
+        font-size: 1.1rem;
+        color: #6366f1;
+        font-weight: 900;
+        text-align: center;
     }
 
-    /* Print & Action triggers */
+    /* ── Buttons ── */
     .result-actions {
         display: flex;
         justify-content: center;
-        margin-top: 24px;
+        gap: 14px;
+        margin-top: 28px;
+        flex-wrap: wrap;
     }
 
-    .btn-lg {
+    .btn-download {
         padding: 14px 32px;
-        font-size: 0.95rem;
-        border-radius: 12px;
-        font-weight: 600;
+        font-size: 0.85rem;
+        border-radius: 14px;
+        font-weight: 700;
         display: inline-flex;
         align-items: center;
         gap: 8px;
-    }
-
-    .btn-success {
-        background-color: var(--success);
-        color: white;
-        border: none;
+        text-decoration: none;
+        transition: all 0.2s ease;
         cursor: pointer;
-        transition: background-color 0.2s ease;
-        box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.1), 0 2px 4px -1px rgba(16, 185, 129, 0.06);
+        border: none;
     }
 
-    .btn-success:hover {
-        background-color: var(--success-hover);
+    .btn-download:hover {
+        transform: translateY(-2px);
     }
 
-    /* Alerts */
-    .alert {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 12px 16px;
-        border-radius: 12px;
-        font-weight: 500;
-        font-size: 0.9rem;
-        margin-top: 16px;
-        text-align: left;
+    .btn-download-skl {
+        background: linear-gradient(135deg, #059669, #047857);
+        color: #ffffff;
+        box-shadow: 0 4px 14px rgba(5, 150, 105, 0.25);
     }
 
-    .alert-danger {
-        background: #fef2f2;
-        border: 1px solid #fecaca;
-        color: #991b1b;
+    .btn-download-skl:hover {
+        box-shadow: 0 6px 20px rgba(5, 150, 105, 0.35);
     }
 
-    .alert-info {
-        background: #eff6ff;
-        border: 1px solid #bfdbfe;
-        color: #1e3a8a;
-        width: 100%;
-        justify-content: center;
+    .btn-download-transkrip {
+        background: linear-gradient(135deg, #6366f1, #4f46e5);
+        color: #ffffff;
+        box-shadow: 0 4px 14px rgba(99, 102, 241, 0.25);
     }
 
-    /* Countdown layout */
+    .btn-download-transkrip:hover {
+        box-shadow: 0 6px 20px rgba(99, 102, 241, 0.35);
+    }
+
+    /* ── Countdown ── */
+    .countdown-wrapper {
+        text-align: center;
+    }
+
+    .countdown-wrapper h2 {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 4px;
+    }
+
+    .countdown-wrapper > p {
+        color: #64748b;
+        font-size: 0.875rem;
+        margin-bottom: 28px;
+    }
+
     .countdown-timer {
         display: flex;
         justify-content: center;
-        gap: 16px;
-        margin: 24px 0;
+        gap: 14px;
+        margin-bottom: 28px;
     }
 
     .timer-box {
@@ -393,176 +499,76 @@
         background: #f8fafc;
         border: 1px solid #e2e8f0;
         border-radius: 16px;
-        width: 80px;
-        padding: 12px 0;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        width: 78px;
+        padding: 16px 0 12px;
     }
 
     .timer-num {
-        font-size: 2rem;
+        font-size: 1.8rem;
         font-weight: 800;
-        color: var(--primary);
+        color: #6366f1;
         line-height: 1;
         margin-bottom: 4px;
     }
 
     .timer-label {
-        font-size: 0.7rem;
+        font-size: 0.65rem;
         font-weight: 700;
-        color: #64748b;
+        color: #94a3b8;
         text-transform: uppercase;
-        letter-spacing: 0.05em;
+        letter-spacing: 0.06em;
     }
 
     .announcement-date-text {
-        font-size: 0.9rem;
+        font-size: 0.8rem;
         background: #f8fafc;
-        padding: 8px 16px;
-        border-radius: 10px;
+        padding: 10px 20px;
+        border-radius: 99px;
         display: inline-flex;
         align-items: center;
-        gap: 8px;
+        gap: 6px;
         color: #475569;
         border: 1px solid #e2e8f0;
     }
 
     .announcement-date-text i {
-        color: #d97706;
+        color: #f59e0b;
     }
 
-    /* Print only definitions */
-    .print-only-container {
-        display: none;
+    /* ── Result Card (different top radius when stacked) ── */
+    .result-card {
+        border-top-left-radius: 0 !important;
+        border-top-right-radius: 0 !important;
+        margin-top: -24px;
+        padding-top: 36px !important;
     }
 
-    @media print {
-        body {
-            background: white !important;
-        }
-        .public-container {
-            padding: 0;
-            max-width: 100%;
-        }
-        .public-header, .search-card, .result-actions, .countdown-wrapper {
-            display: none !important;
-        }
-        .print-only-container {
-            display: block !important;
-        }
-        .print-page {
-            page-break-after: always;
-            padding: 20px;
-            font-family: 'Times New Roman', Times, serif;
-            font-size: 12pt;
-        }
-        .print-kop {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        .print-kop img {
-            max-height: 80px;
-        }
-        .print-kop .kop-text {
-            flex: 1;
-            text-align: center;
-        }
-        .print-kop .kop-text h2 {
-            font-size: 14pt;
-            margin: 0;
-        }
-        .print-kop .kop-text h1 {
-            font-size: 18pt;
-            margin: 5px 0;
-        }
-        .print-kop .kop-text p {
-            font-size: 10pt;
-            color: #333;
-        }
-        .print-divider {
-            border-top: 2px solid black;
-            margin: 10px 0;
-        }
-        .cert-title {
-            text-align: center;
-        }
-        .table-print-meta {
-            width: 100%;
-            margin: 10px 0;
-        }
-        .table-print-meta td {
-            padding: 4px 8px;
-        }
-        .table-print-grades {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 10px 0;
-        }
-        .table-print-grades th, .table-print-grades td {
-            border: 1px solid #333;
-            padding: 6px 8px;
-            font-size: 10pt;
-        }
-        .print-status-box {
-            text-align: center;
-            border: 2px solid #059669;
-            padding: 10px;
-            width: 200px;
-            margin: 20px auto;
-        }
-        .cert-note {
-            font-size: 9pt;
-            font-style: italic;
-        }
-        .cert-footer {
-            margin-top: 40px;
-        }
-        .signature-box {
-            text-align: center;
-            width: 300px;
-            margin-left: auto;
-        }
-        .sig-img {
-            max-height: 60px;
-        }
-        .signature-space {
-            height: 60px;
-        }
-        .page-break {
-            page-break-after: always;
-        }
-        .no-print {
-            display: none !important;
-        }
-        .cert-body p {
-            text-align: justify;
-            text-indent: 30px;
-        }
-        .cert-statement {
-            text-align: justify;
-            text-indent: 30px;
-        }
-        .font-bold {
-            font-weight: bold;
-        }
-        .row-print-average td {
-            border-top: 2px solid #333 !important;
-            font-weight: bold;
-        }
-        .short td {
-            padding: 2px 8px;
-            font-size: 10pt;
-        }
+    .search-card + .result-card {
+        margin-top: -28px;
     }
 
+    /* ── Responsive ── */
     @media (max-width: 768px) {
-        .public-header h1 {
-            font-size: 1.8rem;
+        .public-container {
+            padding: 32px 16px 60px !important;
         }
 
-        .student-meta h3 {
-            font-size: 1.4rem;
+        .card-glass {
+            padding: 28px 16px !important;
+            border-radius: 20px !important;
+        }
+
+        .brand-row {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .brand-text {
+            text-align: center;
+        }
+
+        .brand-text h1 {
+            font-size: 1.25rem;
         }
 
         .result-header {
@@ -571,16 +577,40 @@
         }
 
         .status-badge {
-            width: auto;
+            width: 100%;
+            justify-content: center;
+            box-sizing: border-box;
         }
 
-        .card.glass {
-            padding: 24px;
+        .result-actions {
+            flex-direction: column;
+            width: 100%;
         }
 
-        .table-grades th, .table-grades td {
-            padding: 10px 8px;
-            font-size: 0.8rem;
+        .btn-download {
+            width: 100%;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+
+        .result-card {
+            border-top-left-radius: 20px !important;
+            border-top-right-radius: 20px !important;
+            margin-top: 0 !important;
+            padding-top: 28px !important;
+        }
+
+        .countdown-timer {
+            gap: 8px;
+        }
+
+        .timer-box {
+            width: 64px;
+            padding: 12px 0 10px;
+        }
+
+        .timer-num {
+            font-size: 1.4rem;
         }
     }
 </style>
@@ -588,24 +618,29 @@
 
 @section('content')
 <div class="public-container">
-    <!-- Header/Logo School -->
+    <!-- Branding -->
     <header class="public-header">
-        <div class="school-logo-container">
-            @if(!empty($settings['school_logo']) && file_exists(public_path($settings['school_logo'])))
-                <img src="{{ asset($settings['school_logo']) }}" alt="Logo Sekolah" class="school-logo-img">
-            @else
-                <div class="school-logo-placeholder">
-                    <i class="fa-solid fa-graduation-cap"></i>
-                </div>
-            @endif
+        <div class="brand-row">
+            <div class="school-logo-container">
+                @if(!empty($settings['school_logo']) && file_exists(public_path($settings['school_logo'])))
+                    <img src="{{ asset($settings['school_logo']) }}" alt="Logo Sekolah" class="school-logo-img">
+                @else
+                    <div class="school-logo-placeholder">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    </div>
+                @endif
+            </div>
+            <div class="brand-text">
+                <h1>{{ $settings['school_name'] }}</h1>
+                <p class="school-address"><i class="fa-solid fa-location-dot"></i> {{ $settings['school_address'] ?: 'Kecamatan Banjaran, Kabupaten Bandung, Jawa Barat' }}</p>
+                <span class="brand-badge">Cek Kelulusan</span>
+            </div>
         </div>
-        <h1>{{ $settings['school_name'] }}</h1>
-        <p class="school-address"><i class="fa-solid fa-location-dot"></i> {{ $settings['school_address'] ?: 'Kecamatan Banjaran, Kabupaten Bandung, Jawa Barat' }}</p>
     </header>
 
     @if(!$isAnnounced)
-        <!-- COUNTDOWN TIMER VIEW -->
-        <div class="countdown-wrapper card glass">
+        <!-- Countdown -->
+        <div class="card-glass countdown-wrapper">
             <h2>Pengumuman Kelulusan</h2>
             <p>Pengumuman kelulusan siswa kelas IX akan dibuka dalam:</p>
             <div class="countdown-timer">
@@ -627,26 +662,23 @@
                 </div>
             </div>
             <p class="announcement-date-text">
-                <i class="fa-regular fa-calendar-days"></i> Waktu Pengumuman: 
-                <strong>{{ $announcementDate ? $announcementDate->translatedFormat('d F Y \p\u\k\u\l H:i') : '-' }} WIB</strong>
+                <i class="fa-regular fa-calendar-days"></i>
+                {{ $announcementDate ? $announcementDate->translatedFormat('l, d F Y \p\u\k\u\l H:i') : '-' }} WIB
             </p>
         </div>
     @else
-        <!-- SEARCH & PORTAL VIEW -->
         <div class="portal-wrapper">
-            <!-- Search Box Card -->
-            <div class="search-card card glass">
-                <h2>Cek Status Kelulusan Anda</h2>
+            <!-- Search Card -->
+            <div class="card-glass search-card">
+                <h2>Cek Status Kelulusan</h2>
                 <p>Masukkan NISN atau NIS Anda untuk memeriksa status kelulusan.</p>
-                
                 <form action="{{ route('public.index') }}" method="GET" class="search-form">
                     <div class="input-group">
                         <i class="fa-solid fa-magnifying-glass search-icon"></i>
                         <input type="text" name="search" placeholder="Masukkan NISN atau NIS" value="{{ $searchQuery }}" required autocomplete="off">
-                        <button type="submit" class="btn">Periksa</button>
+                        <button type="submit">Periksa</button>
                     </div>
                 </form>
-
                 @if($error)
                     <div class="alert alert-danger">
                         <i class="fa-solid fa-circle-exclamation"></i> {{ $error }}
@@ -655,24 +687,22 @@
             </div>
 
             @if($student)
-                <!-- RESULT DISPLAY CARD -->
-                <div class="result-card card glass">
+                <!-- Result Card -->
+                <div class="card-glass result-card">
                     <div class="result-header">
                         <div class="student-meta">
                             @if($student->status === 'LULUS')
-                                <p style="color: #065f46; font-weight: 700; font-size: 1.05rem; margin-bottom: 4px;">
+                                <p class="selamat-text">
                                     <i class="fa-solid fa-check-circle"></i> Selamat! Anda dinyatakan LULUS
                                 </p>
                             @endif
                             <h3>{{ $student->name }}</h3>
-                            <p>
-                                <span class="meta-tag">NISN: <strong>{{ $student->nisn }}</strong></span> 
+                            <div class="meta-tags">
+                                <span class="meta-tag">NISN: <strong>{{ $student->nisn }}</strong></span>
                                 <span class="meta-tag">NIS: <strong>{{ $student->nis ?? '-' }}</strong></span>
                                 <span class="meta-tag">Kelas: <strong>{{ $student->class }}</strong></span>
-                            </p>
+                            </div>
                         </div>
-                        
-                        <!-- Status Badge -->
                         @if($student->status === 'LULUS')
                             <div class="status-badge status-lulus">
                                 <i class="fa-solid fa-circle-check"></i> LULUS
@@ -686,22 +716,21 @@
 
                     <hr class="divider">
 
-                    <!-- GRADES TABLE -->
                     <div class="grades-section">
                         <h4><i class="fa-solid fa-file-invoice"></i> Nilai Hasil Ujian</h4>
                         <div class="table-responsive">
                             <table class="table table-grades">
                                 <thead>
                                     <tr>
-                                        <th style="width: 50px;">No</th>
+                                        <th style="width: 40px;">No</th>
                                         <th>Mata Pelajaran</th>
-                                        <th class="text-center" style="width: 60px;">Smt 1</th>
-                                        <th class="text-center" style="width: 60px;">Smt 2</th>
-                                        <th class="text-center" style="width: 60px;">Smt 3</th>
-                                        <th class="text-center" style="width: 60px;">Smt 4</th>
-                                        <th class="text-center" style="width: 60px;">Smt 5</th>
-                                        <th class="text-center" style="width: 60px;">Smt 6</th>
-                                        <th class="text-center" style="width: 100px;">Nilai Ijazah</th>
+                                        <th class="text-center" style="width: 52px;">Smt 1</th>
+                                        <th class="text-center" style="width: 52px;">Smt 2</th>
+                                        <th class="text-center" style="width: 52px;">Smt 3</th>
+                                        <th class="text-center" style="width: 52px;">Smt 4</th>
+                                        <th class="text-center" style="width: 52px;">Smt 5</th>
+                                        <th class="text-center" style="width: 52px;">Smt 6</th>
+                                        <th class="text-center" style="width: 80px;">Nilai Ijazah</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -714,10 +743,8 @@
                                         <tr>
                                             <td>{{ $no++ }}</td>
                                             <td>
-                                                <div class="subject-cell">
-                                                    <span class="subject-name">{{ $subject->name }}</span>
-                                                    <span class="subject-code">{{ $subject->code }}</span>
-                                                </div>
+                                                <div class="subject-name">{{ $subject->name }}</div>
+                                                <div class="subject-code">{{ $subject->code }}</div>
                                             </td>
                                             @for($i = 1; $i <= 6; $i++)
                                                 @php
@@ -731,7 +758,7 @@
                                         </tr>
                                     @endforeach
                                     <tr class="row-average">
-                                        <td colspan="8" class="text-right" style="color: #1e293b; font-weight: 700;">Rata-Rata Nilai Ijazah:</td>
+                                        <td colspan="8" class="text-right" style="font-weight: 700;">Rata-Rata Nilai Ijazah:</td>
                                         <td class="text-center score-avg">
                                             <strong>{{ number_format($student->average_score, 2) }}</strong>
                                         </td>
@@ -741,13 +768,12 @@
                         </div>
                     </div>
 
-                    <!-- ACTION BUTTONS -->
-                    <div class="result-actions" style="gap: 12px; flex-wrap: wrap;">
+                    <div class="result-actions">
                         @if($student->status === 'LULUS')
-                            <a href="{{ route('public.skl.pdf', $student->id) }}" class="btn btn-success btn-lg" target="_blank">
+                            <a href="{{ route('public.skl.pdf', $student->id) }}" class="btn-download btn-download-skl" target="_blank">
                                 <i class="fa-solid fa-download"></i> Download SKL
                             </a>
-                            <a href="{{ route('public.transcript.pdf', $student->id) }}" class="btn btn-primary btn-lg" target="_blank" style="background: #0d9488; border-color: #0d9488;">
+                            <a href="{{ route('public.transcript.pdf', $student->id) }}" class="btn-download btn-download-transkrip" target="_blank">
                                 <i class="fa-solid fa-download"></i> Download Transkrip
                             </a>
                         @else
@@ -755,6 +781,8 @@
                                 <i class="fa-solid fa-circle-info"></i> Silakan hubungi wali kelas atau pihak sekolah untuk informasi lebih lanjut.
                             </div>
                         @endif
+                    </div>
+                </div>
             @endif
         </div>
     @endif
