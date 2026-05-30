@@ -163,11 +163,12 @@
     }
     .footer-right {
         width: 100%;
+        text-align: right;
     }
     .footer-right .signature-block {
-        width: 260px;
-        margin-left: auto;
+        display: inline-block;
         text-align: left;
+        margin-right: 20px;
     }
     .footer-right p {
         margin: 0 0 1px 0;
