@@ -874,7 +874,7 @@ class AdminController extends Controller
         // Auto-detect semester from Excel row 3
         if (isset($rows[2][0]) && strpos(strtolower(trim((string)$rows[2][0])), 'semester') !== false) {
             $excelSemesterVal = trim((string)($rows[2][1] ?? ''));
-            if (in_array($excelSemesterVal, ['1', '2', '3', '4', '5'])) {
+            if (in_array($excelSemesterVal, ['1', '2', '3', '4', '5', '6'])) {
                 $semester = 'Semester ' . $excelSemesterVal;
             } elseif ($excelSemesterVal === '0' || strtolower($excelSemesterVal) === 'nilai ijazah') {
                 $semester = 'Nilai Ijazah';
@@ -1043,13 +1043,8 @@ class AdminController extends Controller
             $cleanSchoolYear = substr($cleanSchoolYear, 0, 8);
         }
 
-        // Clean semester value for B3 (e.g., Semester 1 -> 1, Ujian Sekolah -> 0)
-        $cleanSemester = '1';
-        if (preg_match('/\d+/', $semester, $matches)) {
-            $cleanSemester = $matches[0];
-        } elseif (strtolower($semester) === 'ujian sekolah') {
-            $cleanSemester = '0';
-        }
+        // Semester value for B3: number for numbered semesters, "Nilai Ijazah" for ijazah
+        $cleanSemester = preg_match('/\d+/', $semester, $matches) ? $matches[0] : $semester;
 
         $subjects = Subject::orderBy('order_number')->orderBy('code')->get();
 
