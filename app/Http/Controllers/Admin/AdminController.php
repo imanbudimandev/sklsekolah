@@ -1327,14 +1327,15 @@ class AdminController extends Controller
 
         if ($request->filled('search')) {
             $search = $request->input('search');
-            $query->where('name', 'like', "%{$search}%")
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
                   ->orWhere('nisn', 'like', "%{$search}%")
-                  ->orWhere('exam_number', 'like', "%{$search}%")
                   ->orWhere('class', 'like', "%{$search}%");
+            });
         }
 
         $students = $query->with(['grades.subject'])->orderBy('name')->get();
-        $subjects = Subject::orderBy('code')->get();
+        $subjects = Subject::orderBy('order_number')->orderBy('code')->get();
         
         $announcementDateStr = Setting::get('announcement_date');
         $announcementDate = $announcementDateStr ? Carbon::parse($announcementDateStr) : null;
