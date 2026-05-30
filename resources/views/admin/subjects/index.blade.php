@@ -38,23 +38,43 @@
             <table class="table table-hover">
                 <thead>
                     <tr>
-                        <th width="150">Kode Mapel</th>
+                        <th width="60">No Urut</th>
+                        <th width="130">Kode Mapel</th>
                         <th>Nama Mata Pelajaran</th>
-                        <th>Kategori / Kelompok</th>
+                        <th>Kelompok Mapel</th>
+                        <th>Jurusan</th>
+                        <th width="100" class="text-center">Tampil SKL</th>
+                        <th width="110" class="text-center">Tampil Transkip</th>
                         <th width="150" class="text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     @if($subjects->isEmpty())
                         <tr>
-                            <td colspan="4" class="text-center py-4 text-muted">Mata pelajaran tidak ditemukan.</td>
+                            <td colspan="8" class="text-center py-4 text-muted">Mata pelajaran tidak ditemukan.</td>
                         </tr>
                     @else
                         @foreach($subjects as $subject)
                             <tr>
+                                <td class="text-center">{{ $subject->order_number ?? '-' }}</td>
                                 <td class="font-bold">{{ $subject->code }}</td>
                                 <td>{{ $subject->name }}</td>
-                                <td><span class="badge-category">{{ $subject->category ?? '-' }}</span></td>
+                                <td>{{ $subject->category ?? '-' }}</td>
+                                <td>{{ $subject->jurusan ?? '-' }}</td>
+                                <td class="text-center">
+                                    @if($subject->tampil_skl)
+                                        <span class="badge badge-success">Ya</span>
+                                    @else
+                                        <span class="badge badge-secondary">Tidak</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if($subject->tampil_transkip)
+                                        <span class="badge badge-success">Ya</span>
+                                    @else
+                                        <span class="badge badge-secondary">Tidak</span>
+                                    @endif
+                                </td>
                                 <td class="text-center">
                                     <div class="table-actions">
                                         <!-- Edit button -->
@@ -111,8 +131,28 @@
                     <input type="text" id="add_name" name="name" placeholder="Contoh: Matematika" required autocomplete="off">
                 </div>
                 <div class="form-group">
-                    <label for="add_category">Kategori / Kelompok</label>
-                    <input type="text" id="add_category" name="category" placeholder="Contoh: Kelompok A, Kelompok B, Muatan Lokal" autocomplete="off">
+                    <label for="add_category">Kelompok Mapel</label>
+                    <input type="text" id="add_category" name="category" placeholder="Contoh: Kelompok A, Muatan Lokal" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label for="add_order_number">No Urut</label>
+                    <input type="number" id="add_order_number" name="order_number" placeholder="Urutan tampil" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label for="add_jurusan">Jurusan</label>
+                    <input type="text" id="add_jurusan" name="jurusan" placeholder="Contoh: IPA, IPS, atau kosongkan" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="tampil_skl" value="1" checked>
+                        Tampilkan di SKL
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="tampil_transkip" value="1" checked>
+                        Tampil di Transkip
+                    </label>
                 </div>
             </div>
             <div class="modal-footer">
@@ -143,8 +183,28 @@
                     <input type="text" id="edit_name" name="name" required autocomplete="off">
                 </div>
                 <div class="form-group">
-                    <label for="edit_category">Kategori / Kelompok</label>
+                    <label for="edit_category">Kelompok Mapel</label>
                     <input type="text" id="edit_category" name="category" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label for="edit_order_number">No Urut</label>
+                    <input type="number" id="edit_order_number" name="order_number" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label for="edit_jurusan">Jurusan</label>
+                    <input type="text" id="edit_jurusan" name="jurusan" placeholder="Kosongkan jika untuk semua jurusan" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="tampil_skl" value="1" id="edit_tampil_skl">
+                        Tampilkan di SKL
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="tampil_transkip" value="1" id="edit_tampil_transkip">
+                        Tampil di Transkip
+                    </label>
                 </div>
             </div>
             <div class="modal-footer">
@@ -165,13 +225,13 @@
         <form action="{{ route('admin.subjects.import') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="modal-body">
-                <p>Unggah file CSV yang berisi daftar mata pelajaran.</p>
+                <p>Unggah file Excel atau CSV yang berisi daftar mata pelajaran.</p>
                 
                 <div class="form-group py-3">
-                    <label for="csv_file" class="btn-file-upload">
+                    <label for="file_import" class="btn-file-upload">
                         <i class="fa-solid fa-cloud-arrow-up"></i>
-                        <span>Pilih File CSV</span>
-                        <input type="file" id="csv_file" name="csv_file" accept=".csv,.txt" required onchange="displayFileName(this)">
+                        <span>Pilih File (Excel/CSV)</span>
+                        <input type="file" id="file_import" name="file_import" accept=".xlsx,.xls,.csv,.txt" required onchange="displayFileName(this)">
                     </label>
                     <p id="file-name" class="text-center text-muted mt-2"></p>
                 </div>
@@ -179,7 +239,7 @@
                 <div class="template-download-section alert alert-info">
                     <div class="alert-content">
                         <i class="fa-solid fa-circle-info"></i>
-                        <span>File CSV harus memiliki kolom header: <strong>code, name, category</strong>.</span>
+                        <span>File harus memiliki kolom header: <strong>code, name, category, order_number, jurusan</strong>.</span>
                     </div>
                     <a href="{{ route('admin.subjects.template') }}" class="btn btn-secondary btn-sm mt-2 btn-block">
                         <i class="fa-solid fa-download"></i> Unduh Template CSV Mapel
@@ -224,6 +284,10 @@
         document.getElementById('edit_code').value = subject.code;
         document.getElementById('edit_name').value = subject.name;
         document.getElementById('edit_category').value = subject.category || '';
+        document.getElementById('edit_order_number').value = subject.order_number || '';
+        document.getElementById('edit_jurusan').value = subject.jurusan || '';
+        document.getElementById('edit_tampil_skl').checked = !!subject.tampil_skl;
+        document.getElementById('edit_tampil_transkip').checked = !!subject.tampil_transkip;
 
         openModal('editSubjectModal');
     }

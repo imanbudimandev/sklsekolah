@@ -165,7 +165,7 @@ class AdminController extends Controller
                   ->orWhere('category', 'like', "%{$search}%");
         }
 
-        $subjects = $query->orderBy('code')->paginate(20);
+        $subjects = $query->orderBy('order_number')->orderBy('code')->paginate(20);
 
         return view('admin.subjects.index', compact('subjects'));
     }
@@ -176,7 +176,14 @@ class AdminController extends Controller
             'code' => 'required|unique:subjects,code',
             'name' => 'required',
             'category' => 'nullable',
+            'order_number' => 'nullable|integer',
+            'jurusan' => 'nullable',
+            'tampil_skl' => 'boolean',
+            'tampil_transkip' => 'boolean',
         ]);
+
+        $data['tampil_skl'] = $request->boolean('tampil_skl');
+        $data['tampil_transkip'] = $request->boolean('tampil_transkip');
 
         Subject::create($data);
 
@@ -189,7 +196,14 @@ class AdminController extends Controller
             'code' => 'required|unique:subjects,code,' . $subject->id,
             'name' => 'required',
             'category' => 'nullable',
+            'order_number' => 'nullable|integer',
+            'jurusan' => 'nullable',
+            'tampil_skl' => 'boolean',
+            'tampil_transkip' => 'boolean',
         ]);
+
+        $data['tampil_skl'] = $request->boolean('tampil_skl');
+        $data['tampil_transkip'] = $request->boolean('tampil_transkip');
 
         $subject->update($data);
 
@@ -623,65 +637,94 @@ class AdminController extends Controller
     public function importSubjectsCsv(Request $request)
     {
         $request->validate([
-            'csv_file' => 'required|file|mimes:txt,csv'
+            'file_import' => 'required|file|mimes:xlsx,xls,csv,txt'
         ]);
 
-        $file = $request->file('csv_file');
-        $delimiter = ',';
+        $file = $request->file('file_import');
+        $extension = $file->getClientOriginalExtension();
         $successCount = 0;
 
-        if (($handle = fopen($file->getRealPath(), 'r')) !== false) {
-            $firstLine = fgets($handle);
-            rewind($handle);
-            
-            if (strpos($firstLine, ';') !== false && strpos($firstLine, ',') === false) {
-                $delimiter = ';';
-            }
+        $rows = [];
 
-            $header = fgetcsv($handle, 0, $delimiter);
-            if (!$header) {
-                return redirect()->back()->with('error', 'Format CSV tidak valid.');
-            }
+        if (in_array($extension, ['xlsx', 'xls'])) {
+            $reader = IOFactory::createReader(ucfirst($extension));
+            $reader->setReadDataOnly(true);
+            $spreadsheet = $reader->load($file->getRealPath());
+            $worksheet = $spreadsheet->getActiveSheet();
+            $rows = $worksheet->toArray();
+        } else {
+            $delimiter = ',';
+            if (($handle = fopen($file->getRealPath(), 'r')) !== false) {
+                $firstLine = fgets($handle);
+                rewind($handle);
 
-            $header = array_map(function($val) {
-                return strtolower(trim(preg_replace('/[\x00-\x1F\x7F-\x9F\xEF\xBB\xBF]/', '', $val)));
-            }, $header);
-
-            $map = [
-                'code' => array_search('code', $header) !== false ? array_search('code', $header) : array_search('kode', $header),
-                'name' => array_search('name', $header) !== false ? array_search('name', $header) : array_search('nama', $header),
-                'category' => array_search('category', $header) !== false ? array_search('category', $header) : array_search('kategori', $header),
-            ];
-
-            if ($map['code'] === false || $map['name'] === false) {
-                return redirect()->back()->with('error', 'Kolom wajib (code, name) tidak ditemukan dalam CSV.');
-            }
-
-            while (($row = fgetcsv($handle, 0, $delimiter)) !== false) {
-                if (count($row) < 2) continue;
-
-                if (count($row) < count($header)) {
-                    $row = array_pad($row, count($header), null);
+                if (strpos($firstLine, ';') !== false && strpos($firstLine, ',') === false) {
+                    $delimiter = ';';
                 }
 
-                $code = strtoupper(trim($row[$map['code']]));
-                $name = trim($row[$map['name']]);
-                $category = $map['category'] !== false ? trim($row[$map['category']]) : 'Kelompok A';
-
-                if (empty($code) || empty($name)) {
-                    continue;
+                while (($row = fgetcsv($handle, 0, $delimiter)) !== false) {
+                    $rows[] = $row;
                 }
-
-                Subject::updateOrCreate(
-                    ['code' => $code],
-                    [
-                        'name' => $name,
-                        'category' => $category
-                    ]
-                );
-                $successCount++;
+                fclose($handle);
             }
-            fclose($handle);
+        }
+
+        if (empty($rows)) {
+            return redirect()->back()->with('error', 'File kosong atau tidak valid.');
+        }
+
+        $header = array_map(function($val) {
+            return strtolower(trim(preg_replace('/[\x00-\x1F\x7F-\x9F\xEF\xBB\xBF]/', '', (string)$val)));
+        }, $rows[0]);
+        unset($rows[0]);
+
+        $headerMap = [
+            'code' => ['code', 'kode', 'kode mapel', 'kode_mapel'],
+            'name' => ['name', 'nama', 'nama mapel', 'nama_mapel', 'mata pelajaran', 'nama mata pelajaran'],
+            'category' => ['category', 'kategori', 'kelompok', 'kelompok mapel', 'kelompok_mapel'],
+            'order_number' => ['order_number', 'no urut', 'no_urut', 'urut', 'nomor urut'],
+            'jurusan' => ['jurusan', 'jurusan'],
+        ];
+
+        $map = [];
+        foreach ($headerMap as $field => $aliases) {
+            $map[$field] = false;
+            foreach ($aliases as $alias) {
+                $idx = array_search($alias, $header);
+                if ($idx !== false) {
+                    $map[$field] = $idx;
+                    break;
+                }
+            }
+        }
+
+        if ($map['code'] === false || $map['name'] === false) {
+            return redirect()->back()->with('error', 'Kolom wajib (code, name) tidak ditemukan dalam file.');
+        }
+
+        foreach ($rows as $row) {
+            $row = array_pad($row, max(array_filter($map)), null);
+
+            $code = strtoupper(trim((string)($row[$map['code']] ?? '')));
+            $name = trim((string)($row[$map['name']] ?? ''));
+            if (empty($code) || empty($name)) {
+                continue;
+            }
+
+            $category = $map['category'] !== false ? trim((string)($row[$map['category']] ?? '')) : 'Kelompok A';
+            $order_number = $map['order_number'] !== false ? (int)($row[$map['order_number']] ?? 0) : null;
+            $jurusan = $map['jurusan'] !== false ? trim((string)($row[$map['jurusan']] ?? '')) : null;
+
+            Subject::updateOrCreate(
+                ['code' => $code],
+                [
+                    'name' => $name,
+                    'category' => $category,
+                    'order_number' => $order_number ?: null,
+                    'jurusan' => $jurusan ?: null,
+                ]
+            );
+            $successCount++;
         }
 
         return redirect()->route('admin.subjects')->with('success', "Berhasil mengimpor {$successCount} mata pelajaran.");
@@ -689,13 +732,13 @@ class AdminController extends Controller
 
     public function downloadSubjectTemplate()
     {
-        $headers = ['code', 'name', 'category'];
-        
+        $headers = ['code', 'name', 'category', 'order_number', 'jurusan'];
+
         $callback = function() use ($headers) {
             $file = fopen('php://output', 'w');
             fputcsv($file, $headers);
-            fputcsv($file, ['MAT", "Matematika", "Kelompok A']);
-            fputcsv($file, ['SBK", "Seni Budaya dan Keterampilan", "Kelompok B']);
+            fputcsv($file, ['MAT', 'Matematika', 'Kelompok A', '1', 'IPA']);
+            fputcsv($file, ['SBK', 'Seni Budaya dan Keterampilan', 'Kelompok B', '2', '']);
             fclose($file);
         };
 
