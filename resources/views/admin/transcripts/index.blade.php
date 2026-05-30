@@ -155,7 +155,6 @@
             <table class="table table-hover">
                 <thead>
                     <tr>
-                        <th width="140">No. Peserta</th>
                         <th width="110">NISN</th>
                         <th>Nama Siswa</th>
                         <th class="text-center" width="75">Smt 1</th>
@@ -163,7 +162,8 @@
                         <th class="text-center" width="75">Smt 3</th>
                         <th class="text-center" width="75">Smt 4</th>
                         <th class="text-center" width="75">Smt 5</th>
-                        <th class="text-center" width="90">Ujian Sekolah</th>
+                        <th class="text-center" width="75">Smt 6</th>
+                        <th class="text-center" width="90">Nilai Ijazah</th>
                         <th class="text-center" width="95">Nilai Sekolah</th>
                         <th class="text-center" width="110">Status</th>
                         <th class="text-center" width="130">Aksi</th>
@@ -172,12 +172,11 @@
                 <tbody>
                     @if($students->isEmpty())
                         <tr>
-                            <td colspan="12" class="text-center py-4 text-muted">Data siswa tidak ditemukan.</td>
+                            <td colspan="11" class="text-center py-4 text-muted">Data siswa tidak ditemukan.</td>
                         </tr>
                     @else
                         @foreach($students as $student)
                             <tr>
-                                <td class="font-bold">{{ $student->exam_number }}</td>
                                 <td>{{ $student->nisn }}</td>
                                 <td class="font-semibold">{{ $student->name }}</td>
                                 
@@ -196,8 +195,11 @@
                                 <td class="text-center score-avg-value">
                                     {{ $student->getSemesterAverage('Semester 5') !== null ? number_format($student->getSemesterAverage('Semester 5'), 2) : '-' }}
                                 </td>
+                                <td class="text-center score-avg-value">
+                                    {{ $student->getSemesterAverage('Semester 6') !== null ? number_format($student->getSemesterAverage('Semester 6'), 2) : '-' }}
+                                </td>
                                 <td class="text-center score-avg-value" style="color: #475569;">
-                                    {{ $student->getSemesterAverage('Ujian Sekolah') !== null ? number_format($student->getSemesterAverage('Ujian Sekolah'), 2) : '-' }}
+                                    {{ $student->getSemesterAverage('Nilai Ijazah') !== null ? number_format($student->getSemesterAverage('Nilai Ijazah'), 2) : '-' }}
                                 </td>
                                 <td class="text-center score-final-value">
                                     {{ number_format($student->average_score, 2) }}

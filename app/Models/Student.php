@@ -62,9 +62,9 @@ class Student extends Model
         $count = 0;
         foreach ($grouped as $subjectId => $subjectGrades) {
             $semesterGrades = $subjectGrades->filter(function($grade) {
-                return in_array($grade->semester, ['Semester 1', 'Semester 2', 'Semester 3', 'Semester 4', 'Semester 5']);
+                return in_array($grade->semester, ['Semester 1', 'Semester 2', 'Semester 3', 'Semester 4', 'Semester 5', 'Semester 6']);
             });
-            $ujianSekolahGrade = $subjectGrades->where('semester', 'Ujian Sekolah')->first();
+            $ujianSekolahGrade = $subjectGrades->whereIn('semester', ['Ujian Sekolah', 'Nilai Ijazah'])->first();
             
             if ($semesterGrades->isNotEmpty() && $ujianSekolahGrade) {
                 $avgSemesters = $semesterGrades->avg('score');
@@ -87,10 +87,10 @@ class Student extends Model
         }
         
         $semesterGrades = $grades->filter(function($grade) {
-            return in_array($grade->semester, ['Semester 1', 'Semester 2', 'Semester 3', 'Semester 4', 'Semester 5']);
+            return in_array($grade->semester, ['Semester 1', 'Semester 2', 'Semester 3', 'Semester 4', 'Semester 5', 'Semester 6']);
         });
         
-        $ujianSekolahGrade = $grades->where('semester', 'Ujian Sekolah')->first();
+        $ujianSekolahGrade = $grades->whereIn('semester', ['Ujian Sekolah', 'Nilai Ijazah'])->first();
         
         if ($semesterGrades->isNotEmpty() && $ujianSekolahGrade) {
             $avgSemesters = $semesterGrades->avg('score');
@@ -135,7 +135,7 @@ class Student extends Model
             });
 
             // Get school exam grade
-            $ujianSekolahGrade = $subjectGrades->where('semester', 'Ujian Sekolah')->first();
+            $ujianSekolahGrade = $subjectGrades->whereIn('semester', ['Ujian Sekolah', 'Nilai Ijazah'])->first();
 
             // Only calculate if both semester grades and school exam exist
             if ($semesterGrades->isNotEmpty() && $ujianSekolahGrade) {
