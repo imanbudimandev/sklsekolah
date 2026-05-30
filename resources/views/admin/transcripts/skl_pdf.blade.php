@@ -163,8 +163,7 @@
     }
     .footer-right {
         width: 50%;
-        text-align: left;
-        padding-left: 240px;
+        text-align: right;
     }
     .footer-right p {
         margin: 0 0 1px 0;
