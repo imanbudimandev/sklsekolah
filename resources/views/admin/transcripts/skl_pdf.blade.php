@@ -325,6 +325,9 @@
                     TIDAK LULUS
                 </div>
             @endif
+            @if(!empty($settings['skl_after_lulus_text']))
+                <p style="text-indent: 0; margin-top: 8px; font-size: 8pt; font-weight: 600;">{{ $settings['skl_after_lulus_text'] }}</p>
+            @endif
         </div>
 
         <!-- Grade Table -->
@@ -371,6 +374,9 @@
         </table>
 
         <div class="cert-body">
+            @if(!empty($settings['skl_before_ttd_text']))
+                <p class="no-indent" style="font-weight: 600; margin-bottom: 6px;">{{ $settings['skl_before_ttd_text'] }}</p>
+            @endif
             @php
                 $footerText = $settings['skl_footer_text'] ?? '* Surat Keterangan Lulus ini berlaku sementara sampai diterbitkannya Ijazah asli bagi peserta didik yang dinyatakan lulus, guna melengkapi syarat pendaftaran jenjang pendidikan selanjutnya.';
             @endphp

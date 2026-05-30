@@ -392,6 +392,8 @@ class AdminController extends Controller
             'skl_opening_text' => Setting::get('skl_opening_text', 'Yang bertanda tangan di bawah ini, Kepala Sekolah [NAMA_SEKOLAH] Kecamatan Banjaran Kabupaten Bandung, menerangkan bahwa:'),
             'skl_body_text' => Setting::get('skl_body_text', 'Berdasarkan Kriteria Kelulusan Peserta Didik yang diatur dalam kurikulum yang berlaku dan Rapat Pleno Dewan Guru [NAMA_SEKOLAH] tentang Kelulusan Siswa Kelas IX Tahun Pelajaran [TAHUN_PELAJARAN] pada tanggal [TANGGAL_PENGUMUMAN], dengan ini menyatakan bahwa siswa tersebut di atas:'),
             'skl_footer_text' => Setting::get('skl_footer_text', '* Surat Keterangan Lulus ini berlaku sementara sampai diterbitkannya Ijazah asli bagi peserta didik yang dinyatakan lulus, guna melengkapi syarat pendaftaran jenjang pendidikan selanjutnya.'),
+            'skl_after_lulus_text' => Setting::get('skl_after_lulus_text', ''),
+            'skl_before_ttd_text' => Setting::get('skl_before_ttd_text', 'SKL ini dapat digunakan untuk keperluan Penerimaan Peserta Didik Baru (PPDB), atau keperluan lain sesuai ketentuan dan hanya berlaku sampai dengan diterbitkannya ijazah tahun pelajaran 2024-2025'),
         ];
 
         return view('admin.transcripts.settings_skl', compact('settings'));
@@ -406,6 +408,8 @@ class AdminController extends Controller
             'skl_place' => 'nullable|string',
             'skl_date_format' => 'nullable|string',
             'skl_signature_text' => 'nullable|string',
+            'skl_after_lulus_text' => 'nullable|string',
+            'skl_before_ttd_text' => 'nullable|string',
         ]);
 
         Setting::set('skl_header', $request->input('skl_header'));
@@ -417,6 +421,9 @@ class AdminController extends Controller
         Setting::set('skl_opening_text', $request->input('skl_opening_text'));
         Setting::set('skl_body_text', $request->input('skl_body_text'));
         Setting::set('skl_footer_text', $request->input('skl_footer_text'));
+
+        Setting::set('skl_after_lulus_text', $request->input('skl_after_lulus_text'));
+        Setting::set('skl_before_ttd_text', $request->input('skl_before_ttd_text'));
 
         // Ensure upload directory exists
         if (!File::exists(public_path('uploads'))) {
@@ -1392,6 +1399,8 @@ class AdminController extends Controller
             'nss' => Setting::get('nss', '202000012010'),
             'npsn' => Setting::get('npsn', '20233628'),
             'accreditation' => Setting::get('accreditation', 'B'),
+            'skl_after_lulus_text' => Setting::get('skl_after_lulus_text', ''),
+            'skl_before_ttd_text' => Setting::get('skl_before_ttd_text', 'SKL ini dapat digunakan untuk keperluan Penerimaan Peserta Didik Baru (PPDB), atau keperluan lain sesuai ketentuan dan hanya berlaku sampai dengan diterbitkannya ijazah tahun pelajaran 2024-2025'),
         ];
 
         // Use physical path for logo and signature
@@ -1436,6 +1445,8 @@ class AdminController extends Controller
             'nss' => Setting::get('nss', '202000012010'),
             'npsn' => Setting::get('npsn', '20233628'),
             'accreditation' => Setting::get('accreditation', 'B'),
+            'skl_after_lulus_text' => Setting::get('skl_after_lulus_text', ''),
+            'skl_before_ttd_text' => Setting::get('skl_before_ttd_text', 'SKL ini dapat digunakan untuk keperluan Penerimaan Peserta Didik Baru (PPDB), atau keperluan lain sesuai ketentuan dan hanya berlaku sampai dengan diterbitkannya ijazah tahun pelajaran 2024-2025'),
         ];
 
         // Use physical path for logo and signature
@@ -1488,6 +1499,8 @@ class AdminController extends Controller
             'nss' => Setting::get('nss', '202000012010'),
             'npsn' => Setting::get('npsn', '20233628'),
             'accreditation' => Setting::get('accreditation', 'B'),
+            'skl_after_lulus_text' => Setting::get('skl_after_lulus_text', ''),
+            'skl_before_ttd_text' => Setting::get('skl_before_ttd_text', 'SKL ini dapat digunakan untuk keperluan Penerimaan Peserta Didik Baru (PPDB), atau keperluan lain sesuai ketentuan dan hanya berlaku sampai dengan diterbitkannya ijazah tahun pelajaran 2024-2025'),
         ];
 
         $logoSetting = $settings['skl_logo'] ?: $settings['school_logo'] ?: Setting::get('transcript_logo');

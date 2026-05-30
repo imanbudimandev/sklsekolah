@@ -217,6 +217,17 @@
                             <label>Catatan Kaki (Bawah Surat)</label>
                             <textarea name="skl_footer_text" id="skl_footer_text" class="form-control" rows="2" placeholder="* Surat Keterangan Lulus ini berlaku sementara...">{{ old('skl_footer_text', $settings['skl_footer_text']) }}</textarea>
                         </div>
+
+                        <div class="form-group">
+                            <label>Teks Setelah Status Kelulusan (Sebelum Tabel Nilai)</label>
+                            <textarea name="skl_after_lulus_text" id="skl_after_lulus_text" class="form-control" rows="2" placeholder="Teks yang muncul setelah kotak LULUS/TIDAK LULUS...">{{ old('skl_after_lulus_text', $settings['skl_after_lulus_text']) }}</textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Teks Sebelum Tanda Tangan (Setelah Tabel Nilai)</label>
+                            <textarea name="skl_before_ttd_text" id="skl_before_ttd_text" class="form-control" rows="3" placeholder="SKL ini dapat digunakan untuk keperluan Penerimaan Peserta Didik Baru (PPDB)...">{{ old('skl_before_ttd_text', $settings['skl_before_ttd_text']) }}</textarea>
+                            <small class="text-muted">Teks yang muncul setelah tabel nilai, sebelum tanda tangan.</small>
+                        </div>
                     </div>
 
                     <!-- Action Buttons -->
