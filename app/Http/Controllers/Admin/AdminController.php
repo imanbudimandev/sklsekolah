@@ -483,36 +483,7 @@ class AdminController extends Controller
 
             $birth_date = null;
             if ($map['birth_date'] !== false && !empty($row[$map['birth_date']])) {
-                $rawDate = trim((string) $row[$map['birth_date']]);
-                $dateFormats = ['d-m-Y', 'd/m/Y', 'Y-m-d', 'd.m.Y', 'd/m/y', 'd-m-y'];
-                foreach ($dateFormats as $fmt) {
-                    try {
-                        $parsed = Carbon::createFromFormat($fmt, $rawDate);
-                        if ($parsed && $parsed->format('Y') > 1900 && $parsed->format('Y') < 2100) {
-                            $birth_date = $parsed->format('Y-m-d');
-                            break;
-                        }
-                    } catch (\Exception $e) {
-                        continue;
-                    }
-                }
-                if (!$birth_date) {
-                    try {
-                        $parsed = Carbon::parseFromLocale($rawDate, 'id');
-                        if ($parsed && $parsed->format('Y') > 1900 && $parsed->format('Y') < 2100) {
-                            $birth_date = $parsed->format('Y-m-d');
-                        }
-                    } catch (\Exception $e) {
-                        //
-                    }
-                }
-                if (!$birth_date) {
-                    try {
-                        $birth_date = Carbon::parse($rawDate)->format('Y-m-d');
-                    } catch (\Exception $e) {
-                        $birth_date = null;
-                    }
-                }
+                $birth_date = trim((string) $row[$map['birth_date']]);
             }
 
             Student::updateOrCreate(

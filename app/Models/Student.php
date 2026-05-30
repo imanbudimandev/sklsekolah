@@ -26,9 +26,7 @@ class Student extends Model
         'transcript_grade',
     ];
 
-    protected $casts = [
-        'birth_date' => 'date',
-    ];
+    protected $casts = [];
 
     public function grades(): HasMany
     {

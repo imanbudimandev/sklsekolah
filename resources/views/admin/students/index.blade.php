@@ -65,7 +65,7 @@
                                 <td>{{ $student->nisn }}</td>
                                 <td><strong>{{ $student->name }}</strong></td>
                                 <td>{{ $student->birth_place ?? '-' }}</td>
-                                <td>{{ $student->birth_date ? $student->birth_date->format('d/m/Y') : '-' }}</td>
+                                <td>{{ $student->birth_date ?? '-' }}</td>
                                 <td>{{ $student->class }}</td>
                                 <td>{{ $student->jurusan ?? '-' }}</td>
                                 <td>
@@ -147,7 +147,7 @@
                     </div>
                     <div class="form-group">
                         <label for="add_birth_date">Tanggal Lahir</label>
-                        <input type="date" id="add_birth_date" name="birth_date">
+                        <input type="text" id="add_birth_date" name="birth_date" placeholder="Contoh: 11 Juli 2010" autocomplete="off">
                     </div>
                     <div class="form-group">
                         <label for="add_class">Kelas</label>
@@ -218,7 +218,7 @@
                     </div>
                     <div class="form-group">
                         <label for="edit_birth_date">Tanggal Lahir</label>
-                        <input type="date" id="edit_birth_date" name="birth_date">
+                        <input type="text" id="edit_birth_date" name="birth_date" placeholder="Contoh: 11 Juli 2010" autocomplete="off">
                     </div>
                     <div class="form-group">
                         <label for="edit_class">Kelas</label>
@@ -323,16 +323,7 @@
         document.getElementById('edit_status').value = student.status;
         document.getElementById('edit_password').value = student.password || '';
         document.getElementById('edit_tahun_lulus').value = student.tahun_lulus || '';
-
-        if (student.birth_date) {
-            const date = new Date(student.birth_date);
-            const yyyy = date.getFullYear();
-            const mm = String(date.getMonth() + 1).padStart(2, '0');
-            const dd = String(date.getDate()).padStart(2, '0');
-            document.getElementById('edit_birth_date').value = `${yyyy}-${mm}-${dd}`;
-        } else {
-            document.getElementById('edit_birth_date').value = '';
-        }
+        document.getElementById('edit_birth_date').value = student.birth_date || '';
 
         openModal('editStudentModal');
     }
