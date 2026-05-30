@@ -162,10 +162,10 @@
         border-collapse: collapse;
     }
     .footer-right {
-        width: 50%;
+        width: 100%;
     }
     .footer-right .signature-block {
-        width: 250px;
+        width: 260px;
         margin-left: auto;
         text-align: left;
     }
