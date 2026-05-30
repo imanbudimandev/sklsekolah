@@ -225,13 +225,13 @@
         <form action="{{ route('admin.subjects.import') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="modal-body">
-                <p>Unggah file Excel atau CSV yang berisi daftar mata pelajaran.</p>
+                <p>Unggah file Excel yang berisi daftar mata pelajaran.</p>
                 
                 <div class="form-group py-3">
                     <label for="file_import" class="btn-file-upload">
                         <i class="fa-solid fa-cloud-arrow-up"></i>
-                        <span>Pilih File (Excel/CSV)</span>
-                        <input type="file" id="file_import" name="file_import" accept=".xlsx,.xls,.csv,.txt" required onchange="displayFileName(this)">
+                        <span>Pilih File Excel</span>
+                        <input type="file" id="file_import" name="file_import" accept=".xlsx,.xls" required onchange="displayFileName(this)">
                     </label>
                     <p id="file-name" class="text-center text-muted mt-2"></p>
                 </div>
@@ -239,10 +239,10 @@
                 <div class="template-download-section alert alert-info">
                     <div class="alert-content">
                         <i class="fa-solid fa-circle-info"></i>
-                        <span>File harus memiliki kolom header: <strong>code, name, category, order_number, jurusan</strong>.</span>
+                        <span>Kolom header: <strong>No Urut, Kode Mapel, Nama Mapel, Kelompok Mapel, Jurusan, Tampilkan di SKL, Tampil di Transkip</strong>.</span>
                     </div>
                     <a href="{{ route('admin.subjects.template') }}" class="btn btn-secondary btn-sm mt-2 btn-block">
-                        <i class="fa-solid fa-download"></i> Unduh Template CSV Mapel
+                        <i class="fa-solid fa-download"></i> Unduh Template Excel Mapel
                     </a>
                 </div>
             </div>

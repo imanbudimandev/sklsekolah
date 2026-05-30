@@ -637,40 +637,21 @@ class AdminController extends Controller
     public function importSubjectsCsv(Request $request)
     {
         $request->validate([
-            'file_import' => 'required|file|mimes:xlsx,xls,csv,txt'
+            'file_import' => 'required|file|mimes:xlsx,xls'
         ]);
 
         $file = $request->file('file_import');
         $extension = $file->getClientOriginalExtension();
         $successCount = 0;
 
-        $rows = [];
+        $reader = IOFactory::createReader(ucfirst($extension));
+        $reader->setReadDataOnly(true);
+        $spreadsheet = $reader->load($file->getRealPath());
+        $worksheet = $spreadsheet->getActiveSheet();
+        $rows = $worksheet->toArray();
 
-        if (in_array($extension, ['xlsx', 'xls'])) {
-            $reader = IOFactory::createReader(ucfirst($extension));
-            $reader->setReadDataOnly(true);
-            $spreadsheet = $reader->load($file->getRealPath());
-            $worksheet = $spreadsheet->getActiveSheet();
-            $rows = $worksheet->toArray();
-        } else {
-            $delimiter = ',';
-            if (($handle = fopen($file->getRealPath(), 'r')) !== false) {
-                $firstLine = fgets($handle);
-                rewind($handle);
-
-                if (strpos($firstLine, ';') !== false && strpos($firstLine, ',') === false) {
-                    $delimiter = ';';
-                }
-
-                while (($row = fgetcsv($handle, 0, $delimiter)) !== false) {
-                    $rows[] = $row;
-                }
-                fclose($handle);
-            }
-        }
-
-        if (empty($rows)) {
-            return redirect()->back()->with('error', 'File kosong atau tidak valid.');
+        if (empty($rows) || count($rows) < 2) {
+            return redirect()->back()->with('error', 'File Excel kosong atau tidak valid.');
         }
 
         $header = array_map(function($val) {
@@ -679,11 +660,13 @@ class AdminController extends Controller
         unset($rows[0]);
 
         $headerMap = [
-            'code' => ['code', 'kode', 'kode mapel', 'kode_mapel'],
-            'name' => ['name', 'nama', 'nama mapel', 'nama_mapel', 'mata pelajaran', 'nama mata pelajaran'],
-            'category' => ['category', 'kategori', 'kelompok', 'kelompok mapel', 'kelompok_mapel'],
-            'order_number' => ['order_number', 'no urut', 'no_urut', 'urut', 'nomor urut'],
-            'jurusan' => ['jurusan', 'jurusan'],
+            'code' => ['kode mapel', 'kode_mapel', 'kode', 'code'],
+            'name' => ['nama mapel', 'nama_mapel', 'nama mapel', 'nama', 'mata pelajaran', 'name'],
+            'category' => ['kelompok mapel', 'kelompok_mapel', 'kelompok', 'kategori', 'category'],
+            'order_number' => ['no urut', 'no_urut', 'nomor urut', 'urut', 'order_number'],
+            'jurusan' => ['jurusan'],
+            'tampil_skl' => ['tampilkan di skl', 'tampil_skl', 'tampil skl', 'skl'],
+            'tampil_transkip' => ['tampil di transkip', 'tampil_transkip', 'tampil transkip', 'transkip'],
         ];
 
         $map = [];
@@ -699,7 +682,7 @@ class AdminController extends Controller
         }
 
         if ($map['code'] === false || $map['name'] === false) {
-            return redirect()->back()->with('error', 'Kolom wajib (code, name) tidak ditemukan dalam file.');
+            return redirect()->back()->with('error', 'Kolom wajib (Kode Mapel, Nama Mapel) tidak ditemukan dalam file.');
         }
 
         foreach ($rows as $row) {
@@ -714,6 +697,8 @@ class AdminController extends Controller
             $category = $map['category'] !== false ? trim((string)($row[$map['category']] ?? '')) : 'Kelompok A';
             $order_number = $map['order_number'] !== false ? (int)($row[$map['order_number']] ?? 0) : null;
             $jurusan = $map['jurusan'] !== false ? trim((string)($row[$map['jurusan']] ?? '')) : null;
+            $tampil_skl = $map['tampil_skl'] !== false ? in_array(strtolower(trim((string)($row[$map['tampil_skl']] ?? ''))), ['1', 'yes', 'ya', 'true', 'y']) : true;
+            $tampil_transkip = $map['tampil_transkip'] !== false ? in_array(strtolower(trim((string)($row[$map['tampil_transkip']] ?? ''))), ['1', 'yes', 'ya', 'true', 'y']) : true;
 
             Subject::updateOrCreate(
                 ['code' => $code],
@@ -722,6 +707,8 @@ class AdminController extends Controller
                     'category' => $category,
                     'order_number' => $order_number ?: null,
                     'jurusan' => $jurusan ?: null,
+                    'tampil_skl' => $tampil_skl,
+                    'tampil_transkip' => $tampil_transkip,
                 ]
             );
             $successCount++;
@@ -732,25 +719,41 @@ class AdminController extends Controller
 
     public function downloadSubjectTemplate()
     {
-        $headers = ['code', 'name', 'category', 'order_number', 'jurusan'];
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
 
-        $callback = function() use ($headers) {
-            $file = fopen('php://output', 'w');
-            fputcsv($file, $headers);
-            fputcsv($file, ['MAT', 'Matematika', 'Kelompok A', '1', 'IPA']);
-            fputcsv($file, ['SBK', 'Seni Budaya dan Keterampilan', 'Kelompok B', '2', '']);
-            fclose($file);
-        };
+        $headers = ['No Urut', 'Kode Mapel', 'Nama Mapel', 'Kelompok Mapel', 'Jurusan', 'Tampilkan di SKL', 'Tampil di Transkip'];
+        $sheet->fromArray([$headers], null, 'A1');
 
-        $headers_response = [
-            "Content-type" => "text/csv",
-            "Content-Disposition" => "attachment; filename=template_mapel.csv",
-            "Pragma" => "no-cache",
-            "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
-            "Expires" => "0"
-        ];
+        $sheet->setCellValue('A2', 1);
+        $sheet->setCellValue('B2', 'MAT');
+        $sheet->setCellValue('C2', 'Matematika');
+        $sheet->setCellValue('D2', 'Kelompok A');
+        $sheet->setCellValue('E2', 'IPA');
+        $sheet->setCellValue('F2', 'Ya');
+        $sheet->setCellValue('G2', 'Ya');
 
-        return response()->stream($callback, 200, $headers_response);
+        $sheet->setCellValue('A3', 2);
+        $sheet->setCellValue('B3', 'SBK');
+        $sheet->setCellValue('C3', 'Seni Budaya');
+        $sheet->setCellValue('D3', 'Kelompok B');
+        $sheet->setCellValue('E3', '');
+        $sheet->setCellValue('F3', 'Ya');
+        $sheet->setCellValue('G3', 'Tidak');
+
+        foreach (range('A', 'G') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        $writer = new Xlsx($spreadsheet);
+        ob_start();
+        $writer->save('php://output');
+        $content = ob_get_clean();
+
+        return response($content, 200, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Content-Disposition' => 'attachment; filename="template_mapel.xlsx"',
+        ]);
     }
 
     // --- Grade Management (Multi-Semester) ---
