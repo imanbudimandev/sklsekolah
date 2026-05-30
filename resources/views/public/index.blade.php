@@ -435,6 +435,127 @@
         display: none;
     }
 
+    @media print {
+        body {
+            background: white !important;
+        }
+        .public-container {
+            padding: 0;
+            max-width: 100%;
+        }
+        .public-header, .search-card, .result-actions, .countdown-wrapper {
+            display: none !important;
+        }
+        .print-only-container {
+            display: block !important;
+        }
+        .print-page {
+            page-break-after: always;
+            padding: 20px;
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 12pt;
+        }
+        .print-kop {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .print-kop img {
+            max-height: 80px;
+        }
+        .print-kop .kop-text {
+            flex: 1;
+            text-align: center;
+        }
+        .print-kop .kop-text h2 {
+            font-size: 14pt;
+            margin: 0;
+        }
+        .print-kop .kop-text h1 {
+            font-size: 18pt;
+            margin: 5px 0;
+        }
+        .print-kop .kop-text p {
+            font-size: 10pt;
+            color: #333;
+        }
+        .print-divider {
+            border-top: 2px solid black;
+            margin: 10px 0;
+        }
+        .cert-title {
+            text-align: center;
+        }
+        .table-print-meta {
+            width: 100%;
+            margin: 10px 0;
+        }
+        .table-print-meta td {
+            padding: 4px 8px;
+        }
+        .table-print-grades {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        .table-print-grades th, .table-print-grades td {
+            border: 1px solid #333;
+            padding: 6px 8px;
+            font-size: 10pt;
+        }
+        .print-status-box {
+            text-align: center;
+            border: 2px solid #059669;
+            padding: 10px;
+            width: 200px;
+            margin: 20px auto;
+        }
+        .cert-note {
+            font-size: 9pt;
+            font-style: italic;
+        }
+        .cert-footer {
+            margin-top: 40px;
+        }
+        .signature-box {
+            text-align: center;
+            width: 300px;
+            margin-left: auto;
+        }
+        .sig-img {
+            max-height: 60px;
+        }
+        .signature-space {
+            height: 60px;
+        }
+        .page-break {
+            page-break-after: always;
+        }
+        .no-print {
+            display: none !important;
+        }
+        .cert-body p {
+            text-align: justify;
+            text-indent: 30px;
+        }
+        .cert-statement {
+            text-align: justify;
+            text-indent: 30px;
+        }
+        .font-bold {
+            font-weight: bold;
+        }
+        .row-print-average td {
+            border-top: 2px solid #333 !important;
+            font-weight: bold;
+        }
+        .short td {
+            padding: 2px 8px;
+            font-size: 10pt;
+        }
+    }
+
     @media (max-width: 768px) {
         .public-header h1 {
             font-size: 1.8rem;
@@ -516,12 +637,12 @@
             <!-- Search Box Card -->
             <div class="search-card card glass">
                 <h2>Cek Status Kelulusan Anda</h2>
-                <p>Masukkan Nomor Peserta Ujian atau NISN Anda untuk memeriksa status kelulusan.</p>
+                <p>Masukkan NISN atau NIS Anda untuk memeriksa status kelulusan.</p>
                 
                 <form action="{{ route('public.index') }}" method="GET" class="search-form">
                     <div class="input-group">
                         <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                        <input type="text" name="search" placeholder="Contoh: 02-001-001-1 atau 1234567890" value="{{ $searchQuery }}" required autocomplete="off">
+                        <input type="text" name="search" placeholder="Masukkan NISN atau NIS" value="{{ $searchQuery }}" required autocomplete="off">
                         <button type="submit" class="btn">Periksa</button>
                     </div>
                 </form>
@@ -538,10 +659,15 @@
                 <div class="result-card card glass">
                     <div class="result-header">
                         <div class="student-meta">
+                            @if($student->status === 'LULUS')
+                                <p style="color: #065f46; font-weight: 700; font-size: 1.05rem; margin-bottom: 4px;">
+                                    <i class="fa-solid fa-check-circle"></i> Selamat! Anda dinyatakan LULUS
+                                </p>
+                            @endif
                             <h3>{{ $student->name }}</h3>
                             <p>
                                 <span class="meta-tag">NISN: <strong>{{ $student->nisn }}</strong></span> 
-                                <span class="meta-tag">No. Ujian: <strong>{{ $student->exam_number }}</strong></span>
+                                <span class="meta-tag">NIS: <strong>{{ $student->nis ?? '-' }}</strong></span>
                                 <span class="meta-tag">Kelas: <strong>{{ $student->class }}</strong></span>
                             </p>
                         </div>
@@ -562,27 +688,24 @@
 
                     <!-- GRADES TABLE -->
                     <div class="grades-section">
-                        <h4><i class="fa-solid fa-file-invoice"></i> Transkrip Nilai Hasil Ujian</h4>
+                        <h4><i class="fa-solid fa-file-invoice"></i> Nilai Hasil Ujian</h4>
                         <div class="table-responsive">
                             <table class="table table-grades">
                                 <thead>
                                     <tr>
                                         <th style="width: 50px;">No</th>
                                         <th>Mata Pelajaran</th>
-                                        <th class="text-center" style="width: 70px;">Smt 1</th>
-                                        <th class="text-center" style="width: 70px;">Smt 2</th>
-                                        <th class="text-center" style="width: 70px;">Smt 3</th>
-                                        <th class="text-center" style="width: 70px;">Smt 4</th>
-                                        <th class="text-center" style="width: 70px;">Smt 5</th>
-                                        <th class="text-center" style="width: 80px;">US</th>
-                                        <th class="text-center" style="width: 120px;">Nilai Akhir</th>
+                                        <th class="text-center" style="width: 60px;">Smt 1</th>
+                                        <th class="text-center" style="width: 60px;">Smt 2</th>
+                                        <th class="text-center" style="width: 60px;">Smt 3</th>
+                                        <th class="text-center" style="width: 60px;">Smt 4</th>
+                                        <th class="text-center" style="width: 60px;">Smt 5</th>
+                                        <th class="text-center" style="width: 60px;">Smt 6</th>
+                                        <th class="text-center" style="width: 100px;">Nilai Ijazah</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @php
-                                        $no = 1;
-                                        $subjects = App\Models\Subject::orderBy('code')->get();
-                                    @endphp
+                                    @php $no = 1; @endphp
                                     @foreach($subjects as $subject)
                                         @php
                                             $subGrades = $student->grades->where('subject_id', $subject->id);
@@ -596,23 +719,19 @@
                                                     <span class="subject-code">{{ $subject->code }}</span>
                                                 </div>
                                             </td>
-                                            @for($i = 1; $i <= 5; $i++)
+                                            @for($i = 1; $i <= 6; $i++)
                                                 @php
                                                     $semGrade = $subGrades->where('semester', "Semester $i")->first();
                                                 @endphp
                                                 <td class="text-center" style="color: #64748b;">{{ $semGrade ? number_format($semGrade->score, 0) : '-' }}</td>
                                             @endfor
-                                            @php
-                                                $usGrade = $subGrades->where('semester', 'Ujian Sekolah')->first();
-                                            @endphp
-                                            <td class="text-center" style="color: #64748b;">{{ $usGrade ? number_format($usGrade->score, 0) : '-' }}</td>
                                             <td class="text-center td-score-val">
                                                 {{ $finalGrade !== null ? number_format($finalGrade, 1) : '-' }}
                                             </td>
                                         </tr>
                                     @endforeach
                                     <tr class="row-average">
-                                        <td colspan="8" class="text-right" style="color: #1e293b; font-weight: 700;">Rata-Rata Nilai Akhir Sekolah:</td>
+                                        <td colspan="8" class="text-right" style="color: #1e293b; font-weight: 700;">Rata-Rata Nilai Ijazah:</td>
                                         <td class="text-center score-avg">
                                             <strong>{{ number_format($student->average_score, 2) }}</strong>
                                         </td>
@@ -623,212 +742,19 @@
                     </div>
 
                     <!-- ACTION BUTTONS -->
-                    <div class="result-actions">
+                    <div class="result-actions" style="gap: 12px; flex-wrap: wrap;">
                         @if($student->status === 'LULUS')
-                            <button onclick="window.print()" class="btn btn-success btn-lg">
-                                <i class="fa-solid fa-print"></i> Cetak Surat Keterangan Lulus (SKL)
-                            </button>
+                            <a href="{{ route('public.skl.pdf', $student->id) }}" class="btn btn-success btn-lg" target="_blank">
+                                <i class="fa-solid fa-download"></i> Download SKL
+                            </a>
+                            <a href="{{ route('public.transcript.pdf', $student->id) }}" class="btn btn-primary btn-lg" target="_blank" style="background: #0d9488; border-color: #0d9488;">
+                                <i class="fa-solid fa-download"></i> Download Transkrip
+                            </a>
                         @else
                             <div class="alert alert-info">
                                 <i class="fa-solid fa-circle-info"></i> Silakan hubungi wali kelas atau pihak sekolah untuk informasi lebih lanjut.
                             </div>
                         @endif
-                    </div>
-                </div>
-
-                <!-- HIDDEN PRINTABLE CERTIFICATE & TRANSCRIPT -->
-                <div class="print-only-container">
-                    <!-- PAGE 1: SURAT KETERANGAN LULUS -->
-                    <div class="print-page certificate-page">
-                        <!-- Letterhead (Kop Surat) -->
-                        <div class="print-kop">
-                            @if(!empty($settings['school_logo']))
-                                <img src="{{ asset($settings['school_logo']) }}" alt="Logo" class="kop-logo">
-                            @endif
-                            <div class="kop-text">
-                                <h2>YAYASAN NURUL IHSAN BANJARAN</h2>
-                                <h1>{{ strtoupper($settings['school_name']) }}</h1>
-                                <p>{{ $settings['school_address'] ?: 'Jl. Raya Banjaran No. 123, Banjaran, Bandung, Jawa Barat' }}</p>
-                                <p>Email: smpnurulihsanbanjaran@gmail.com | Website: www.smpnurulihsanbanjaran.sch.id</p>
-                            </div>
-                        </div>
-                        <div class="print-divider"></div>
-
-                        <!-- Certificate Title -->
-                        <div class="cert-title">
-                            <h3><u>SURAT KETERANGAN LULUS</u></h3>
-                            <p>Nomor: 421.3/{{ rand(100, 300) }}/SMP.NI/{{ date('Y') }}</p>
-                        </div>
-
-                        <!-- Certificate Body -->
-                        <div class="cert-body">
-                            <p>Yang bertanda tangan di bawah ini, Kepala Sekolah {{ $settings['school_name'] }} Kecamatan Banjaran Kabupaten Bandung, menerangkan bahwa:</p>
-                            
-                            <table class="table-print-meta">
-                                <tr>
-                                    <td width="200">Nama Lengkap</td>
-                                    <td width="20">:</td>
-                                    <td><strong>{{ $student->name }}</strong></td>
-                                </tr>
-                                <tr>
-                                    <td>Tempat, Tanggal Lahir</td>
-                                    <td>:</td>
-                                    <td>{{ $student->birth_place ?? '-' }}, {{ $student->birth_date ? $student->birth_date->translatedFormat('d F Y') : '-' }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Nomor Induk Siswa Nasional (NISN)</td>
-                                    <td>:</td>
-                                    <td>{{ $student->nisn }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Nomor Peserta Ujian</td>
-                                    <td>:</td>
-                                    <td>{{ $student->exam_number }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Sekolah Asal</td>
-                                    <td>:</td>
-                                    <td>{{ $settings['school_name'] }}</td>
-                                </tr>
-                            </table>
-
-                            <p class="cert-statement">
-                                Berdasarkan Kriteria Kelulusan Peserta Didik yang diatur dalam kurikulum yang berlaku dan Rapat Pleno Dewan Guru {{ $settings['school_name'] }} tentang Kelulusan Siswa Kelas IX Tahun Pelajaran {{ (date('Y')-1) }}/{{ date('Y') }} pada tanggal {{ $announcementDate ? $announcementDate->translatedFormat('d F Y') : date('d F Y') }}, dengan ini menyatakan bahwa siswa tersebut di atas:
-                            </p>
-
-                            <div class="print-status-box">
-                                <strong>L U L U S</strong>
-                            </div>
-
-                            <p class="cert-note">
-                                Surat Keterangan Lulus ini berlaku sementara sampai diterbitkannya Ijazah asli bagi peserta didik yang dinyatakan lulus, guna melengkapi syarat pendaftaran jenjang pendidikan selanjutnya.
-                            </p>
-                        </div>
-
-                        <!-- Certificate Footer (Signatures) -->
-                        <div class="cert-footer">
-                            <div class="signature-box">
-                                <p>Banjaran, {{ $announcementDate ? $announcementDate->translatedFormat('d F Y') : date('d F Y') }}</p>
-                                <p>Kepala Sekolah,</p>
-                                @if(!empty($settings['principal_signature']) && file_exists(public_path($settings['principal_signature'])))
-                                    <img src="{{ asset($settings['principal_signature']) }}" alt="Tanda Tangan Kepala Sekolah" class="sig-img">
-                                @else
-                                    <div class="signature-space"></div>
-                                @endif
-                                <p><strong><u>{{ $settings['principal_name'] }}</u></strong></p>
-                                <p>NIP. {{ $settings['principal_nip'] ?? '-' }}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- PAGE BREAK FOR TRANSCRIPT -->
-                    <div class="page-break"></div>
-
-                    <!-- PAGE 2: NILAI TRANSKRIP -->
-                    <div class="print-page transcript-page">
-                        <!-- Letterhead (Kop Surat) -->
-                        <div class="print-kop">
-                            @if(!empty($settings['school_logo']))
-                                <img src="{{ asset($settings['school_logo']) }}" alt="Logo" class="kop-logo">
-                            @endif
-                            <div class="kop-text">
-                                <h2>YAYASAN NURUL IHSAN BANJARAN</h2>
-                                <h1>{{ strtoupper($settings['school_name']) }}</h1>
-                                <p>{{ $settings['school_address'] ?: 'Jl. Raya Banjaran No. 123, Banjaran, Bandung, Jawa Barat' }}</p>
-                            </div>
-                        </div>
-                        <div class="print-divider"></div>
-
-                        <div class="cert-title">
-                            <h3><u>TRANSKRIP NILAI KELULUSAN</u></h3>
-                            <p>Tahun Pelajaran: {{ (date('Y')-1) }}/{{ date('Y') }}</p>
-                        </div>
-
-                        <table class="table-print-meta short">
-                            <tr>
-                                <td width="150">Nama Lengkap</td>
-                                <td width="15">:</td>
-                                <td><strong>{{ $student->name }}</strong></td>
-                                <td width="150">NISN</td>
-                                <td width="15">:</td>
-                                <td>{{ $student->nisn }}</td>
-                            </tr>
-                            <tr>
-                                <td>Kelas</td>
-                                <td>:</td>
-                                <td>{{ $student->class }}</td>
-                                <td>Nomor Ujian</td>
-                                <td>:</td>
-                                <td>{{ $student->exam_number }}</td>
-                            </tr>
-                        </table>
-
-                        <table class="table-print-grades">
-                            <thead>
-                                <tr>
-                                    <th width="40" rowspan="2" align="center">No</th>
-                                    <th rowspan="2">Mata Pelajaran</th>
-                                    <th colspan="5" align="center">Nilai Rata-Rata Raport Semester</th>
-                                    <th width="90" rowspan="2" align="center">Ujian Sekolah</th>
-                                    <th width="90" rowspan="2" align="center">Nilai Sekolah</th>
-                                </tr>
-                                <tr>
-                                    <th width="45" align="center">1</th>
-                                    <th width="45" align="center">2</th>
-                                    <th width="45" align="center">3</th>
-                                    <th width="45" align="center">4</th>
-                                    <th width="45" align="center">5</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @php
-                                    $no = 1;
-                                    $subjects = App\Models\Subject::orderBy('code')->get();
-                                @endphp
-                                @foreach($subjects as $subject)
-                                    @php
-                                        $subGrades = $student->grades->where('subject_id', $subject->id);
-                                        $finalGrade = $student->calculateFinalGradeForSubject($subject->id);
-                                    @endphp
-                                    <tr>
-                                        <td align="center">{{ $no++ }}</td>
-                                        <td>{{ $subject->name }}</td>
-                                        @for($i = 1; $i <= 5; $i++)
-                                            @php
-                                                $semGrade = $subGrades->where('semester', "Semester $i")->first();
-                                            @endphp
-                                            <td align="center">{{ $semGrade ? number_format($semGrade->score, 2) : '-' }}</td>
-                                        @endfor
-                                        @php
-                                            $usGrade = $subGrades->where('semester', 'Ujian Sekolah')->first();
-                                        @endphp
-                                        <td align="center">{{ $usGrade ? number_format($usGrade->score, 2) : '-' }}</td>
-                                        <td align="center" class="font-bold">{{ $finalGrade !== null ? number_format($finalGrade, 2) : '-' }}</td>
-                                    </tr>
-                                @endforeach
-                                <tr class="row-print-average">
-                                    <td colspan="8" align="right"><strong>Rata-Rata:</strong></td>
-                                    <td align="center" class="font-bold"><strong>{{ number_format($student->average_score, 2) }}</strong></td>
-                                </tr>
-                            </tbody>
-                        </table>
-
-                        <!-- Transcript Footer -->
-                        <div class="cert-footer">
-                            <div class="signature-box">
-                                <p>Banjaran, {{ $announcementDate ? $announcementDate->translatedFormat('d F Y') : date('d F Y') }}</p>
-                                <p>Kepala Sekolah,</p>
-                                @if(!empty($settings['principal_signature']) && file_exists(public_path($settings['principal_signature'])))
-                                    <img src="{{ asset($settings['principal_signature']) }}" alt="Tanda Tangan Kepala Sekolah" class="sig-img">
-                                @else
-                                    <div class="signature-space"></div>
-                                @endif
-                                <p><strong><u>{{ $settings['principal_name'] }}</u></strong></p>
-                                <p>NIP. {{ $settings['principal_nip'] ?? '-' }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             @endif
         </div>
     @endif

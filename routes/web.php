@@ -7,6 +7,8 @@ use App\Http\Controllers\Admin\StudentController;
 
 // Public Routes
 Route::get('/', [PublicController::class, 'index'])->name('public.index');
+Route::get('/skl/{student}/pdf', [PublicController::class, 'downloadSklPdf'])->name('public.skl.pdf');
+Route::get('/transkrip/{student}/pdf', [PublicController::class, 'downloadTranscriptPdf'])->name('public.transcript.pdf');
 
 // Redirect for default Laravel auth middleware
 Route::get('/login', function () {
