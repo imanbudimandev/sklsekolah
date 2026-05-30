@@ -163,7 +163,11 @@
     }
     .footer-right {
         width: 50%;
-        text-align: right;
+    }
+    .footer-right .signature-block {
+        width: 250px;
+        margin-left: auto;
+        text-align: left;
     }
     .footer-right p {
         margin: 0 0 1px 0;
@@ -384,19 +388,21 @@
             <table class="footer-table">
                 <tr>
                     <td class="footer-right">
-                        <p>{{ $settings['skl_place'] ?? 'Banjaran' }}, {{ $announcementDate ? $announcementDate->locale('id')->translatedFormat($settings['skl_date_format'] ?? 'd F Y') : \Carbon\Carbon::now()->locale('id')->translatedFormat($settings['skl_date_format'] ?? 'd F Y') }}</p>
-                        <p>{{ $settings['skl_signature_text'] ?? 'Kepala Sekolah,' }}</p>
-                        
-                        @if($signature_path)
-                            <img src="{{ $signature_path }}" class="sig-img" alt="Tanda Tangan">
-                        @else
-                            <div class="signature-space"></div>
-                        @endif
-                        
-                        <p style="font-weight: bold; text-decoration: underline; margin-bottom: 2px;">{{ $settings['principal_name'] }}</p>
-                        @if(!empty($settings['principal_nip']))
-                            <p style="color: #4b5563; font-size: 8.5pt;">NIP. {{ $settings['principal_nip'] }}</p>
-                        @endif
+                        <div class="signature-block">
+                            <p>{{ $settings['skl_place'] ?? 'Banjaran' }}, {{ $announcementDate ? $announcementDate->locale('id')->translatedFormat($settings['skl_date_format'] ?? 'd F Y') : \Carbon\Carbon::now()->locale('id')->translatedFormat($settings['skl_date_format'] ?? 'd F Y') }}</p>
+                            <p>{{ $settings['skl_signature_text'] ?? 'Kepala Sekolah,' }}</p>
+
+                            @if($signature_path)
+                                <img src="{{ $signature_path }}" class="sig-img" alt="Tanda Tangan">
+                            @else
+                                <div class="signature-space"></div>
+                            @endif
+
+                            <p style="font-weight: bold; text-decoration: underline; margin-bottom: 2px;">{{ $settings['principal_name'] }}</p>
+                            @if(!empty($settings['principal_nip']))
+                                <p style="color: #4b5563; font-size: 8.5pt;">NIP. {{ $settings['principal_nip'] }}</p>
+                            @endif
+                        </div>
                     </td>
                 </tr>
             </table>
