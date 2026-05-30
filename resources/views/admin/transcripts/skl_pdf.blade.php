@@ -274,7 +274,7 @@
                 $openingText = $settings['skl_opening_text'] ?? 'Yang bertanda tangan di bawah ini, Kepala Sekolah [NAMA_SEKOLAH] Kecamatan Banjaran Kabupaten Bandung, menerangkan bahwa:';
                 $openingText = str_replace('[NAMA_SEKOLAH]', $settings['school_name'], $openingText);
             @endphp
-            <p class="no-indent">{{ $openingText }}</p>
+            <p class="no-indent">{!! $openingText !!}</p>
             
             <table class="table-print-meta">
                 <tr>
@@ -308,7 +308,7 @@
                 );
             @endphp
             <p>
-                {{ $bodyText }}
+                {!! $bodyText !!}
             </p>
 
             @if($student->status === 'LULUS')
@@ -321,7 +321,7 @@
                 </div>
             @endif
             @if(!empty($settings['skl_after_lulus_text']))
-                <p style="text-indent: 0; margin-top: 8px; font-size: 8pt; font-weight: 600;">{{ $settings['skl_after_lulus_text'] }}</p>
+                <p style="text-indent: 0; margin-top: 8px; font-size: 8pt; font-weight: 600;">{!! $settings['skl_after_lulus_text'] !!}</p>
             @endif
         </div>
 
@@ -370,13 +370,13 @@
 
         <div class="cert-body">
             @if(!empty($settings['skl_before_ttd_text']))
-                <p class="no-indent" style="font-weight: 600; margin-bottom: 6px;">{{ $settings['skl_before_ttd_text'] }}</p>
+                <p class="no-indent" style="font-weight: 600; margin-bottom: 6px;">{!! $settings['skl_before_ttd_text'] !!}</p>
             @endif
             @php
                 $footerText = $settings['skl_footer_text'] ?? '* Surat Keterangan Lulus ini berlaku sementara sampai diterbitkannya Ijazah asli bagi peserta didik yang dinyatakan lulus, guna melengkapi syarat pendaftaran jenjang pendidikan selanjutnya.';
             @endphp
             <p class="no-indent cert-note">
-                {{ $footerText }}
+                {!! $footerText !!}
             </p>
         </div>
 
