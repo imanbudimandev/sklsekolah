@@ -316,11 +316,11 @@
                     <tr>
                         <td class="meta-label">Tempat, Tgl Lahir</td>
                         <td class="meta-colon">:</td>
-                        <td class="meta-value">{{ $student->birth_place ?? '-' }}, {{ $student->birth_date ? $student->birth_date->translatedFormat('d F Y') : '-' }}</td>
+                        <td class="meta-value">{{ $student->birth_place ?? '-' }}, {{ $student->birth_date_formatted ?? '-' }}</td>
                         
-                        <td class="meta-label" style="padding-left: 20px;">No. Peserta Ujian</td>
-                        <td class="meta-colon">:</td>
-                        <td class="meta-value">{{ $student->exam_number }}</td>
+                        <td class="meta-label" style="padding-left: 20px;">&nbsp;</td>
+                        <td class="meta-colon">&nbsp;</td>
+                        <td class="meta-value">&nbsp;</td>
                     </tr>
                 </table>
 
@@ -335,19 +335,20 @@
                             <th width="45">III</th>
                             <th width="45">IV</th>
                             <th width="45">V</th>
-                            <th width="55" style="border-top-right-radius: 6px; border-bottom-right-radius: 6px;">VI (US)</th>
+                            <th width="45">VI</th>
+                            <th width="55" style="border-top-right-radius: 6px; border-bottom-right-radius: 6px;">Ijazah</th>
                         </tr>
                     </thead>
                     <tbody>
                         @php
                             $no = 1;
                             $groupedSubjects = $subjects->groupBy('category');
-                            $semesterNames = ['Semester 1', 'Semester 2', 'Semester 3', 'Semester 4', 'Semester 5', 'Ujian Sekolah'];
+                            $semesterNames = ['Semester 1', 'Semester 2', 'Semester 3', 'Semester 4', 'Semester 5', 'Semester 6', 'Nilai Ijazah'];
                         @endphp
 
                         @foreach($groupedSubjects as $category => $categorySubjects)
                             <tr class="category-row">
-                                <td colspan="8"><strong>{{ $category }}</strong></td>
+                                <td colspan="9"><strong>{{ $category }}</strong></td>
                             </tr>
                             @foreach($categorySubjects as $subject)
                                 @php
@@ -360,7 +361,7 @@
                                         @php
                                             $semGrade = $subGrades->where('semester', $semName)->first();
                                         @endphp
-                                        <td class="center" style="{{ $semName == 'Ujian Sekolah' ? 'font-weight: 700; color: #0d9488;' : '' }}">
+                                        <td class="center" style="{{ $semName == 'Nilai Ijazah' ? 'font-weight: 700; color: #0d9488;' : '' }}">
                                             {{ $semGrade ? number_format($semGrade->score, 2) : '-' }}
                                         </td>
                                     @endforeach
@@ -370,7 +371,7 @@
                         
                         <!-- Rata-Rata Row -->
                         <tr class="row-print-average">
-                            <td colspan="7" align="right" style="padding: 8px 12px; border-bottom-left-radius: 6px;"><strong>RATA-RATA NILAI AKHIR:</strong></td>
+                            <td colspan="8" align="right" style="padding: 8px 12px; border-bottom-left-radius: 6px;"><strong>RATA-RATA NILAI AKHIR:</strong></td>
                             <td class="center" style="border-bottom-right-radius: 6px;">{{ number_format($student->average_score, 2) }}</td>
                         </tr>
                     </tbody>

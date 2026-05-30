@@ -240,7 +240,7 @@
                 <tr>
                     <td class="meta-label">Tempat, Tanggal Lahir</td>
                     <td class="meta-colon">:</td>
-                    <td class="meta-value">{{ $student->birth_place ?? '-' }}, {{ $student->birth_date ? $student->birth_date->translatedFormat('d F Y') : '-' }}</td>
+                    <td class="meta-value">{{ $student->birth_place ?? '-' }}, {{ $student->birth_date_formatted ?? '-' }}</td>
                 </tr>
                 <tr>
                     <td class="meta-label">Nomor Induk Siswa Nasional</td>
@@ -250,7 +250,7 @@
                 <tr>
                     <td class="meta-label">Nomor Peserta Ujian</td>
                     <td class="meta-colon">:</td>
-                    <td class="meta-value">{{ $student->exam_number }}</td>
+                    <td class="meta-value">{{ $student->exam_number ?? '-' }}</td>
                 </tr>
                 <tr>
                     <td class="meta-label">Sekolah Asal</td>
