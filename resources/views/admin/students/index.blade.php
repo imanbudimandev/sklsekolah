@@ -44,7 +44,8 @@
                         <th>NIS</th>
                         <th>NISN</th>
                         <th>Nama Siswa</th>
-                        <th>TTL</th>
+                        <th>Tempat Lahir</th>
+                        <th>Tanggal Lahir</th>
                         <th>Kelas</th>
                         <th>Jurusan</th>
                         <th>Status</th>
@@ -55,7 +56,7 @@
                 <tbody>
                     @if($students->isEmpty())
                         <tr>
-                            <td colspan="9" class="text-center py-4 text-muted">Data siswa tidak ditemukan.</td>
+                            <td colspan="10" class="text-center py-4 text-muted">Data siswa tidak ditemukan.</td>
                         </tr>
                     @else
                         @foreach($students as $student)
@@ -63,10 +64,8 @@
                                 <td>{{ $student->nis ?? '-' }}</td>
                                 <td>{{ $student->nisn }}</td>
                                 <td><strong>{{ $student->name }}</strong></td>
-                                <td>
-                                    {{ $student->birth_place ?? '-' }}, 
-                                    {{ $student->birth_date ? $student->birth_date->format('d/m/Y') : '-' }}
-                                </td>
+                                <td>{{ $student->birth_place ?? '-' }}</td>
+                                <td>{{ $student->birth_date ? $student->birth_date->format('d/m/Y') : '-' }}</td>
                                 <td>{{ $student->class }}</td>
                                 <td>{{ $student->jurusan ?? '-' }}</td>
                                 <td>
