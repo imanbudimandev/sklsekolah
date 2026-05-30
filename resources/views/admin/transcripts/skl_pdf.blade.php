@@ -302,7 +302,7 @@
                 $bodyText = $settings['skl_body_text'] ?? 'Berdasarkan Kriteria Kelulusan Peserta Didik yang diatur dalam kurikulum yang berlaku dan Rapat Pleno Dewan Guru [NAMA_SEKOLAH] tentang Kelulusan Siswa Kelas IX Tahun Pelajaran [TAHUN_PELAJARAN] pada tanggal [TANGGAL_PENGUMUMAN], dengan ini menyatakan bahwa siswa tersebut di atas:';
                 $bodyText = str_replace(
                     ['[NAMA_SEKOLAH]', '[TAHUN_PELAJARAN]', '[TANGGAL_PENGUMUMAN]'],
-                    [$settings['school_name'], ((date('Y')-1) . '/' . date('Y')), ($announcementDate ? $announcementDate->translatedFormat('d F Y') : date('d F Y'))],
+                    [$settings['school_name'], ((date('Y')-1) . '/' . date('Y')), ($announcementDate ? $announcementDate->locale('id')->translatedFormat('d F Y') : \Carbon\Carbon::now()->locale('id')->translatedFormat('d F Y'))],
                     $bodyText
                 );
             @endphp
@@ -384,7 +384,7 @@
             <table class="footer-table">
                 <tr>
                     <td class="footer-right">
-                        <p>{{ $settings['skl_place'] ?? 'Banjaran' }}, {{ $announcementDate ? $announcementDate->translatedFormat($settings['skl_date_format'] ?? 'd F Y') : date($settings['skl_date_format'] ?? 'd F Y') }}</p>
+                        <p>{{ $settings['skl_place'] ?? 'Banjaran' }}, {{ $announcementDate ? $announcementDate->locale('id')->translatedFormat($settings['skl_date_format'] ?? 'd F Y') : \Carbon\Carbon::now()->locale('id')->translatedFormat($settings['skl_date_format'] ?? 'd F Y') }}</p>
                         <p>{{ $settings['skl_signature_text'] ?? 'Kepala Sekolah,' }}</p>
                         
                         @if($signature_path)
