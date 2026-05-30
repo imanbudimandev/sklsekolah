@@ -774,7 +774,7 @@ class AdminController extends Controller
     public function grades(Request $request)
     {
         $semester = $request->input('semester', 'Semester 1');
-        $validSemesters = ['Semester 1', 'Semester 2', 'Semester 3', 'Semester 4', 'Semester 5', 'Ujian Sekolah'];
+        $validSemesters = ['Semester 1', 'Semester 2', 'Semester 3', 'Semester 4', 'Semester 5', 'Semester 6', 'Nilai Ijazah'];
         if (!in_array($semester, $validSemesters)) {
             $semester = 'Semester 1';
         }
@@ -804,7 +804,7 @@ class AdminController extends Controller
     public function storeGrades(Request $request)
     {
         $semester = $request->input('semester', 'Semester 1');
-        $validSemesters = ['Semester 1', 'Semester 2', 'Semester 3', 'Semester 4', 'Semester 5', 'Ujian Sekolah'];
+        $validSemesters = ['Semester 1', 'Semester 2', 'Semester 3', 'Semester 4', 'Semester 5', 'Semester 6', 'Nilai Ijazah'];
         if (!in_array($semester, $validSemesters)) {
             return redirect()->back()->with('error', 'Semester tidak valid.');
         }
@@ -842,7 +842,7 @@ class AdminController extends Controller
         ]);
 
         $semester = $request->input('semester');
-        $validSemesters = ['Semester 1', 'Semester 2', 'Semester 3', 'Semester 4', 'Semester 5', 'Ujian Sekolah'];
+        $validSemesters = ['Semester 1', 'Semester 2', 'Semester 3', 'Semester 4', 'Semester 5', 'Semester 6', 'Nilai Ijazah'];
         if (!in_array($semester, $validSemesters)) {
             return redirect()->back()->with('error', 'Semester tidak valid.');
         }
@@ -869,6 +869,22 @@ class AdminController extends Controller
 
         if (empty($rows) || count($rows) < 2) {
             return redirect()->back()->with('error', 'File Excel kosong atau tidak valid.');
+        }
+
+        // Auto-detect semester from Excel row 3
+        if (isset($rows[2][0]) && strpos(strtolower(trim((string)$rows[2][0])), 'semester') !== false) {
+            $excelSemesterVal = trim((string)($rows[2][1] ?? ''));
+            if (in_array($excelSemesterVal, ['1', '2', '3', '4', '5'])) {
+                $semester = 'Semester ' . $excelSemesterVal;
+            } elseif ($excelSemesterVal === '0' || strtolower($excelSemesterVal) === 'nilai ijazah') {
+                $semester = 'Nilai Ijazah';
+            }
+        }
+
+        // Auto-detect Graduation Year (Tahun Lulus) from Excel row 4
+        $excelTahunLulus = null;
+        if (isset($rows[3][0]) && strpos(strtolower(trim((string)$rows[3][0])), 'tahun lulus') !== false) {
+            $excelTahunLulus = trim((string)($rows[3][1] ?? ''));
         }
 
         // Find header row (contains column names like No, NIS, NAMA SISWA)
@@ -920,14 +936,46 @@ class AdminController extends Controller
             return strtolower($item->code);
         });
 
+        // Subject Aliases Mapping
+        $subjectAliases = [
+            'pai' => ['pai', 'paibp', 'pai bp', 'agama'],
+            'ppkn' => ['ppkn', 'pkn', 'kewarganegaraan'],
+            'ind' => ['ind', 'bind', 'b. indonesia', 'indonesia'],
+            'mtk' => ['mtk', 'mtm', 'matematika', 'mat'],
+            'ipa' => ['ipa', 'sains'],
+            'ips' => ['ips', 'social'],
+            'ing' => ['ing', 'bing', 'b. inggris', 'inggris'],
+            'sbd' => ['sbd', 'sbud', 'seni budaya', 'seni'],
+            'pjok' => ['pjok', 'penjas', 'olahraga'],
+            'sun' => ['sun', 'bsd', 'sunda', 'b. sunda', 'bahasa sunda'],
+            'prk' => ['prk', 'kk', 'prakarya', 'keterampilan'],
+        ];
+
         $subjectColumns = [];
         foreach ($header as $index => $colName) {
             if ($index === $colMap['no'] || $index === $colMap['nis'] || $index === $colMap['nama']) {
                 continue;
             }
-            $cleanColName = strtolower($colName);
+            $cleanColName = strtolower(trim($colName));
+            if (empty($cleanColName)) continue;
+
+            $matchedSubject = null;
+            // 1. Try exact code match
             if (isset($allSubjects[$cleanColName])) {
-                $subjectColumns[$index] = $allSubjects[$cleanColName]->id;
+                $matchedSubject = $allSubjects[$cleanColName];
+            } else {
+                // 2. Try alias match
+                foreach ($allSubjects as $dbCode => $subjectObj) {
+                    $dbCodeLower = strtolower($dbCode);
+                    if (isset($subjectAliases[$dbCodeLower]) && in_array($cleanColName, $subjectAliases[$dbCodeLower])) {
+                        $matchedSubject = $subjectObj;
+                        break;
+                    }
+                }
+            }
+
+            if ($matchedSubject) {
+                $subjectColumns[$index] = $matchedSubject->id;
             }
         }
 
@@ -953,16 +1001,23 @@ class AdminController extends Controller
                 continue;
             }
 
+            // Update student's Graduation Year (Tahun Lulus) if present in Excel
+            if ($excelTahunLulus && preg_match('/^\d{4}$/', $excelTahunLulus)) {
+                $student->update(['tahun_lulus' => $excelTahunLulus]);
+            }
+
             foreach ($subjectColumns as $index => $subjectId) {
                 $scoreValue = trim((string)($row[$index] ?? ''));
                 if ($scoreValue !== '' && $scoreValue !== null) {
+                    // Replace comma with dot for Indonesian decimal format support
+                    $cleanScore = floatval(str_replace(',', '.', $scoreValue));
                     Grade::updateOrCreate(
                         [
                             'student_id' => $student->id,
                             'subject_id' => $subjectId,
                             'semester' => $semester
                         ],
-                        ['score' => floatval($scoreValue)]
+                        ['score' => $cleanScore]
                     );
                 } else {
                     Grade::where('student_id', $student->id)
@@ -981,51 +1036,176 @@ class AdminController extends Controller
     {
         $semester = $request->input('semester', 'Semester 1');
         $schoolYear = Setting::get('school_year', date('Y') . '/' . (date('Y') + 1));
+        
+        // Clean school year value for B2 (e.g., 2025/2026 -> 20252026)
+        $cleanSchoolYear = preg_replace('/\D/', '', $schoolYear);
+        if (strlen($cleanSchoolYear) > 8) {
+            $cleanSchoolYear = substr($cleanSchoolYear, 0, 8);
+        }
+
+        // Clean semester value for B3 (e.g., Semester 1 -> 1, Ujian Sekolah -> 0)
+        $cleanSemester = '1';
+        if (preg_match('/\d+/', $semester, $matches)) {
+            $cleanSemester = $matches[0];
+        } elseif (strtolower($semester) === 'ujian sekolah') {
+            $cleanSemester = '0';
+        }
+
         $subjects = Subject::orderBy('order_number')->orderBy('code')->get();
 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Data Nilai');
 
+        // Row 1: Title
         $sheet->setCellValue('A1', 'DATA NILAI SISWA');
-        $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(12);
-        $sheet->mergeCells('A1:' . $sheet->getHighestColumn() . '1');
+        $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
 
-        $sheet->setCellValue('A2', 'Tahun Pelajaran: ' . $schoolYear);
-        $sheet->setCellValue('A3', 'Semester: ' . $semester);
-        $sheet->setCellValue('A4', 'Tahun Lulus: ' . date('Y'));
+        // Row 2: Tahun Pelajaran
+        $sheet->setCellValue('A2', 'TAHUN PELAJARAN');
+        $sheet->setCellValue('B2', $cleanSchoolYear);
+        $sheet->setCellValue('D2', '<< ISI KODE TAHUN PELAJARAN TAHUN AWAL TAHUN AKHIR TANPA STRIP CONTOH (20202021)');
+        
+        // Row 3: Semester
+        $sheet->setCellValue('A3', 'SEMESTER');
+        $sheet->setCellValue('B3', $cleanSemester);
+        $sheet->setCellValue('D3', '<< ISI SEMESTER DISINI (1/2/3/4/5/6), UNTUK KEPERLUAN SKL SAJA BISA DIISI 0 SAJA');
 
-        $headers = ['No', 'NIS', 'NAMA SISWA'];
-        foreach ($subjects as $subject) {
-            $headers[] = $subject->code;
+        // Row 4: Tahun Lulus
+        $sheet->setCellValue('A4', 'TAHUN LULUS');
+        $sheet->setCellValue('B4', date('Y'));
+        $sheet->setCellValue('D4', '<< ISI TAHUN LULUS DISINI');
+
+        // Metadata Labels Styling (Tidy Info-Card Style)
+        $metaLabels = ['A2', 'A3', 'A4'];
+        foreach ($metaLabels as $cell) {
+            $sheet->getStyle($cell)->getFont()->setBold(true)->setSize(10);
+            $sheet->getStyle($cell)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('F1F5F9'); // Premium light slate bg
         }
-        $sheet->fromArray([$headers], null, 'A6');
-        $sheet->getStyle('A6:' . chr(ord('A') + count($headers) - 1) . '6')->getFont()->setBold(true);
+        
+        $sheet->getStyle('B2:B4')->getFont()->setBold(true)->setSize(10);
+        $sheet->getStyle('B2:B4')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A2:B4')->applyFromArray([
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => Border::BORDER_THIN,
+                    'color' => ['rgb' => 'CBD5E1'] // Modern slate border
+                ]
+            ]
+        ]);
 
+        // Row 6: Table Headers
+        $headers = ['No', 'NIS', 'NAMA SISWA'];
+        
+        // Map database codes to user's beautiful aliases for header display
+        $aliasMap = [
+            'pai' => 'PAIBP',
+            'ppkn' => 'PPKn',
+            'ind' => 'BIND',
+            'mtk' => 'MTM',
+            'ing' => 'BING',
+            'sbd' => 'SBUD',
+            'sun' => 'BSD',
+            'prk' => 'KK',
+        ];
+
+        foreach ($subjects as $subject) {
+            $codeLower = strtolower($subject->code);
+            $headers[] = isset($aliasMap[$codeLower]) ? $aliasMap[$codeLower] : strtoupper($subject->code);
+        }
+
+        $sheet->fromArray([$headers], null, 'A6');
+        
+        // Style Header Row 6
+        $headerColEnd = chr(ord('A') + count($headers) - 1);
+
+        // Merge Title and Metadata Explanations across the header width to prevent column D stretching
+        $sheet->mergeCells('A1:' . $headerColEnd . '1');
+        $sheet->mergeCells('D2:' . $headerColEnd . '2');
+        $sheet->mergeCells('D3:' . $headerColEnd . '3');
+        $sheet->mergeCells('D4:' . $headerColEnd . '4');
+        $headerStyle = [
+            'font' => ['bold' => true, 'color' => ['rgb' => '000000']],
+            'fill' => [
+                'fillType' => Fill::FILL_SOLID,
+                'startColor' => ['rgb' => 'C5D9F1'] // Professional light blue accent
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER
+            ],
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => Border::BORDER_THIN,
+                    'color' => ['rgb' => '000000']
+                ]
+            ]
+        ];
+        $sheet->getStyle('A6:' . $headerColEnd . '6')->applyFromArray($headerStyle);
+        $sheet->getRowDimension(6)->setRowHeight(28);
+
+        // Populate Student Data
         $students = Student::orderBy('name')->get();
         $rowNum = 7;
 
-        foreach ($students as $student) {
-            $gradesMap = Grade::where('student_id', $student->id)
-                ->where('semester', $semester)
-                ->pluck('score', 'subject_id');
+        // Load grades in bulk to avoid N+1 query issue
+        $allGrades = Grade::where('semester', $semester)
+            ->get()
+            ->groupBy('student_id');
 
-            $rowData = [$rowNum - 6, $student->nisn, $student->name];
+        foreach ($students as $index => $student) {
+            $studentGrades = $allGrades->get($student->id, collect())->keyBy('subject_id');
+            
+            // Format NIS and name
+            $nisVal = $student->nisn ?: $student->nis;
+            
+            $rowData = [$index + 1, $nisVal, $student->name];
             foreach ($subjects as $subject) {
-                $rowData[] = $gradesMap->get($subject->id) ?? '';
+                $grade = $studentGrades->get($subject->id);
+                // Convert score decimals to commas for Indonesian format
+                $score = $grade ? str_replace('.', ',', (string)$grade->score) : '';
+                $rowData[] = $score;
             }
+            
+            // Write student row
             $sheet->fromArray([$rowData], null, "A{$rowNum}");
+
+            // Explicitly format NIS as TEXT to preserve leading zeros
+            $sheet->getCell("B{$rowNum}")->setValueExplicit($nisVal, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            
+            // Align No and NIS to center/left, name to left
+            $sheet->getStyle("A{$rowNum}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle("B{$rowNum}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+            $sheet->getStyle("C{$rowNum}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+
+            // Center-align all subject grade values
+            $sheet->getStyle("D{$rowNum}:" . $headerColEnd . $rowNum)
+                ->getAlignment()
+                ->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+            // Add thin borders for data row
+            $sheet->getStyle("A{$rowNum}:" . $headerColEnd . $rowNum)->applyFromArray([
+                'borders' => [
+                    'allBorders' => [
+                        'borderStyle' => Border::BORDER_THIN,
+                        'color' => ['rgb' => 'D9D9D9']
+                    ]
+                ]
+            ]);
+
             $rowNum++;
         }
 
-        if ($students->isEmpty()) {
-            $exampleRow = [1, '1234567890', 'Ahmad Fauzi'];
-            foreach ($subjects as $subject) {
-                $exampleRow[] = '85';
-            }
-            $sheet->fromArray([$exampleRow], null, "A{$rowNum}");
-        }
+        // Color the 'NAMA SISWA' header column (C6) with a soft yellow accent as requested
+        $sheet->getStyle('C6')->applyFromArray([
+            'fill' => [
+                'fillType' => Fill::FILL_SOLID,
+                'startColor' => ['rgb' => 'FFFF00'] // Soft Yellow
+            ]
+        ]);
 
-        foreach (range('A', chr(ord('A') + count($headers) - 1)) as $col) {
+        // Auto size columns nicely
+        foreach (range('A', $headerColEnd) as $col) {
             $sheet->getColumnDimension($col)->setAutoSize(true);
         }
 
