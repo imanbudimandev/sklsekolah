@@ -1369,10 +1369,13 @@ class AdminController extends Controller
     public function downloadSklPdf(Student $student)
     {
         $student->load(['grades.subject']);
-        
+        $subjects = Subject::with(['grades' => function($q) use ($student) {
+            $q->where('student_id', $student->id);
+        }])->orderBy('order_number')->orderBy('code')->get();
+
         $announcementDateStr = Setting::get('announcement_date');
         $announcementDate = $announcementDateStr ? Carbon::parse($announcementDateStr) : null;
-        
+
         $settings = [
             'school_name' => Setting::get('school_name', 'SMP Nurul Ihsan Banjaran'),
             'school_address' => Setting::get('school_address', ''),
@@ -1398,8 +1401,8 @@ class AdminController extends Controller
         $year = $announcementDate ? $announcementDate->format('Y') : date('Y');
         $letterNumber = str_replace(['[NUMBER]', '[YEAR]'], [$number, $year], $settings['skl_letter_number']);
 
-        $pdf = Pdf::loadView('admin.transcripts.skl_pdf', compact('student', 'announcementDate', 'settings', 'logo_path', 'signature_path', 'letterNumber'));
-        
+        $pdf = Pdf::loadView('admin.transcripts.skl_pdf', compact('student', 'subjects', 'announcementDate', 'settings', 'logo_path', 'signature_path', 'letterNumber'));
+
         $filename = "skl_" . strtolower(str_replace(' ', '_', $student->name)) . ".pdf";
         return $pdf->download($filename);
     }
@@ -1407,10 +1410,13 @@ class AdminController extends Controller
     public function previewSklPdf(Student $student)
     {
         $student->load(['grades.subject']);
-        
+        $subjects = Subject::with(['grades' => function($q) use ($student) {
+            $q->where('student_id', $student->id);
+        }])->orderBy('order_number')->orderBy('code')->get();
+
         $announcementDateStr = Setting::get('announcement_date');
         $announcementDate = $announcementDateStr ? Carbon::parse($announcementDateStr) : null;
-        
+
         $settings = [
             'school_name' => Setting::get('school_name', 'SMP Nurul Ihsan Banjaran'),
             'school_address' => Setting::get('school_address', ''),
@@ -1436,8 +1442,8 @@ class AdminController extends Controller
         $year = $announcementDate ? $announcementDate->format('Y') : date('Y');
         $letterNumber = str_replace(['[NUMBER]', '[YEAR]'], [$number, $year], $settings['skl_letter_number']);
 
-        $pdf = Pdf::loadView('admin.transcripts.skl_pdf', compact('student', 'announcementDate', 'settings', 'logo_path', 'signature_path', 'letterNumber'));
-        
+        $pdf = Pdf::loadView('admin.transcripts.skl_pdf', compact('student', 'subjects', 'announcementDate', 'settings', 'logo_path', 'signature_path', 'letterNumber'));
+
         return $pdf->stream();
     }
 
@@ -1455,6 +1461,7 @@ class AdminController extends Controller
         }
 
         $students = $query->with(['grades.subject'])->orderBy('name')->get();
+        $subjects = Subject::orderBy('order_number')->orderBy('code')->get();
 
         $announcementDateStr = Setting::get('announcement_date');
         $announcementDate = $announcementDateStr ? Carbon::parse($announcementDateStr) : null;
@@ -1484,7 +1491,7 @@ class AdminController extends Controller
 
         $schoolYear = Setting::get('school_year', date('Y') . '/' . (date('Y') + 1));
 
-        $pdf = Pdf::loadView('admin.transcripts.skl_pdf', compact('students', 'announcementDate', 'settings', 'logo_path', 'signature_path', 'letterNumber', 'schoolYear'));
+        $pdf = Pdf::loadView('admin.transcripts.skl_pdf', compact('students', 'subjects', 'announcementDate', 'settings', 'logo_path', 'signature_path', 'letterNumber', 'schoolYear'));
 
         $filename = "skl_masal_" . date('Ymd_His') . ".pdf";
         return $pdf->download($filename);

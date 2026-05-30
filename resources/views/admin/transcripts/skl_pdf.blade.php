@@ -13,164 +13,209 @@
             font-size: 9pt;
             line-height: 1.35;
             color: #1f2937;
-            margin: 0;
-            padding: 0;
-            background-color: #fff;
-        }
-        .modern-container {
-            padding: 5px 10px;
-            background-color: #ffffff;
-        }
-        .print-kop {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 3px;
-        }
-        .kop-logo {
-            width: 60px;
-            height: 60px;
-            object-fit: contain;
-        }
-        .kop-text {
-            text-align: center;
-            padding-left: 8px;
-            padding-right: 8px;
-        }
-        .kop-text h2 {
-            font-size: 9pt;
-            font-weight: 700;
-            color: #111827;
-            margin: 0 0 1px 0;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-        }
-        .kop-text h1 {
-            font-size: 12pt;
-            font-weight: 800;
-            color: #0f172a;
-            margin: 0 0 2px 0;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .kop-text .kop-address {
-            font-size: 7.5pt;
-            margin: 1px 0;
-            color: #4b5563;
-        }
-        .kop-text .kop-detail {
-            font-size: 7pt;
-            margin: 0;
-            color: #6b7280;
-        }
-        .print-divider {
-            border: none;
-            height: 1px;
-            background-color: #111827;
-            margin: 3px 0 8px 0;
-        }
-        .cert-title {
-            text-align: center;
-            margin-bottom: 12px;
-        }
-        .cert-title h3 {
-            font-size: 11pt;
-            font-weight: 800;
-            color: #111827;
-            margin: 0 0 1px 0;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            text-decoration: underline;
-        }
-        .cert-title .letter-number {
-            font-size: 8pt;
-            color: #374151;
-            margin: 0;
-        }
-        .cert-body {
-            font-size: 9pt;
-            text-align: justify;
-        }
-        .cert-body p {
-            margin-top: 0;
-            margin-bottom: 6px;
-            text-indent: 25px;
-        }
-        .cert-body p.no-indent {
-            text-indent: 0;
-        }
-        .table-print-meta {
-            width: 80%;
-            margin: 8px auto 10px auto;
-            border-collapse: collapse;
-        }
-        .table-print-meta td {
-            padding: 3px 8px;
-            vertical-align: top;
-        }
-        .meta-label {
-            width: 170px;
-            color: #374151;
-            font-weight: 600;
-        }
-        .meta-colon {
-            width: 12px;
-            text-align: center;
-            color: #4b5563;
-        }
-        .meta-value {
-            color: #111827;
-            font-weight: 700;
-        }
-        .print-status-box {
-            width: 200px;
-            margin: 10px auto;
-            padding: 6px;
-            border: 2px solid #059669;
-            background-color: #ecfdf5;
-            color: #065f46;
-            text-align: center;
-            font-size: 11pt;
-            font-weight: 800;
-            border-radius: 4px;
-            letter-spacing: 2px;
-        }
-        .print-status-box.tidak-lulus {
-            border: 2px solid #dc2626;
-            background-color: #fef2f2;
-            color: #991b1b;
-        }
-        .cert-note {
-            font-size: 7.5pt;
-            color: #4b5563;
-            margin-top: 8px;
-            font-style: italic;
-            line-height: 1.3;
-        }
-        .cert-footer {
-            margin-top: 15px;
-            width: 100%;
-        }
-        .footer-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .footer-right {
-            width: 50%;
-            text-align: left;
-            padding-left: 240px;
-        }
-        .footer-right p {
-            margin: 0 0 1px 0;
-            font-size: 8.5pt;
-        }
-        .sig-img {
-            height: 45px;
-            width: auto;
-            margin: 2px 0;
-        }
-        .signature-space {
-            height: 45px;
-        }
+        margin: 0;
+        padding: 0;
+        background-color: #fff;
+    }
+    .modern-container {
+        padding: 5px 10px;
+        background-color: #ffffff;
+    }
+    .print-kop {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 3px;
+    }
+    .kop-logo {
+        width: 55px;
+        height: 55px;
+        object-fit: contain;
+    }
+    .kop-text {
+        text-align: center;
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+    .kop-text h2 {
+        font-size: 8pt;
+        font-weight: 700;
+        color: #111827;
+        margin: 0 0 1px 0;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+    .kop-text h1 {
+        font-size: 11pt;
+        font-weight: 800;
+        color: #0f172a;
+        margin: 0 0 2px 0;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .kop-text .kop-address {
+        font-size: 7pt;
+        margin: 1px 0;
+        color: #4b5563;
+    }
+    .kop-text .kop-detail {
+        font-size: 6.5pt;
+        margin: 0;
+        color: #6b7280;
+    }
+    .print-divider {
+        border: none;
+        height: 0.5px;
+        background-color: #9ca3af;
+        margin: 2px 0 6px 0;
+    }
+    .cert-title {
+        text-align: center;
+        margin-bottom: 8px;
+    }
+    .cert-title h3 {
+        font-size: 10pt;
+        font-weight: 800;
+        color: #111827;
+        margin: 0 0 1px 0;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        text-decoration: underline;
+    }
+    .cert-title .letter-number {
+        font-size: 7.5pt;
+        color: #374151;
+        margin: 0;
+    }
+    .cert-body {
+        font-size: 8.5pt;
+        text-align: justify;
+    }
+    .cert-body p {
+        margin-top: 0;
+        margin-bottom: 4px;
+        text-indent: 25px;
+    }
+    .cert-body p.no-indent {
+        text-indent: 0;
+    }
+    .table-print-meta {
+        width: 80%;
+        margin: 6px auto 8px auto;
+        border-collapse: collapse;
+    }
+    .table-print-meta td {
+        padding: 2px 6px;
+        vertical-align: top;
+    }
+    .meta-label {
+        width: 160px;
+        color: #374151;
+        font-weight: 600;
+    }
+    .meta-colon {
+        width: 10px;
+        text-align: center;
+        color: #4b5563;
+    }
+    .meta-value {
+        color: #111827;
+        font-weight: 700;
+    }
+    .print-status-box {
+        width: 180px;
+        margin: 6px auto;
+        padding: 4px;
+        border: 2px solid #059669;
+        background-color: #ecfdf5;
+        color: #065f46;
+        text-align: center;
+        font-size: 10pt;
+        font-weight: 800;
+        border-radius: 3px;
+        letter-spacing: 2px;
+    }
+    .print-status-box.tidak-lulus {
+        border: 2px solid #dc2626;
+        background-color: #fef2f2;
+        color: #991b1b;
+    }
+    .cert-note {
+        font-size: 7pt;
+        color: #4b5563;
+        margin-top: 6px;
+        font-style: italic;
+        line-height: 1.25;
+    }
+    .cert-footer {
+        margin-top: 10px;
+        width: 100%;
+    }
+    .footer-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .footer-right {
+        width: 50%;
+        text-align: left;
+        padding-left: 240px;
+    }
+    .footer-right p {
+        margin: 0 0 1px 0;
+        font-size: 8pt;
+    }
+    .sig-img {
+        height: 40px;
+        width: auto;
+        margin: 2px 0;
+    }
+    .signature-space {
+        height: 40px;
+    }
+    .table-skl-grades {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 6px 0;
+        border: 1px solid #115e59;
+        font-size: 7pt;
+    }
+    .table-skl-grades th {
+        font-weight: 700;
+        text-align: center;
+        background-color: #115e59;
+        color: #ffffff;
+        font-size: 6.5pt;
+        text-transform: uppercase;
+        padding: 4px 3px;
+        border: 1px solid #0f766e;
+    }
+    .table-skl-grades td {
+        padding: 3px 4px;
+        border: 1px solid #cbd5e1;
+        color: #374151;
+    }
+    .table-skl-grades tr:nth-child(even) {
+        background-color: #f8fafc;
+    }
+    .table-skl-grades td.center {
+        text-align: center;
+    }
+    .table-skl-grades .category-row td {
+        font-weight: 800;
+        background-color: #f1f5f9;
+        color: #0f172a;
+        padding: 3px 4px;
+        border: 1px solid #cbd5e1;
+        text-transform: uppercase;
+        font-size: 6.5pt;
+    }
+    .table-skl-grades .avg-row td {
+        font-weight: 800;
+        background-color: #e2e8f0;
+        color: #0f172a;
+        padding: 3px 4px;
+        border: 1px solid #cbd5e1;
+        font-size: 6.5pt;
+    }
     </style>
 </head>
 <body>
@@ -266,7 +311,82 @@
                     TIDAK LULUS
                 </div>
             @endif
+        </div>
 
+        <!-- Grade Table -->
+        @php
+            $semesterNames = ['Semester 1', 'Semester 2', 'Semester 3', 'Semester 4', 'Semester 5', 'Semester 6'];
+            $groupedSubjects = $subjects->groupBy('category');
+            $no = 1;
+
+            $semesterTotals = array_fill(0, 6, 0);
+            $semesterCounts = array_fill(0, 6, 0);
+            $ijazahTotal = 0;
+            $ijazahCount = 0;
+        @endphp
+        <table class="table-skl-grades">
+            <thead>
+                <tr>
+                    <th rowspan="2" width="18">No</th>
+                    <th rowspan="2">Mata Pelajaran</th>
+                    <th colspan="6">Semester</th>
+                    <th rowspan="2" width="45">Nilai Ijazah</th>
+                </tr>
+                <tr>
+                    <th width="26">I</th>
+                    <th width="26">II</th>
+                    <th width="26">III</th>
+                    <th width="26">IV</th>
+                    <th width="26">V</th>
+                    <th width="26">VI</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($groupedSubjects as $category => $categorySubjects)
+                    <tr class="category-row">
+                        <td colspan="8"><strong>{{ $category }}</strong></td>
+                    </tr>
+                    @foreach($categorySubjects as $subject)
+                        @php
+                            $subGrades = $student->grades->where('subject_id', $subject->id);
+                        @endphp
+                        <tr>
+                            <td class="center">{{ $no++ }}</td>
+                            <td>{{ $subject->name }}</td>
+                            @foreach($semesterNames as $i => $semName)
+                                @php
+                                    $semGrade = $subGrades->where('semester', $semName)->first();
+                                    $score = $semGrade ? $semGrade->score : null;
+                                    if ($score !== null) {
+                                        $semesterTotals[$i] += $score;
+                                        $semesterCounts[$i]++;
+                                    }
+                                @endphp
+                                <td class="center">{{ $score !== null ? number_format($score, 2) : '-' }}</td>
+                            @endforeach
+                            @php
+                                $finalGrade = $student->calculateFinalGradeForSubject($subject->id);
+                                if ($finalGrade !== null) {
+                                    $ijazahTotal += $finalGrade;
+                                    $ijazahCount++;
+                                }
+                            @endphp
+                            <td class="center">{{ $finalGrade !== null ? number_format($finalGrade, 2) : '-' }}</td>
+                        </tr>
+                    @endforeach
+                @endforeach
+                <!-- Average Row -->
+                <tr class="avg-row">
+                    <td colspan="2">RATA-RATA</td>
+                    @for($i = 0; $i < 6; $i++)
+                        <td class="center">{{ $semesterCounts[$i] > 0 ? number_format($semesterTotals[$i] / $semesterCounts[$i], 2) : '-' }}</td>
+                    @endfor
+                    <td class="center">{{ $ijazahCount > 0 ? number_format($ijazahTotal / $ijazahCount, 2) : '-' }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="cert-body">
             @php
                 $footerText = $settings['skl_footer_text'] ?? '* Surat Keterangan Lulus ini berlaku sementara sampai diterbitkannya Ijazah asli bagi peserta didik yang dinyatakan lulus, guna melengkapi syarat pendaftaran jenjang pendidikan selanjutnya.';
             @endphp
