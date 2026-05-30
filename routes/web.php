@@ -70,6 +70,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::get('/transcripts/pdf/bulk', [AdminController::class, 'downloadBulkTranscriptsPdf'])->name('transcripts.bulk_pdf');
     Route::get('/transcripts/{student}/skl/pdf', [AdminController::class, 'downloadSklPdf'])->name('transcripts.skl.pdf');
     Route::get('/transcripts/{student}/skl/preview', [AdminController::class, 'previewSklPdf'])->name('transcripts.skl.preview');
+    Route::get('/transcripts/skl/pdf/bulk', [AdminController::class, 'downloadBulkSklPdf'])->name('transcripts.skl.bulk_pdf');
 
     // Database Tools
     Route::get('/tools', [AdminController::class, 'tools'])->name('tools');

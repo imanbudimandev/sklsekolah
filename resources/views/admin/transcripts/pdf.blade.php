@@ -5,13 +5,13 @@
     <title>Transkip Nilai - Modern Sleek Perfect Fill</title>
     <style>
         @page {
-            margin: 8mm 10mm;
+            margin: 6mm 10mm;
             size: A4;
         }
-        body {
-            font-family: 'Helvetica', 'Arial', sans-serif;
-            font-size: 8.5pt;
-            line-height: 1.35;
+        body, table, tr, td, th {
+            font-family: 'Times New Roman', 'Times', serif;
+            font-size: 10pt;
+            line-height: 1.3;
             color: #1f2937;
             margin: 0;
             padding: 0;
@@ -20,23 +20,21 @@
         .page-break {
             box-sizing: border-box;
             padding: 0;
-            height: 100%;
         }
         .modern-container {
             position: relative;
-            padding: 12px 18px;
-            height: 98%;
+            padding: 8px 18px;
             border-top: 4px solid #0d9488;
             background-color: #ffffff;
         }
         .print-kop {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
         .kop-logo {
-            width: 55px;
-            height: 55px;
+            width: 50px;
+            height: 50px;
             object-fit: contain;
         }
         .kop-text {
@@ -52,7 +50,7 @@
             text-transform: uppercase;
         }
         .kop-text h1 {
-            font-size: 11pt;
+            font-size: 10.5pt;
             font-weight: 800;
             color: #1f2937;
             margin: 0 0 2px 0;
@@ -75,48 +73,52 @@
             font-weight: 600;
         }
         .kop-qr {
-            width: 55px;
+            width: 50px;
             text-align: right;
         }
         .kop-qr img {
-            width: 45px;
-            height: 45px;
+            width: 40px;
+            height: 40px;
         }
         .print-divider {
             border: none;
             height: 0.5px;
             background-color: #e5e7eb;
-            margin: 4px 0 8px 0;
+            margin: 6px 0 10px 0;
+        }
+        .footer-divider {
+            border: none;
+            height: 0.5px;
+            background-color: #e5e7eb;
+            margin: 15px 0 10px 0;
         }
         .cert-title {
             text-align: center;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
         .cert-title h3 {
             font-size: 10pt;
-            font-weight: 800;
-            color: #1f2937;
+            font-weight: bold;
+            color: #000000;
             margin: 0;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
         .cert-title .subtitle {
-            font-size: 7.5pt;
-            color: #6b7280;
+            font-size: 10pt;
+            color: #000000;
             margin-top: 2px;
-            font-weight: 500;
+            font-weight: bold;
         }
         .table-print-meta {
             width: 100%;
             border-collapse: collapse;
-            font-size: 8pt;
-            margin: 6px 0 8px 0;
-            background-color: #f9fafb;
-            border-radius: 6px;
-            border: 1px solid #f3f4f6;
+            margin: 6px 0 10px 0;
+            background-color: transparent;
+            border: none;
         }
         .table-print-meta td {
-            padding: 4px 10px;
+            padding: 3px 0;
             vertical-align: middle;
         }
         .meta-label {
@@ -136,51 +138,44 @@
         .table-print-grades {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 6px;
-            font-size: 7.5pt;
+            margin-top: 8px;
+            border: 1px solid #115e59;
         }
         .table-print-grades th {
             font-weight: 700;
             text-align: center;
-            background-color: #0d9488;
+            background-color: #115e59;
             color: #ffffff;
-            font-size: 7pt;
+            font-size: 9.5pt;
             text-transform: uppercase;
-            letter-spacing: 0.3px;
-            padding: 4px 5px;
-            border: none;
+            letter-spacing: 0.5px;
+            padding: 7.5px 8px;
+            border: 1px solid #0f766e;
         }
         .table-print-grades td {
-            padding: 3px 5px;
-            border-bottom: 1px solid #f3f4f6;
+            padding: 7.5px 8px;
+            border: 1px solid #cbd5e1;
             color: #374151;
+        }
+        .table-print-grades tr:nth-child(even) {
+            background-color: #f8fafc;
         }
         .table-print-grades td.center {
             text-align: center;
+            border: 1px solid #cbd5e1;
         }
         .table-print-grades .category-row td {
             font-weight: 800;
-            background-color: #f3f4f6;
-            color: #1f2937;
-            padding: 3px 5px;
-            border-bottom: 1px solid #e5e7eb;
+            background-color: #f1f5f9;
+            color: #0f172a;
+            padding: 6px 8px;
+            border: 1px solid #cbd5e1;
             text-transform: uppercase;
-            font-size: 7pt;
-            letter-spacing: 0.3px;
-        }
-        .row-print-average {
-            background-color: #f0fdfa;
-        }
-        .row-print-average td {
-            color: #0d9488;
-            font-size: 8pt;
-            font-weight: 800;
-            border-top: 1.5px solid #0d9488;
-            border-bottom: 1.5px solid #0d9488;
-            padding: 5px 8px;
+            font-size: 9.5pt;
+            letter-spacing: 0.5px;
         }
         .cert-footer {
-            margin-top: 8px;
+            margin-top: 15px;
             width: 100%;
         }
         .footer-table {
@@ -188,31 +183,32 @@
             border-collapse: collapse;
         }
         .footer-left {
-            width: 35%;
-            vertical-align: bottom;
+            width: 65%;
+            vertical-align: middle;
             padding: 0;
         }
         .footer-right {
-            width: 65%;
-            text-align: left;
-            vertical-align: top;
-            padding-left: 30px;
+            width: 35%;
+            text-align: center;
+            vertical-align: middle;
+            padding: 0;
         }
         .footer-right p {
             margin: 0 0 1px 0;
-            font-size: 8pt;
+            font-size: 10pt;
+            color: #000000;
         }
         .sig-img {
-            height: 40px;
+            height: 70px;
             width: auto;
-            margin: 2px 0;
+            margin: 4px 0;
         }
         .signature-space {
-            height: 40px;
+            height: 70px;
         }
         .photo-box {
-            width: 65px;
-            height: 85px;
+            width: 75px;
+            height: 100px;
             border-radius: 4px;
             border: 1.5px solid #e5e7eb;
             overflow: hidden;
@@ -234,7 +230,7 @@
             display: table-cell;
             vertical-align: middle;
             text-align: center;
-            font-size: 6pt;
+            font-size: 6.5pt;
             color: #9ca3af;
             font-weight: 600;
         }
@@ -248,13 +244,13 @@
                 <table class="print-kop">
                     <tr>
                         @if($logo_path)
-                            <td width="65" align="center" valign="middle">
+                            <td width="60" align="center" valign="middle">
                                 <img src="{{ $logo_path }}" class="kop-logo" alt="Logo">
                             </td>
                         @endif
                         <td class="kop-text" valign="middle">
                             @if(!empty($settings['transcript_header']))
-                                <div style="font-size: 10pt; font-weight: bold; line-height: 1.3;">
+                                <div style="font-size: 9pt; font-weight: bold; line-height: 1.25;">
                                     {!! $settings['transcript_header'] !!}
                                 </div>
                             @else
@@ -297,18 +293,18 @@
                         <td class="meta-colon">:</td>
                         <td class="meta-value">{{ strtoupper($student->name) }}</td>
                         
-                        <td class="meta-label" style="padding-left: 20px;">NIS / NISN</td>
+                        <td class="meta-label" style="padding-left: 40px;">NIS</td>
                         <td class="meta-colon">:</td>
-                        <td class="meta-value">{{ $student->nis ?? '-' }} / {{ $student->nisn }}</td>
+                        <td class="meta-value">{{ $student->nis ?? '-' }}</td>
                     </tr>
                     <tr>
                         <td class="meta-label">Tempat, Tgl Lahir</td>
                         <td class="meta-colon">:</td>
                         <td class="meta-value">{{ $student->birth_place ?? '-' }}, {{ $student->birth_date_formatted ?? '-' }}</td>
                         
-                        <td class="meta-label" style="padding-left: 20px;">&nbsp;</td>
-                        <td class="meta-colon">&nbsp;</td>
-                        <td class="meta-value">&nbsp;</td>
+                        <td class="meta-label" style="padding-left: 40px;">NISN</td>
+                        <td class="meta-colon">:</td>
+                        <td class="meta-value">{{ $student->nisn }}</td>
                     </tr>
                 </table>
 
@@ -316,27 +312,29 @@
                 <table class="table-print-grades">
                     <thead>
                         <tr>
-                            <th width="30" style="border-top-left-radius: 6px; border-bottom-left-radius: 6px;">No</th>
-                            <th align="left">Mata Pelajaran</th>
-                            <th width="45">I</th>
-                            <th width="45">II</th>
-                            <th width="45">III</th>
-                            <th width="45">IV</th>
-                            <th width="45">V</th>
-                            <th width="45">VI</th>
-                            <th width="55" style="border-top-right-radius: 6px; border-bottom-right-radius: 6px;">Ijazah</th>
+                            <th rowspan="2" width="24" style="vertical-align: middle;">No</th>
+                            <th rowspan="2" align="left" style="vertical-align: middle;">Mata Pelajaran</th>
+                            <th colspan="6" style="padding: 5px 8px; font-size: 7.5pt; letter-spacing: 0.5px;">Semester</th>
+                        </tr>
+                        <tr>
+                            <th width="32" style="font-size: 7.5pt; padding: 4px 8px;">I</th>
+                            <th width="32" style="font-size: 7.5pt; padding: 4px 8px;">II</th>
+                            <th width="32" style="font-size: 7.5pt; padding: 4px 8px;">III</th>
+                            <th width="32" style="font-size: 7.5pt; padding: 4px 8px;">IV</th>
+                            <th width="32" style="font-size: 7.5pt; padding: 4px 8px;">V</th>
+                            <th width="32" style="font-size: 7.5pt; padding: 4px 8px;">VI</th>
                         </tr>
                     </thead>
                     <tbody>
                         @php
                             $no = 1;
                             $groupedSubjects = $subjects->groupBy('category');
-                            $semesterNames = ['Semester 1', 'Semester 2', 'Semester 3', 'Semester 4', 'Semester 5', 'Semester 6', 'Nilai Ijazah'];
+                            $semesterNames = ['Semester 1', 'Semester 2', 'Semester 3', 'Semester 4', 'Semester 5', 'Semester 6'];
                         @endphp
 
                         @foreach($groupedSubjects as $category => $categorySubjects)
                             <tr class="category-row">
-                                <td colspan="9"><strong>{{ $category }}</strong></td>
+                                <td colspan="8"><strong>{{ $category }}</strong></td>
                             </tr>
                             @foreach($categorySubjects as $subject)
                                 @php
@@ -349,21 +347,17 @@
                                         @php
                                             $semGrade = $subGrades->where('semester', $semName)->first();
                                         @endphp
-                                        <td class="center" style="{{ $semName == 'Nilai Ijazah' ? 'font-weight: 700; color: #0d9488;' : '' }}">
+                                        <td class="center">
                                             {{ $semGrade ? number_format($semGrade->score, 2) : '-' }}
                                         </td>
                                     @endforeach
                                 </tr>
                             @endforeach
                         @endforeach
-                        
-                        <!-- Rata-Rata Row -->
-                        <tr class="row-print-average">
-                            <td colspan="8" align="right" style="padding: 8px 12px; border-bottom-left-radius: 6px;"><strong>RATA-RATA NILAI AKHIR:</strong></td>
-                            <td class="center" style="border-bottom-right-radius: 6px;">{{ number_format($student->average_score, 2) }}</td>
-                        </tr>
                     </tbody>
                 </table>
+
+                <div class="footer-divider"></div>
 
                 <!-- Signature Block -->
                 <div class="cert-footer">
@@ -371,7 +365,7 @@
                         <tr>
                             <td class="footer-left" valign="bottom">
                                 @if(!empty($settings['transcript_footer']))
-                                    <p style="font-size: 8pt; color: #6b7280; margin-bottom: 12px; font-style: italic; line-height: 1.4; max-width: 180px;">{{ $settings['transcript_footer'] }}</p>
+                                    <p style="font-size: 8pt; color: #6b7280; margin-bottom: 10px; font-style: italic; line-height: 1.35; max-width: 180px;">{{ $settings['transcript_footer'] }}</p>
                                 @endif
                                 <!-- Student Photo -->
                                 <div class="photo-box">
@@ -386,10 +380,10 @@
                             </td>
                             <td class="footer-right">
                                 @if(!empty($settings['transcript_signature_text']))
-                                    <p style="font-size: 8pt; color: #6b7280; white-space: pre-wrap; margin-bottom: 12px; font-style: italic; line-height: 1.45;">{{ $settings['transcript_signature_text'] }}</p>
+                                    <p style="font-size: 9.5pt; color: #000000; white-space: pre-wrap; margin-bottom: 10px; font-style: italic; line-height: 1.35;">{{ $settings['transcript_signature_text'] }}</p>
                                 @endif
-                                <p style="color: #4b5563; font-weight: 500;">{{ $settings['transcript_place'] ?? 'Subang' }}, {{ $announcementDate ? $announcementDate->translatedFormat($settings['transcript_date_format'] ?? 'd F Y') : date($settings['transcript_date_format'] ?? 'd F Y') }}</p>
-                                <p style="font-weight: 700; color: #0d9488;">Kepala {{ $settings['school_name'] }}</p>
+                                <p style="color: #000000; font-weight: bold;">{{ $settings['transcript_place'] ?? 'Subang' }}, {{ $announcementDate ? $announcementDate->locale('id')->translatedFormat($settings['transcript_date_format'] ?? 'd F Y') : \Carbon\Carbon::now()->locale('id')->translatedFormat($settings['transcript_date_format'] ?? 'd F Y') }}</p>
+                                <p style="font-weight: bold; color: #000000;">Kepala {{ $settings['school_name'] }}</p>
                                 
                                 @if($signature_path)
                                     <img src="{{ $signature_path }}" class="sig-img" alt="Tanda Tangan">
@@ -397,9 +391,9 @@
                                     <div class="signature-space"></div>
                                 @endif
                                 
-                                <p style="font-size: 9.5pt; font-weight: bold; color: #1f2937; margin-bottom: 1px;"><u>{{ $settings['principal_name'] }}</u></p>
+                                <p style="font-size: 10pt; font-weight: bold; color: #000000; margin-bottom: 1px;"><u>{{ $settings['principal_name'] }}</u></p>
                                 @if(!empty($settings['principal_nip']))
-                                    <p style="font-size: 8pt; color: #6b7280;">NIP. {{ $settings['principal_nip'] }}</p>
+                                    <p style="font-size: 9.5pt; color: #000000;">NIP. {{ $settings['principal_nip'] }}</p>
                                 @endif
                             </td>
                         </tr>

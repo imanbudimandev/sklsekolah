@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Surat Keterangan Lulus - {{ $student->name }}</title>
+    <title>Surat Keterangan Lulus</title>
     <style>
         @page {
             margin: 10mm 15mm;
@@ -174,9 +174,8 @@
     </style>
 </head>
 <body>
-    <div class="modern-container">
-        <!-- Kop Surat -->
-        <table class="print-kop">
+    @foreach($students ?? [$student] as $student)
+    <div class="modern-container" style="{{ $loop->last ? '' : 'page-break-after: always;' }}">
             <tr>
                 @if($logo_path)
                     <td width="75" align="center" valign="middle">
@@ -298,5 +297,6 @@
             </table>
         </div>
     </div>
+    @endforeach
 </body>
 </html>

@@ -1237,7 +1237,7 @@ class AdminController extends Controller
     public function downloadTranscriptPdf(Student $student)
     {
         $student->load(['grades.subject']);
-        $subjects = Subject::orderBy('code')->get();
+        $subjects = Subject::orderBy('order_number')->orderBy('code')->get();
         
         $announcementDateStr = Setting::get('announcement_date');
         $announcementDate = $announcementDateStr ? Carbon::parse($announcementDateStr) : null;
@@ -1281,7 +1281,7 @@ class AdminController extends Controller
     public function previewTranscriptPdf(Student $student)
     {
         $student->load(['grades.subject']);
-        $subjects = Subject::orderBy('code')->get();
+        $subjects = Subject::orderBy('order_number')->orderBy('code')->get();
         
         $announcementDateStr = Setting::get('announcement_date');
         $announcementDate = $announcementDateStr ? Carbon::parse($announcementDateStr) : null;
@@ -1439,6 +1439,55 @@ class AdminController extends Controller
         $pdf = Pdf::loadView('admin.transcripts.skl_pdf', compact('student', 'announcementDate', 'settings', 'logo_path', 'signature_path', 'letterNumber'));
         
         return $pdf->stream();
+    }
+
+    public function downloadBulkSklPdf(Request $request)
+    {
+        $query = Student::query();
+
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('nisn', 'like', "%{$search}%")
+                  ->orWhere('class', 'like', "%{$search}%");
+            });
+        }
+
+        $students = $query->with(['grades.subject'])->orderBy('name')->get();
+
+        $announcementDateStr = Setting::get('announcement_date');
+        $announcementDate = $announcementDateStr ? Carbon::parse($announcementDateStr) : null;
+
+        $settings = [
+            'school_name' => Setting::get('school_name', 'SMP Nurul Ihsan Banjaran'),
+            'school_address' => Setting::get('school_address', ''),
+            'principal_name' => Setting::get('principal_name', ''),
+            'principal_nip' => Setting::get('principal_nip', ''),
+            'school_logo' => Setting::get('school_logo'),
+            'principal_signature' => Setting::get('principal_signature'),
+            'skl_logo' => Setting::get('skl_logo'),
+            'skl_letter_number' => Setting::get('skl_letter_number', '421.3/[NUMBER]/SMP.NI/[YEAR]'),
+            'skl_place' => Setting::get('skl_place', 'Banjaran'),
+            'skl_date_format' => Setting::get('skl_date_format', 'd F Y'),
+            'skl_header' => Setting::get('skl_header', ''),
+            'skl_signature_text' => Setting::get('skl_signature_text', 'Kepala Sekolah'),
+        ];
+
+        $logoSetting = $settings['skl_logo'] ?: $settings['school_logo'] ?: Setting::get('transcript_logo');
+        $logo_path = (!empty($logoSetting) && file_exists(public_path($logoSetting))) ? public_path($logoSetting) : null;
+        $signature_path = (!empty($settings['principal_signature']) && file_exists(public_path($settings['principal_signature']))) ? public_path($settings['principal_signature']) : null;
+
+        $number = rand(100, 300);
+        $year = $announcementDate ? $announcementDate->format('Y') : date('Y');
+        $letterNumber = str_replace(['[NUMBER]', '[YEAR]'], [$number, $year], $settings['skl_letter_number']);
+
+        $schoolYear = Setting::get('school_year', date('Y') . '/' . (date('Y') + 1));
+
+        $pdf = Pdf::loadView('admin.transcripts.skl_pdf', compact('students', 'announcementDate', 'settings', 'logo_path', 'signature_path', 'letterNumber', 'schoolYear'));
+
+        $filename = "skl_masal_" . date('Ymd_His') . ".pdf";
+        return $pdf->download($filename);
     }
 
     // --- Database Tools ---
