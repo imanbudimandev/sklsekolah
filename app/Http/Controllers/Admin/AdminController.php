@@ -871,10 +871,28 @@ class AdminController extends Controller
             return redirect()->back()->with('error', 'File Excel kosong atau tidak valid.');
         }
 
+        // Find header row (contains column names like No, NIS, NAMA SISWA)
+        $headerRowIdx = null;
+        $headerKeywords = ['no', 'nis', 'nama'];
+        foreach ($rows as $idx => $row) {
+            $firstCell = strtolower(trim((string)($row[0] ?? '')));
+            foreach ($headerKeywords as $keyword) {
+                if ($firstCell === $keyword || strpos($firstCell, $keyword) !== false) {
+                    $headerRowIdx = $idx;
+                    break 2;
+                }
+            }
+        }
+
+        if ($headerRowIdx === null) {
+            return redirect()->back()->with('error', 'Baris header (No, NIS, NAMA SISWA) tidak ditemukan dalam file.');
+        }
+
         $header = array_map(function($val) {
             return strtolower(trim(preg_replace('/[\x00-\x1F\x7F-\x9F\xEF\xBB\xBF]/', '', (string)$val)));
-        }, $rows[0]);
-        unset($rows[0]);
+        }, $rows[$headerRowIdx]);
+
+        $dataRows = array_slice($rows, $headerRowIdx + 1);
 
         $headerMap = [
             'no' => ['no', 'nomor', 'no.'],
@@ -913,7 +931,7 @@ class AdminController extends Controller
             }
         }
 
-        foreach ($rows as $row) {
+        foreach ($dataRows as $row) {
             $row = array_pad($row, max(array_filter($colMap)), null);
 
             $nis = $colMap['nis'] !== false ? trim((string)($row[$colMap['nis']] ?? '')) : '';
@@ -962,26 +980,36 @@ class AdminController extends Controller
     public function downloadGradesTemplate(Request $request)
     {
         $semester = $request->input('semester', 'Semester 1');
+        $schoolYear = Setting::get('school_year', date('Y') . '/' . (date('Y') + 1));
         $subjects = Subject::orderBy('order_number')->orderBy('code')->get();
 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
+        $sheet->setCellValue('A1', 'DATA NILAI SISWA');
+        $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(12);
+        $sheet->mergeCells('A1:' . $sheet->getHighestColumn() . '1');
+
+        $sheet->setCellValue('A2', 'Tahun Pelajaran: ' . $schoolYear);
+        $sheet->setCellValue('A3', 'Semester: ' . $semester);
+        $sheet->setCellValue('A4', 'Tahun Lulus: ' . date('Y'));
+
         $headers = ['No', 'NIS', 'NAMA SISWA'];
         foreach ($subjects as $subject) {
             $headers[] = $subject->code;
         }
-        $sheet->fromArray([$headers], null, 'A1');
+        $sheet->fromArray([$headers], null, 'A6');
+        $sheet->getStyle('A6:' . chr(ord('A') + count($headers) - 1) . '6')->getFont()->setBold(true);
 
         $students = Student::orderBy('name')->get();
-        $rowNum = 2;
+        $rowNum = 7;
 
         foreach ($students as $student) {
             $gradesMap = Grade::where('student_id', $student->id)
                 ->where('semester', $semester)
                 ->pluck('score', 'subject_id');
 
-            $rowData = [$rowNum - 1, $student->nisn, $student->name];
+            $rowData = [$rowNum - 6, $student->nisn, $student->name];
             foreach ($subjects as $subject) {
                 $rowData[] = $gradesMap->get($subject->id) ?? '';
             }

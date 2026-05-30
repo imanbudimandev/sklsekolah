@@ -200,20 +200,6 @@
         </div>
     </div>
 
-    <!-- Header Info -->
-    <div class="card" style="margin-bottom: 15px; padding: 20px 24px; border-left: 4px solid var(--primary);">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px;">
-            <div>
-                <h3 style="margin: 0 0 4px 0; font-size: 1.1rem; color: var(--text-dark);">DATA NILAI SISWA</h3>
-                <p style="margin: 0; font-size: 0.9rem; color: var(--text-muted);">Tahun Pelajaran: <strong>{{ $schoolYear }}</strong></p>
-            </div>
-            <div style="text-align: right;">
-                <p style="margin: 0; font-size: 0.9rem; color: var(--text-muted);">Semester: <strong>{{ $semester }}</strong></p>
-                <p style="margin: 0; font-size: 0.9rem; color: var(--text-muted);">Tahun Lulus: <strong>{{ date('Y') }}</strong></p>
-            </div>
-        </div>
-    </div>
-
     <!-- Table Card containing the bulk edit form -->
     <div class="card table-card">
         <form action="{{ route('admin.grades.store') }}" method="POST">
