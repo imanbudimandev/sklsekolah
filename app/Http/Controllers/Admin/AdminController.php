@@ -22,6 +22,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
 class AdminController extends Controller
 {
@@ -554,7 +555,16 @@ class AdminController extends Controller
             $colLetter++;
         }
 
-        foreach (range('A', $sheet->getHighestColumn()) as $col) {
+        // Format all data cells as text to prevent Excel auto-formatting dates
+        $lastCol = $sheet->getHighestColumn();
+        $sheet->getStyle('A2:' . $lastCol . '2')
+              ->getNumberFormat()
+              ->setFormatCode(NumberFormat::FORMAT_TEXT);
+        $sheet->getStyle('A2:' . $lastCol . '1000')
+              ->getNumberFormat()
+              ->setFormatCode(NumberFormat::FORMAT_TEXT);
+
+        foreach (range('A', $lastCol) as $col) {
             $sheet->getColumnDimension($col)->setAutoSize(true);
         }
 
