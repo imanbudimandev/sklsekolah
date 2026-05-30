@@ -186,8 +186,14 @@
                             </div>
                             <div class="form-group">
                                 <label>Format Tampilan Tanggal</label>
-                                <input type="text" name="skl_date_format" id="skl_date_format" class="form-control" placeholder="d F Y" value="{{ old('skl_date_format', $settings['skl_date_format']) }}">
-                                <small class="text-muted">Default: <code>d F Y</code> (Contoh: 29 Mei 2026)</small>
+                                <select name="skl_date_format" id="skl_date_format" class="form-control">
+                                    <option value="d F Y" {{ $settings['skl_date_format'] == 'd F Y' ? 'selected' : '' }}>29 Mei 2026</option>
+                                    <option value="j F Y" {{ $settings['skl_date_format'] == 'j F Y' ? 'selected' : '' }}>29 Mei 2026</option>
+                                    <option value="d M Y" {{ $settings['skl_date_format'] == 'd M Y' ? 'selected' : '' }}>29 Mei 2026</option>
+                                    <option value="d/m/Y" {{ $settings['skl_date_format'] == 'd/m/Y' ? 'selected' : '' }}>29/05/2026</option>
+                                    <option value="d-m-Y" {{ $settings['skl_date_format'] == 'd-m-Y' ? 'selected' : '' }}>29-05-2026</option>
+                                    <option value="Y-m-d" {{ $settings['skl_date_format'] == 'Y-m-d' ? 'selected' : '' }}>2026-05-29</option>
+                                </select>
                             </div>
                         </div>
 

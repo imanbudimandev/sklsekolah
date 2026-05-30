@@ -158,7 +158,14 @@
                             </div>
                             <div class="form-group">
                                 <label>Format Tanggal</label>
-                                <input type="text" name="transcript_date_format" id="transcript_date_format" class="form-control" placeholder="d F Y" value="{{ old('transcript_date_format', $settings['transcript_date_format']) }}">
+                                <select name="transcript_date_format" id="transcript_date_format" class="form-control">
+                                    <option value="d F Y" {{ $settings['transcript_date_format'] == 'd F Y' ? 'selected' : '' }}>29 Mei 2026</option>
+                                    <option value="j F Y" {{ $settings['transcript_date_format'] == 'j F Y' ? 'selected' : '' }}>29 Mei 2026</option>
+                                    <option value="d M Y" {{ $settings['transcript_date_format'] == 'd M Y' ? 'selected' : '' }}>29 Mei 2026</option>
+                                    <option value="d/m/Y" {{ $settings['transcript_date_format'] == 'd/m/Y' ? 'selected' : '' }}>29/05/2026</option>
+                                    <option value="d-m-Y" {{ $settings['transcript_date_format'] == 'd-m-Y' ? 'selected' : '' }}>29-05-2026</option>
+                                    <option value="Y-m-d" {{ $settings['transcript_date_format'] == 'Y-m-d' ? 'selected' : '' }}>2026-05-29</option>
+                                </select>
                             </div>
                         </div>
                     </div>
