@@ -225,7 +225,6 @@
         color: #0f172a;
         padding: 3px 4px;
         border: 1px solid #cbd5e1;
-        font-size: 6.5pt;
     }
     </style>
 </head>
