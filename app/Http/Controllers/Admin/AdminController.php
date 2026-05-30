@@ -641,12 +641,22 @@ class AdminController extends Controller
         ]);
 
         $file = $request->file('file_import');
-        $extension = $file->getClientOriginalExtension();
+        $extension = strtolower($file->getClientOriginalExtension());
         $successCount = 0;
 
-        $reader = IOFactory::createReader(ucfirst($extension));
-        $reader->setReadDataOnly(true);
-        $spreadsheet = $reader->load($file->getRealPath());
+        $tmpPath = $file->getPathname();
+        if (!file_exists($tmpPath) || !is_readable($tmpPath)) {
+            return redirect()->back()->with('error', 'File upload tidak ditemukan atau tidak bisa dibaca.');
+        }
+
+        try {
+            $reader = IOFactory::createReader(ucfirst($extension));
+            $reader->setReadDataOnly(true);
+            $spreadsheet = $reader->load($tmpPath);
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal membaca file Excel: ' . $e->getMessage());
+        }
+
         $worksheet = $spreadsheet->getActiveSheet();
         $rows = $worksheet->toArray();
 
