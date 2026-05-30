@@ -780,10 +780,11 @@ class AdminController extends Controller
 
         if ($request->filled('search')) {
             $search = $request->input('search');
-            $query->where('name', 'like', "%{$search}%")
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
                   ->orWhere('nisn', 'like', "%{$search}%")
-                  ->orWhere('exam_number', 'like', "%{$search}%")
                   ->orWhere('class', 'like', "%{$search}%");
+            });
         }
 
         // Eager load grades with subjects for the selected semester
@@ -791,7 +792,7 @@ class AdminController extends Controller
             $q->where('semester', $semester);
         }])->orderBy('name')->paginate(20);
 
-        $subjects = Subject::orderBy('code')->get();
+        $subjects = Subject::orderBy('order_number')->orderBy('code')->get();
 
         return view('admin.grades.index', compact('students', 'subjects', 'semester', 'validSemesters'));
     }
@@ -870,13 +871,11 @@ class AdminController extends Controller
                 return strtolower(trim(preg_replace('/[\x00-\x1F\x7F-\x9F\xEF\xBB\xBF]/', '', $val)));
             }, $header);
 
-            $map = [
-                'exam_number' => array_search('no_peserta', $header) !== false ? array_search('no_peserta', $header) : array_search('exam_number', $header),
-                'nisn' => array_search('nisn', $header),
-            ];
+            $nisnIdx = array_search('nisn', $header);
+            $namaIdx = array_search('nama', $header);
 
-            if ($map['exam_number'] === false && $map['nisn'] === false) {
-                return redirect()->back()->with('error', 'Kolom pengidentifikasi (no_peserta atau nisn) tidak ditemukan dalam CSV.');
+            if ($nisnIdx === false && $namaIdx === false) {
+                return redirect()->back()->with('error', 'Kolom identitas siswa (nisn atau nama) tidak ditemukan dalam CSV.');
             }
 
             $subjectColumns = [];
@@ -885,7 +884,7 @@ class AdminController extends Controller
             });
 
             foreach ($header as $index => $colName) {
-                if ($index === $map['exam_number'] || $index === $map['nisn']) {
+                if ($index === $nisnIdx || $index === $namaIdx) {
                     continue;
                 }
                 
@@ -903,11 +902,11 @@ class AdminController extends Controller
                 }
 
                 $student = null;
-                if ($map['exam_number'] !== false && !empty(trim($row[$map['exam_number']]))) {
-                    $student = Student::where('exam_number', trim($row[$map['exam_number']]))->first();
+                if ($nisnIdx !== false && !empty(trim($row[$nisnIdx]))) {
+                    $student = Student::where('nisn', trim($row[$nisnIdx]))->first();
                 }
-                if (!$student && $map['nisn'] !== false && !empty(trim($row[$map['nisn']]))) {
-                    $student = Student::where('nisn', trim($row[$map['nisn']]))->first();
+                if (!$student && $namaIdx !== false && !empty(trim($row[$namaIdx]))) {
+                    $student = Student::where('name', trim($row[$namaIdx]))->first();
                 }
 
                 if (!$student) {
@@ -943,8 +942,8 @@ class AdminController extends Controller
     public function downloadGradesTemplate(Request $request)
     {
         $semester = $request->input('semester', 'Semester 1');
-        $subjects = Subject::orderBy('code')->get();
-        $headers = ['no_peserta', 'nisn', 'nama'];
+        $subjects = Subject::orderBy('order_number')->orderBy('code')->get();
+        $headers = ['nisn', 'nama'];
         
         foreach ($subjects as $subject) {
             $headers[] = $subject->code;
@@ -961,7 +960,7 @@ class AdminController extends Controller
                     ->where('semester', $semester)
                     ->pluck('score', 'subject_id');
 
-                $row = [$student->exam_number, $student->nisn, $student->name];
+                $row = [$student->nisn, $student->name];
                 foreach ($subjects as $subject) {
                     $row[] = $gradesMap->get($subject->id) ?? '';
                 }
@@ -969,7 +968,7 @@ class AdminController extends Controller
             }
             
             if ($students->isEmpty()) {
-                $exampleRow = ['02-001-001-1', '1234567890', 'Ahmad Fauzi'];
+                $exampleRow = ['1234567890', 'Ahmad Fauzi'];
                 foreach ($subjects as $subject) {
                     $exampleRow[] = '85';
                 }

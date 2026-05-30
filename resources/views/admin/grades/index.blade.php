@@ -144,7 +144,6 @@
                 <table class="table table-hover">
                     <thead>
                         <tr>
-                            <th width="140">No. Peserta</th>
                             <th width="110">NISN</th>
                             <th>Nama Siswa</th>
                             @foreach($subjects as $subject)
@@ -157,14 +156,13 @@
                     <tbody>
                         @if($students->isEmpty())
                             <tr>
-                                <td colspan="{{ count($subjects) + 3 }}" class="text-center py-4 text-muted">
+                                <td colspan="{{ count($subjects) + 2 }}" class="text-center py-4 text-muted">
                                     Data siswa tidak ditemukan.
                                 </td>
                             </tr>
                         @else
                             @foreach($students as $student)
                                 <tr>
-                                    <td class="font-bold">{{ $student->exam_number }}</td>
                                     <td>{{ $student->nisn }}</td>
                                     <td class="font-semibold">{{ $student->name }}</td>
                                     
@@ -235,7 +233,7 @@
                 <div class="template-download-section alert alert-info">
                     <div class="alert-content">
                         <i class="fa-solid fa-circle-info"></i>
-                        <span>Kolom header CSV: <strong>no_peserta, nisn, nama</strong> diikuti dengan kode mata pelajaran (misal: <strong>PAI, MTK, IND</strong>).</span>
+                        <span>Kolom header CSV: <strong>nisn, nama</strong> diikuti dengan kode mata pelajaran (misal: <strong>PAI, MTK, IND</strong>).</span>
                     </div>
                 </div>
             </div>
