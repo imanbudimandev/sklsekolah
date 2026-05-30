@@ -8,15 +8,15 @@
             margin: 10mm 15mm;
             size: A4;
         }
-        body {
-            font-family: 'Helvetica', 'Arial', sans-serif;
+        body, table, tr, td, th, p, h1, h2, h3, h4, div, span {
+            font-family: 'Times New Roman', 'Times', serif;
             font-size: 9pt;
             line-height: 1.35;
             color: #1f2937;
-        margin: 0;
-        padding: 0;
-        background-color: #fff;
-    }
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
+        }
     .modern-container {
         position: relative;
         padding: 8px 18px;
