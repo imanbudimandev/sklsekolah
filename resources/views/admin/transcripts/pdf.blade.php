@@ -5,13 +5,13 @@
     <title>Transkip Nilai - Modern Sleek Perfect Fill</title>
     <style>
         @page {
-            margin: 10mm 12mm;
+            margin: 8mm 10mm;
             size: A4;
         }
         body {
             font-family: 'Helvetica', 'Arial', sans-serif;
-            font-size: 9.8pt;
-            line-height: 1.45;
+            font-size: 8.5pt;
+            line-height: 1.35;
             color: #1f2937;
             margin: 0;
             padding: 0;
@@ -22,55 +22,51 @@
             padding: 0;
             height: 100%;
         }
-
-        /* === PERFECT VERTICAL FILL CONTAINER === */
         .modern-container {
             position: relative;
-            padding: 20px 25px;
-            height: 97%;
-            border-top: 6px solid #0d9488; /* Teal branding top bar */
+            padding: 12px 18px;
+            height: 98%;
+            border-top: 4px solid #0d9488;
             background-color: #ffffff;
         }
-
-        /* === KOP SURAT === */
         .print-kop {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 10px;
+            margin-bottom: 6px;
         }
         .kop-logo {
-            width: 65px;
-            height: 65px;
+            width: 55px;
+            height: 55px;
             object-fit: contain;
         }
         .kop-text {
             text-align: left;
-            padding-left: 15px;
+            padding-left: 12px;
         }
         .kop-text .kop-yayasan {
-            font-size: 8.5pt;
+            font-size: 7.5pt;
             font-weight: 700;
             color: #0d9488;
-            margin: 0 0 2px 0;
-            letter-spacing: 1.5px;
+            margin: 0 0 1px 0;
+            letter-spacing: 1px;
             text-transform: uppercase;
         }
         .kop-text h1 {
-            font-size: 13.5pt;
+            font-size: 11pt;
             font-weight: 800;
             color: #1f2937;
-            margin: 0 0 4px 0;
+            margin: 0 0 2px 0;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
         }
         .kop-text .kop-info {
-            font-size: 8pt;
-            margin: 2px 0;
+            font-size: 7pt;
+            margin: 1px 0;
             color: #4b5563;
         }
         .kop-text .kop-detail {
-            font-size: 7.5pt;
-            margin: 1px 0;
+            font-size: 6.5pt;
+            margin: 0;
             color: #6b7280;
         }
         .kop-text .kop-detail a {
@@ -79,27 +75,25 @@
             font-weight: 600;
         }
         .kop-qr {
-            width: 65px;
+            width: 55px;
             text-align: right;
         }
         .kop-qr img {
-            width: 55px;
-            height: 55px;
+            width: 45px;
+            height: 45px;
         }
         .print-divider {
             border: none;
-            height: 1px;
+            height: 0.5px;
             background-color: #e5e7eb;
-            margin: 6px 0 12px 0;
+            margin: 4px 0 8px 0;
         }
-
-        /* === TITLE === */
         .cert-title {
             text-align: center;
-            margin-bottom: 15px;
+            margin-bottom: 8px;
         }
         .cert-title h3 {
-            font-size: 12pt;
+            font-size: 10pt;
             font-weight: 800;
             color: #1f2937;
             margin: 0;
@@ -107,33 +101,31 @@
             letter-spacing: 0.5px;
         }
         .cert-title .subtitle {
-            font-size: 8.5pt;
+            font-size: 7.5pt;
             color: #6b7280;
-            margin-top: 3px;
+            margin-top: 2px;
             font-weight: 500;
         }
-
-        /* === STUDENT META CARD === */
         .table-print-meta {
             width: 100%;
             border-collapse: collapse;
-            font-size: 9pt;
-            margin: 10px 0 15px 0;
+            font-size: 8pt;
+            margin: 6px 0 8px 0;
             background-color: #f9fafb;
-            border-radius: 8px;
+            border-radius: 6px;
             border: 1px solid #f3f4f6;
         }
         .table-print-meta td {
-            padding: 7px 12px;
+            padding: 4px 10px;
             vertical-align: middle;
         }
         .meta-label {
-            width: 130px;
+            width: 110px;
             color: #4b5563;
             font-weight: 600;
         }
         .meta-colon {
-            width: 10px;
+            width: 8px;
             text-align: center;
             color: #9ca3af;
         }
@@ -141,27 +133,25 @@
             color: #1f2937;
             font-weight: 700;
         }
-
-        /* === COMFORTABLE GRADES TABLE === */
         .table-print-grades {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 12px;
-            font-size: 8.5pt;
+            margin-top: 6px;
+            font-size: 7.5pt;
         }
         .table-print-grades th {
             font-weight: 700;
             text-align: center;
             background-color: #0d9488;
             color: #ffffff;
-            font-size: 8.5pt;
+            font-size: 7pt;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            padding: 6.5px 8px;
+            letter-spacing: 0.3px;
+            padding: 4px 5px;
             border: none;
         }
         .table-print-grades td {
-            padding: 5.5px 8px;
+            padding: 3px 5px;
             border-bottom: 1px solid #f3f4f6;
             color: #374151;
         }
@@ -172,27 +162,25 @@
             font-weight: 800;
             background-color: #f3f4f6;
             color: #1f2937;
-            padding: 5.5px 8px;
+            padding: 3px 5px;
             border-bottom: 1px solid #e5e7eb;
             text-transform: uppercase;
-            font-size: 8pt;
-            letter-spacing: 0.5px;
+            font-size: 7pt;
+            letter-spacing: 0.3px;
         }
         .row-print-average {
             background-color: #f0fdfa;
         }
         .row-print-average td {
             color: #0d9488;
-            font-size: 9.5pt;
+            font-size: 8pt;
             font-weight: 800;
             border-top: 1.5px solid #0d9488;
             border-bottom: 1.5px solid #0d9488;
-            padding: 8px 10px;
+            padding: 5px 8px;
         }
-
-        /* === PERFECT FIT FOOTER / SIGNATURE === */
         .cert-footer {
-            margin-top: 25px;
+            margin-top: 8px;
             width: 100%;
         }
         .footer-table {
@@ -200,33 +188,33 @@
             border-collapse: collapse;
         }
         .footer-left {
-            width: 40%;
+            width: 35%;
             vertical-align: bottom;
             padding: 0;
         }
         .footer-right {
-            width: 60%;
+            width: 65%;
             text-align: left;
             vertical-align: top;
-            padding-left: 50px;
+            padding-left: 30px;
         }
         .footer-right p {
-            margin: 0 0 2px 0;
-            font-size: 9pt;
+            margin: 0 0 1px 0;
+            font-size: 8pt;
         }
         .sig-img {
-            height: 50px;
+            height: 40px;
             width: auto;
-            margin: 4px 0;
+            margin: 2px 0;
         }
         .signature-space {
-            height: 50px;
+            height: 40px;
         }
         .photo-box {
-            width: 75px;
-            height: 100px;
-            border-radius: 6px;
-            border: 2px solid #e5e7eb;
+            width: 65px;
+            height: 85px;
+            border-radius: 4px;
+            border: 1.5px solid #e5e7eb;
             overflow: hidden;
             display: inline-block;
             background-color: #f9fafb;
@@ -246,7 +234,7 @@
             display: table-cell;
             vertical-align: middle;
             text-align: center;
-            font-size: 7pt;
+            font-size: 6pt;
             color: #9ca3af;
             font-weight: 600;
         }

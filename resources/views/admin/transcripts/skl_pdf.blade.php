@@ -5,123 +5,115 @@
     <title>Surat Keterangan Lulus - {{ $student->name }}</title>
     <style>
         @page {
-            margin: 15mm 20mm;
+            margin: 10mm 15mm;
             size: A4;
         }
         body {
             font-family: 'Helvetica', 'Arial', sans-serif;
-            font-size: 10pt;
-            line-height: 1.5;
+            font-size: 9pt;
+            line-height: 1.35;
             color: #1f2937;
             margin: 0;
             padding: 0;
             background-color: #fff;
         }
         .modern-container {
-            padding: 10px 15px;
+            padding: 5px 10px;
             background-color: #ffffff;
         }
-
-        /* === KOP SURAT === */
         .print-kop {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
         }
         .kop-logo {
-            width: 75px;
-            height: 75px;
+            width: 60px;
+            height: 60px;
             object-fit: contain;
         }
         .kop-text {
             text-align: center;
-            padding-left: 10px;
-            padding-right: 10px;
+            padding-left: 8px;
+            padding-right: 8px;
         }
         .kop-text h2 {
-            font-size: 11pt;
+            font-size: 9pt;
             font-weight: 700;
             color: #111827;
+            margin: 0 0 1px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .kop-text h1 {
+            font-size: 12pt;
+            font-weight: 800;
+            color: #0f172a;
             margin: 0 0 2px 0;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-        .kop-text h1 {
-            font-size: 15pt;
-            font-weight: 800;
-            color: #0f172a;
-            margin: 0 0 4px 0;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
         .kop-text .kop-address {
-            font-size: 8.5pt;
-            margin: 2px 0;
+            font-size: 7.5pt;
+            margin: 1px 0;
             color: #4b5563;
         }
         .kop-text .kop-detail {
-            font-size: 8pt;
-            margin: 1px 0;
+            font-size: 7pt;
+            margin: 0;
             color: #6b7280;
         }
         .print-divider {
             border: none;
-            height: 1.5px;
+            height: 1px;
             background-color: #111827;
-            margin: 5px 0 15px 0;
+            margin: 3px 0 8px 0;
         }
-
-        /* === CERTIFICATE TITLE === */
         .cert-title {
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 12px;
         }
         .cert-title h3 {
-            font-size: 13pt;
+            font-size: 11pt;
             font-weight: 800;
             color: #111827;
-            margin: 0 0 2px 0;
+            margin: 0 0 1px 0;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
             text-decoration: underline;
         }
         .cert-title .letter-number {
-            font-size: 9pt;
+            font-size: 8pt;
             color: #374151;
             margin: 0;
         }
-
-        /* === CERTIFICATE BODY === */
         .cert-body {
-            font-size: 10pt;
+            font-size: 9pt;
             text-align: justify;
         }
         .cert-body p {
             margin-top: 0;
-            margin-bottom: 12px;
-            text-indent: 30px;
+            margin-bottom: 6px;
+            text-indent: 25px;
         }
         .cert-body p.no-indent {
             text-indent: 0;
         }
-
-        /* === STUDENT METADATA === */
         .table-print-meta {
-            width: 85%;
-            margin: 15px auto 20px auto;
+            width: 80%;
+            margin: 8px auto 10px auto;
             border-collapse: collapse;
         }
         .table-print-meta td {
-            padding: 5px 10px;
+            padding: 3px 8px;
             vertical-align: top;
         }
         .meta-label {
-            width: 200px;
+            width: 170px;
             color: #374151;
             font-weight: 600;
         }
         .meta-colon {
-            width: 15px;
+            width: 12px;
             text-align: center;
             color: #4b5563;
         }
@@ -129,39 +121,33 @@
             color: #111827;
             font-weight: 700;
         }
-
-        /* === STATUS DISPLAY BOX === */
         .print-status-box {
-            width: 250px;
-            margin: 20px auto;
-            padding: 10px;
+            width: 200px;
+            margin: 10px auto;
+            padding: 6px;
             border: 2px solid #059669;
             background-color: #ecfdf5;
             color: #065f46;
             text-align: center;
-            font-size: 14pt;
+            font-size: 11pt;
             font-weight: 800;
-            border-radius: 6px;
-            letter-spacing: 3px;
+            border-radius: 4px;
+            letter-spacing: 2px;
         }
-
         .print-status-box.tidak-lulus {
             border: 2px solid #dc2626;
             background-color: #fef2f2;
             color: #991b1b;
         }
-
         .cert-note {
-            font-size: 8.5pt;
+            font-size: 7.5pt;
             color: #4b5563;
-            margin-top: 15px;
+            margin-top: 8px;
             font-style: italic;
-            line-height: 1.4;
+            line-height: 1.3;
         }
-
-        /* === FOOTER SIGNATURE === */
         .cert-footer {
-            margin-top: 30px;
+            margin-top: 15px;
             width: 100%;
         }
         .footer-table {
@@ -171,19 +157,19 @@
         .footer-right {
             width: 50%;
             text-align: left;
-            padding-left: 280px;
+            padding-left: 240px;
         }
         .footer-right p {
-            margin: 0 0 2px 0;
-            font-size: 9.5pt;
+            margin: 0 0 1px 0;
+            font-size: 8.5pt;
         }
         .sig-img {
-            height: 60px;
+            height: 45px;
             width: auto;
-            margin: 4px 0;
+            margin: 2px 0;
         }
         .signature-space {
-            height: 60px;
+            height: 45px;
         }
     </style>
 </head>
