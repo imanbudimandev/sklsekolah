@@ -86,6 +86,69 @@
     .grade-header-code {
         cursor: help;
     }
+
+    @media (max-width: 768px) {
+        .semester-tabs-container {
+            margin-top: 10px;
+        }
+        .semester-tab {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+        }
+        .save-bar {
+            flex-direction: column;
+            gap: 10px;
+            padding: 12px 16px;
+            margin: 15px -16px -16px -16px;
+            text-align: center;
+        }
+        .save-bar-info {
+            font-size: 0.85rem;
+        }
+        .save-bar-actions .btn {
+            width: 100%;
+        }
+        .control-header > div:first-child {
+            flex-direction: column !important;
+        }
+        .admin-search-form {
+            max-width: 100% !important;
+        }
+        .control-actions {
+            width: 100%;
+        }
+        .control-actions .btn {
+            flex: 1;
+            font-size: 0.85rem;
+            padding: 8px 12px;
+        }
+        .grade-input {
+            width: 50px;
+            height: 28px;
+            font-size: 0.75rem;
+            padding: 2px;
+        }
+        th, td {
+            padding: 6px 4px !important;
+            font-size: 0.8rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .grade-input {
+            width: 40px;
+            height: 24px;
+            font-size: 0.7rem;
+        }
+        th, td {
+            padding: 4px 2px !important;
+            font-size: 0.7rem;
+        }
+        th[width] {
+            width: auto !important;
+            min-width: auto !important;
+        }
+    }
 </style>
 @endsection
 
