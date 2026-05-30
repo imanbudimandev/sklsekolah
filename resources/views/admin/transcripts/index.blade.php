@@ -163,8 +163,7 @@
                         <th class="text-center" width="75">Smt 4</th>
                         <th class="text-center" width="75">Smt 5</th>
                         <th class="text-center" width="75">Smt 6</th>
-                        <th class="text-center" width="90">Nilai Ijazah</th>
-                        <th class="text-center" width="95">Nilai Sekolah</th>
+                        <th class="text-center" width="95">Nilai Ijazah</th>
                         <th class="text-center" width="110">Status</th>
                         <th class="text-center" width="130">Aksi</th>
                     </tr>
@@ -172,7 +171,7 @@
                 <tbody>
                     @if($students->isEmpty())
                         <tr>
-                            <td colspan="11" class="text-center py-4 text-muted">Data siswa tidak ditemukan.</td>
+                            <td colspan="10" class="text-center py-4 text-muted">Data siswa tidak ditemukan.</td>
                         </tr>
                     @else
                         @foreach($students as $student)
@@ -197,9 +196,6 @@
                                 </td>
                                 <td class="text-center score-avg-value">
                                     {{ $student->getSemesterAverage('Semester 6') !== null ? number_format($student->getSemesterAverage('Semester 6'), 2) : '-' }}
-                                </td>
-                                <td class="text-center score-avg-value" style="color: #475569;">
-                                    {{ $student->getSemesterAverage('Nilai Ijazah') !== null ? number_format($student->getSemesterAverage('Nilai Ijazah'), 2) : '-' }}
                                 </td>
                                 <td class="text-center score-final-value">
                                     {{ number_format($student->average_score, 2) }}
