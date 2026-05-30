@@ -106,29 +106,20 @@ class AdminController extends Controller
     public function storeStudent(Request $request)
     {
         $data = $request->validate([
-            'exam_number' => 'required|unique:students,exam_number',
+            'exam_number' => 'nullable|unique:students,exam_number',
+            'nis' => 'nullable',
             'nisn' => 'required|unique:students,nisn',
             'name' => 'required',
             'birth_place' => 'nullable',
             'birth_date' => 'nullable|date',
             'class' => 'nullable',
+            'jurusan' => 'nullable',
             'status' => 'required|in:LULUS,TIDAK LULUS',
-            'scores' => 'nullable|array',
+            'password' => 'nullable',
+            'tahun_lulus' => 'nullable',
         ]);
 
-        $student = Student::create($data);
-
-        if (!empty($data['scores'])) {
-            foreach ($data['scores'] as $subjectId => $score) {
-                if ($score !== null && $score !== '') {
-                    Grade::create([
-                        'student_id' => $student->id,
-                        'subject_id' => $subjectId,
-                        'score' => $score
-                    ]);
-                }
-            }
-        }
+        Student::create($data);
 
         return redirect()->route('admin.students')->with('success', 'Data siswa berhasil ditambahkan.');
     }
@@ -136,31 +127,20 @@ class AdminController extends Controller
     public function updateStudent(Request $request, Student $student)
     {
         $data = $request->validate([
-            'exam_number' => 'required|unique:students,exam_number,' . $student->id,
+            'exam_number' => 'nullable|unique:students,exam_number,' . $student->id,
+            'nis' => 'nullable',
             'nisn' => 'required|unique:students,nisn,' . $student->id,
             'name' => 'required',
             'birth_place' => 'nullable',
             'birth_date' => 'nullable|date',
             'class' => 'nullable',
+            'jurusan' => 'nullable',
             'status' => 'required|in:LULUS,TIDAK LULUS',
-            'scores' => 'nullable|array',
+            'password' => 'nullable',
+            'tahun_lulus' => 'nullable',
         ]);
 
         $student->update($data);
-
-        // Update grades
-        if (isset($data['scores'])) {
-            foreach ($data['scores'] as $subjectId => $score) {
-                if ($score !== null && $score !== '') {
-                    Grade::updateOrCreate(
-                        ['student_id' => $student->id, 'subject_id' => $subjectId],
-                        ['score' => $score]
-                    );
-                } else {
-                    Grade::where('student_id', $student->id)->where('subject_id' , $subjectId)->delete();
-                }
-            }
-        }
 
         return redirect()->route('admin.students')->with('success', 'Data siswa berhasil diperbarui.');
     }
@@ -448,7 +428,18 @@ class AdminController extends Controller
         ]);
 
         $file = $request->file('file');
-        $spreadsheet = IOFactory::load($file->getRealPath());
+
+        $tmpPath = $file->getPathname();
+        if (!file_exists($tmpPath) || !is_readable($tmpPath)) {
+            return redirect()->back()->with('error', 'File upload tidak ditemukan atau tidak bisa dibaca.');
+        }
+
+        try {
+            $spreadsheet = IOFactory::load($tmpPath);
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal membaca file Excel: ' . $e->getMessage());
+        }
+
         $worksheet = $spreadsheet->getActiveSheet();
         $rows = $worksheet->toArray();
 
@@ -460,85 +451,73 @@ class AdminController extends Controller
             return strtolower(trim((string) $val));
         }, $rows[0]);
 
-        // Find column mappings
         $map = [
-            'exam_number' => array_search('no_peserta', $header) !== false ? array_search('no_peserta', $header) : array_search('exam_number', $header),
+            'nis' => array_search('nis', $header),
             'nisn' => array_search('nisn', $header),
             'name' => array_search('nama', $header) !== false ? array_search('nama', $header) : array_search('name', $header),
-            'birth_place' => array_search('tempat_lahir', $header) !== false ? array_search('tempat_lahir', $header) : array_search('birth_place', $header),
-            'birth_date' => array_search('tanggal_lahir', $header) !== false ? array_search('tanggal_lahir', $header) : array_search('birth_date', $header),
+            'birth_place' => array_search('tempat', $header) !== false ? array_search('tempat', $header) : array_search('birth_place', $header),
+            'birth_date' => array_search('tanggal_lahir', $header),
             'class' => array_search('kelas', $header) !== false ? array_search('kelas', $header) : array_search('class', $header),
-            'status' => array_search('status', $header),
+            'jurusan' => array_search('jurusan', $header),
+            'status' => array_search('kelulusan', $header) !== false ? array_search('kelulusan', $header) : array_search('status', $header),
+            'password' => array_search('password', $header),
+            'tahun_lulus' => array_search('tahun_lulus', $header) !== false ? array_search('tahun_lulus', $header) : array_search('tahun_lulus', $header),
         ];
 
-        if ($map['exam_number'] === false || $map['nisn'] === false || $map['name'] === false) {
-            return redirect()->back()->with('error', 'Kolom wajib (no_peserta, nisn, nama) tidak ditemukan dalam file Excel.');
-        }
-
-        // Map other columns to subjects
-        $subjectColumns = [];
-        $allSubjects = Subject::all()->keyBy(function($item) {
-            return strtolower($item->code);
-        });
-
-        foreach ($header as $index => $colName) {
-            if (in_array($index, $map)) {
-                continue;
-            }
-            $cleanColName = strtolower($colName);
-            if (isset($allSubjects[$cleanColName])) {
-                $subjectColumns[$index] = $allSubjects[$cleanColName]->id;
-            }
+        if ($map['nisn'] === false || $map['name'] === false) {
+            return redirect()->back()->with('error', 'Kolom wajib (nisn, nama) tidak ditemukan dalam file Excel.');
         }
 
         $successCount = 0;
         for ($i = 1; $i < count($rows); $i++) {
             $row = $rows[$i];
-            if (count($row) < 3) continue;
+            if (count($row) < 2) continue;
 
-            $exam_number = trim((string) ($row[$map['exam_number']] ?? ''));
             $nisn = trim((string) ($row[$map['nisn']] ?? ''));
             $name = trim((string) ($row[$map['name']] ?? ''));
 
-            if (empty($exam_number) || empty($nisn) || empty($name)) {
+            if (empty($nisn) || empty($name)) {
                 continue;
             }
 
             $birth_date = null;
             if ($map['birth_date'] !== false && !empty($row[$map['birth_date']])) {
-                try {
-                    $birth_date = Carbon::parse(trim((string) $row[$map['birth_date']]))->format('Y-m-d');
-                } catch (\Exception $e) {
-                    $birth_date = null;
+                $rawDate = trim((string) $row[$map['birth_date']]);
+                $dateFormats = ['d-m-Y', 'd/m/Y', 'Y-m-d', 'd.m.Y', 'd/m/y', 'd-m-y'];
+                foreach ($dateFormats as $fmt) {
+                    try {
+                        $parsed = Carbon::createFromFormat($fmt, $rawDate);
+                        if ($parsed && $parsed->format('Y') > 1900 && $parsed->format('Y') < 2100) {
+                            $birth_date = $parsed->format('Y-m-d');
+                            break;
+                        }
+                    } catch (\Exception $e) {
+                        continue;
+                    }
+                }
+                if (!$birth_date) {
+                    try {
+                        $birth_date = Carbon::parse($rawDate)->format('Y-m-d');
+                    } catch (\Exception $e) {
+                        $birth_date = null;
+                    }
                 }
             }
 
-            $student = Student::updateOrCreate(
-                ['exam_number' => $exam_number],
+            Student::updateOrCreate(
+                ['nisn' => $nisn],
                 [
-                    'nisn' => $nisn,
+                    'nis' => $map['nis'] !== false ? trim((string) ($row[$map['nis']] ?? '')) : null,
                     'name' => $name,
                     'birth_place' => $map['birth_place'] !== false ? trim((string) ($row[$map['birth_place']] ?? '')) : null,
                     'birth_date' => $birth_date,
                     'class' => $map['class'] !== false ? trim((string) ($row[$map['class']] ?? '')) : null,
+                    'jurusan' => $map['jurusan'] !== false ? trim((string) ($row[$map['jurusan']] ?? '')) : null,
                     'status' => $map['status'] !== false ? strtoupper(trim((string) ($row[$map['status']] ?? ''))) : 'LULUS',
+                    'password' => $map['password'] !== false ? trim((string) ($row[$map['password']] ?? '')) : null,
+                    'tahun_lulus' => $map['tahun_lulus'] !== false ? trim((string) ($row[$map['tahun_lulus']] ?? '')) : null,
                 ]
             );
-
-            foreach ($subjectColumns as $index => $subjectId) {
-                $scoreValue = trim((string) ($row[$index] ?? ''));
-                if ($scoreValue !== '' && $scoreValue !== null) {
-                    Grade::updateOrCreate(
-                        [
-                            'student_id' => $student->id,
-                            'subject_id' => $subjectId
-                        ],
-                        ['score' => floatval($scoreValue)]
-                    );
-                } else {
-                    Grade::where('student_id', $student->id)->where('subject_id', $subjectId)->delete();
-                }
-            }
 
             $successCount++;
         }
@@ -548,8 +527,7 @@ class AdminController extends Controller
 
     public function downloadStudentTemplate()
     {
-        $subjects = Subject::orderBy('code')->get();
-        $headers = ['no_peserta', 'nisn', 'nama', 'tempat_lahir', 'tanggal_lahir', 'kelas', 'status'];
+        $headers = ['nis', 'nisn', 'nama', 'tempat', 'tanggal_lahir', 'kelas', 'jurusan', 'kelulusan', 'password', 'tahun_lulus'];
 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -561,11 +539,6 @@ class AdminController extends Controller
             $colLetter++;
         }
 
-        foreach ($subjects as $subject) {
-            $sheet->setCellValue($colLetter . '1', $subject->code);
-            $colLetter++;
-        }
-
         $headerStyle = [
             'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
             'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '4F46E5']],
@@ -574,11 +547,7 @@ class AdminController extends Controller
         ];
         $sheet->getStyle('A1:' . $sheet->getHighestColumn() . '1')->applyFromArray($headerStyle);
 
-        $exampleRow = ['02-001-001-1', '1234567890', 'Ahmad Fauzi', 'Bandung', '2011-05-12', 'IX-A', 'LULUS'];
-        for ($i = 7; $i < count($headers) + $subjects->count(); $i++) {
-            $exampleRow[] = '85';
-        }
-
+        $exampleRow = ['12345', '1234567890', 'Ahmad Fauzi', 'Bandung', '2011-05-12', 'IX-A', 'IPA', 'LULUS', 'siswa123', '2026'];
         $colLetter = 'A';
         foreach ($exampleRow as $val) {
             $sheet->setCellValue($colLetter . '2', $val);
@@ -596,28 +565,22 @@ class AdminController extends Controller
 
         return response($content, 200, [
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'Content-Disposition' => 'attachment; filename="template_siswa_nilai.xlsx"',
+            'Content-Disposition' => 'attachment; filename="template_import_siswa.xlsx"',
         ]);
     }
 
     public function exportStudentsExcel()
     {
-        $students = Student::with('grades.subject')->orderBy('exam_number')->get();
-        $subjects = Subject::orderBy('code')->get();
-        $headers = ['no_peserta', 'nisn', 'nama', 'tempat_lahir', 'tanggal_lahir', 'kelas', 'status', 'rata_rata'];
+        $students = Student::orderBy('nisn')->get();
+        $headers = ['nis', 'nisn', 'nama', 'tempat', 'tanggal_lahir', 'kelas', 'jurusan', 'kelulusan', 'password', 'tahun_lulus'];
 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
-        $sheet->setTitle('Data Kelulusan');
+        $sheet->setTitle('Data Siswa');
 
         $colLetter = 'A';
         foreach ($headers as $h) {
             $sheet->setCellValue($colLetter . '1', $h);
-            $colLetter++;
-        }
-
-        foreach ($subjects as $subject) {
-            $sheet->setCellValue($colLetter . '1', $subject->code);
             $colLetter++;
         }
 
@@ -631,24 +594,18 @@ class AdminController extends Controller
 
         $rowNum = 2;
         foreach ($students as $student) {
-            $gradesMap = $student->grades->keyBy('subject_id');
-
             $rowData = [
-                $student->exam_number,
+                $student->nis,
                 $student->nisn,
                 $student->name,
                 $student->birth_place,
                 $student->birth_date ? $student->birth_date->format('Y-m-d') : '',
                 $student->class,
+                $student->jurusan,
                 $student->status,
-                $student->average_score,
+                $student->password,
+                $student->tahun_lulus,
             ];
-
-            foreach ($subjects as $subject) {
-                $grade = $gradesMap->get($subject->id);
-                $rowData[] = $grade ? $grade->score : '';
-            }
-
             $colLetter = 'A';
             foreach ($rowData as $val) {
                 $sheet->setCellValue($colLetter . $rowNum, $val);
@@ -668,7 +625,7 @@ class AdminController extends Controller
 
         return response($content, 200, [
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'Content-Disposition' => 'attachment; filename="data_kelulusan_siswa.xlsx"',
+            'Content-Disposition' => 'attachment; filename="data_siswa.xlsx"',
         ]);
     }
 

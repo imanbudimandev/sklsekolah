@@ -41,25 +41,26 @@
             <table class="table table-hover">
                 <thead>
                     <tr>
-                        <th>No Ujian</th>
+                        <th>NIS</th>
                         <th>NISN</th>
                         <th>Nama Siswa</th>
                         <th>TTL</th>
                         <th>Kelas</th>
-                        <th>Rata-Rata</th>
+                        <th>Jurusan</th>
                         <th>Status</th>
+                        <th>Tahun Lulus</th>
                         <th width="150" class="text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     @if($students->isEmpty())
                         <tr>
-                            <td colspan="8" class="text-center py-4 text-muted">Data siswa tidak ditemukan.</td>
+                            <td colspan="9" class="text-center py-4 text-muted">Data siswa tidak ditemukan.</td>
                         </tr>
                     @else
                         @foreach($students as $student)
                             <tr>
-                                <td>{{ $student->exam_number }}</td>
+                                <td>{{ $student->nis ?? '-' }}</td>
                                 <td>{{ $student->nisn }}</td>
                                 <td><strong>{{ $student->name }}</strong></td>
                                 <td>
@@ -67,7 +68,7 @@
                                     {{ $student->birth_date ? $student->birth_date->format('d/m/Y') : '-' }}
                                 </td>
                                 <td>{{ $student->class }}</td>
-                                <td class="font-bold text-center">{{ number_format($student->average_score, 2) }}</td>
+                                <td>{{ $student->jurusan ?? '-' }}</td>
                                 <td>
                                     @if($student->status === 'LULUS')
                                         <span class="badge badge-success">LULUS</span>
@@ -75,11 +76,12 @@
                                         <span class="badge badge-danger">TIDAK LULUS</span>
                                     @endif
                                 </td>
+                                <td>{{ $student->tahun_lulus ?? '-' }}</td>
                                 <td class="text-center">
                                     <div class="table-actions">
                                         <!-- Edit button -->
                                         <button 
-                                            onclick="openEditModal({{ json_encode($student) }}, {{ json_encode($student->grades->pluck('score', 'subject_id')) }})" 
+                                            onclick="openEditModal({{ json_encode($student) }})" 
                                             class="btn btn-warning btn-icon-sm" 
                                             title="Edit">
                                             <i class="fa-solid fa-pencil"></i>
@@ -125,8 +127,12 @@
                 <h4 class="form-section-title">Informasi Pribadi</h4>
                 <div class="form-grid">
                     <div class="form-group">
-                        <label for="add_exam_number">Nomor Peserta Ujian <span class="required">*</span></label>
-                        <input type="text" id="add_exam_number" name="exam_number" placeholder="Contoh: 02-001-001-1" required autocomplete="off">
+                        <label for="add_exam_number">Nomor Peserta Ujian</label>
+                        <input type="text" id="add_exam_number" name="exam_number" placeholder="Contoh: 02-001-001-1" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="add_nis">NIS</label>
+                        <input type="text" id="add_nis" name="nis" placeholder="Nomor Induk Siswa" autocomplete="off">
                     </div>
                     <div class="form-group">
                         <label for="add_nisn">NISN <span class="required">*</span></label>
@@ -149,23 +155,24 @@
                         <input type="text" id="add_class" name="class" placeholder="Contoh: IX-A" autocomplete="off">
                     </div>
                     <div class="form-group">
+                        <label for="add_jurusan">Jurusan</label>
+                        <input type="text" id="add_jurusan" name="jurusan" placeholder="Contoh: IPA / IPS" autocomplete="off">
+                    </div>
+                    <div class="form-group">
                         <label for="add_status">Status Kelulusan <span class="required">*</span></label>
                         <select id="add_status" name="status" required>
                             <option value="LULUS">LULUS</option>
                             <option value="TIDAK LULUS">TIDAK LULUS</option>
                         </select>
                     </div>
-                </div>
-
-                <!-- Input Nilai Siswa -->
-                <h4 class="form-section-title mt-4">Nilai Hasil Ujian</h4>
-                <div class="scores-form-grid">
-                    @foreach($subjects as $subject)
-                        <div class="form-group-score">
-                            <label for="add_score_{{ $subject->id }}">{{ $subject->name }} ({{ $subject->code }})</label>
-                            <input type="number" step="0.01" min="0" max="100" id="add_score_{{ $subject->id }}" name="scores[{{ $subject->id }}]" placeholder="0.00" class="input-score">
-                        </div>
-                    @endforeach
+                    <div class="form-group">
+                        <label for="add_password">Password</label>
+                        <input type="text" id="add_password" name="password" placeholder="Password login siswa" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="add_tahun_lulus">Tahun Lulus</label>
+                        <input type="text" id="add_tahun_lulus" name="tahun_lulus" placeholder="Contoh: 2026" autocomplete="off">
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -195,6 +202,10 @@
                         <input type="text" id="edit_exam_number" name="exam_number" required autocomplete="off">
                     </div>
                     <div class="form-group">
+                        <label for="edit_nis">NIS</label>
+                        <input type="text" id="edit_nis" name="nis" autocomplete="off">
+                    </div>
+                    <div class="form-group">
                         <label for="edit_nisn">NISN <span class="required">*</span></label>
                         <input type="text" id="edit_nisn" name="nisn" required autocomplete="off">
                     </div>
@@ -215,28 +226,25 @@
                         <input type="text" id="edit_class" name="class" autocomplete="off">
                     </div>
                     <div class="form-group">
+                        <label for="edit_jurusan">Jurusan</label>
+                        <input type="text" id="edit_jurusan" name="jurusan" autocomplete="off">
+                    </div>
+                    <div class="form-group">
                         <label for="edit_status">Status Kelulusan <span class="required">*</span></label>
                         <select id="edit_status" name="status" required>
                             <option value="LULUS">LULUS</option>
                             <option value="TIDAK LULUS">TIDAK LULUS</option>
                         </select>
                     </div>
+                    <div class="form-group">
+                        <label for="edit_password">Password</label>
+                        <input type="text" id="edit_password" name="password" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_tahun_lulus">Tahun Lulus</label>
+                        <input type="text" id="edit_tahun_lulus" name="tahun_lulus" autocomplete="off">
+                    </div>
                 </div>
-
-                <!-- Input Nilai Siswa -->
-                <h4 class="form-section-title mt-4">Nilai Hasil Ujian</h4>
-                <div class="scores-form-grid">
-                    @foreach($subjects as $subject)
-                        <div class="form-group-score">
-                            <label for="edit_score_{{ $subject->id }}">{{ $subject->name }} ({{ $subject->code }})</label>
-                            <input type="number" step="0.01" min="0" max="100" id="edit_score_{{ $subject->id }}" name="scores[{{ $subject->id }}]" placeholder="0.00" class="input-score">
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="closeModal('editStudentModal')">Batal</button>
-                <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
             </div>
         </form>
     </div>
@@ -252,7 +260,7 @@
         <form action="{{ route('admin.students.import') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="modal-body">
-                <p>Unggah file Excel yang berisi data siswa beserta nilainya. Pastikan format kolom sesuai dengan template yang ditentukan.</p>
+                <p>Unggah file Excel berisi data siswa. Format kolom: <strong>NIS, NISN, NAMA, TEMPAT, TANGGAL_LAHIR, KELAS, JURUSAN, KELULUSAN, PASSWORD, TAHUN_LULUS</strong>.</p>
                 
                 <div class="form-group py-3">
                     <label for="import_file" class="btn-file-upload">
@@ -302,21 +310,22 @@
     }
 
     // Open Edit Modal and Populate Fields
-    function openEditModal(student, grades) {
-        // Set form action URL
+    function openEditModal(student) {
         const formAction = `/admin/students/${student.id}`;
         document.getElementById('editStudentForm').setAttribute('action', formAction);
 
-        // Populate fields
         document.getElementById('edit_exam_number').value = student.exam_number;
+        document.getElementById('edit_nis').value = student.nis || '';
         document.getElementById('edit_nisn').value = student.nisn;
         document.getElementById('edit_name').value = student.name;
         document.getElementById('edit_birth_place').value = student.birth_place || '';
         document.getElementById('edit_class').value = student.class || '';
+        document.getElementById('edit_jurusan').value = student.jurusan || '';
         document.getElementById('edit_status').value = student.status;
+        document.getElementById('edit_password').value = student.password || '';
+        document.getElementById('edit_tahun_lulus').value = student.tahun_lulus || '';
 
         if (student.birth_date) {
-            // format date to YYYY-MM-DD
             const date = new Date(student.birth_date);
             const yyyy = date.getFullYear();
             const mm = String(date.getMonth() + 1).padStart(2, '0');
@@ -324,18 +333,6 @@
             document.getElementById('edit_birth_date').value = `${yyyy}-${mm}-${dd}`;
         } else {
             document.getElementById('edit_birth_date').value = '';
-        }
-
-        // Reset all score fields first
-        const inputs = document.querySelectorAll('#editStudentForm .input-score');
-        inputs.forEach(input => input.value = '');
-
-        // Populate score fields
-        for (const subjectId in grades) {
-            const inputScore = document.getElementById(`edit_score_${subjectId}`);
-            if (inputScore) {
-                inputScore.value = grades[subjectId];
-            }
         }
 
         openModal('editStudentModal');

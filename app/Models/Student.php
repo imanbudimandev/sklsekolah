@@ -18,7 +18,10 @@ class Student extends Model
         'birth_place',
         'birth_date',
         'class',
+        'jurusan',
         'status',
+        'password',
+        'tahun_lulus',
         'photo',
         'transcript_grade',
     ];
