@@ -14,6 +14,16 @@ class PublicController extends Controller
 {
     public function index(Request $request)
     {
+        // Visitor Counter logic (Real & Unique per session)
+        if (!session()->has('public_visited')) {
+            session()->put('public_visited', true);
+            $visitorCount = (int) Setting::get('visitor_count', 0);
+            $visitorCount++;
+            Setting::set('visitor_count', $visitorCount);
+        } else {
+            $visitorCount = (int) Setting::get('visitor_count', 0);
+        }
+
         $announcementDateStr = Setting::get('announcement_date');
         $announcementDate = $announcementDateStr ? Carbon::parse($announcementDateStr) : null;
         $isAnnounced = $announcementDate ? now()->greaterThanOrEqualTo($announcementDate) : true;
@@ -27,9 +37,9 @@ class PublicController extends Controller
                 $error = 'Pengumuman kelulusan belum dibuka.';
             } else {
                 $student = Student::where('nisn', $searchQuery)
-                    ->orWhere('nis', $searchQuery)
-                    ->with(['grades.subject'])
-                    ->first();
+                     ->orWhere('nis', $searchQuery)
+                     ->with(['grades.subject'])
+                     ->first();
 
                 if (!$student) {
                     $error = 'Data siswa tidak ditemukan. Silakan periksa kembali NISN atau NIS Anda.';
@@ -48,7 +58,7 @@ class PublicController extends Controller
 
         $subjects = Subject::orderBy('code')->get();
 
-        return view('public.index', compact('isAnnounced', 'announcementDate', 'student', 'error', 'searchQuery', 'settings', 'subjects'));
+        return view('public.index', compact('isAnnounced', 'announcementDate', 'student', 'error', 'searchQuery', 'settings', 'subjects', 'visitorCount'));
     }
 
     public function downloadSklPdf(Student $student)

@@ -1,795 +1,840 @@
 @extends('layouts.app')
 
-@section('title', 'Cek Kelulusan Siswa')
+@section('title', 'Info Kelulusan Online')
 
 @section('styles')
 <style>
-    /* ==========================================================================
-       THEME: MODERN ACADEMIC — Clean, Airy, Professional
-       ========================================================================== */
+    :root {
+        --primary: #4f46e5;
+        --primary-hover: #4338ca;
+        --primary-light: #e0e7ff;
+        --success: #10b981;
+        --danger: #ef4444;
+        --slate-900: #0f172a;
+        --slate-800: #1e293b;
+        --slate-700: #334155;
+        --slate-600: #475569;
+        --slate-500: #64748b;
+        --slate-100: #f1f5f9;
+        --slate-50: #f8fafc;
+    }
 
     body {
-        background: linear-gradient(160deg, #f0f4ff 0%, #e8edf5 50%, #f5f0ff 100%) !important;
-        color: #1e293b !important;
-        font-family: 'Inter', 'Plus Jakarta Sans', -apple-system, sans-serif !important;
+        background-color: #f1f5f9 !important;
+        background-image: 
+            radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.05) 0px, transparent 50%), 
+            radial-gradient(at 100% 0%, rgba(168, 85, 247, 0.05) 0px, transparent 50%),
+            radial-gradient(at 50% 100%, rgba(99, 102, 241, 0.03) 0px, transparent 50%) !important;
+        color: var(--slate-900) !important;
+        font-family: 'Plus Jakarta Sans', -apple-system, sans-serif !important;
         margin: 0;
         padding: 0;
         min-height: 100vh;
-    }
-
-    .public-container {
-        max-width: 820px !important;
-        margin: 0 auto !important;
-        padding: 60px 20px 80px !important;
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
         box-sizing: border-box;
     }
 
-    /* ── Top Branding ── */
-    .public-header {
-        text-align: center;
-        margin-bottom: 36px;
+    .public-wrapper {
         width: 100%;
-    }
-
-    .brand-row {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 60px 20px;
+        box-sizing: border-box;
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 18px;
-        margin-bottom: 14px;
-        flex-wrap: wrap;
+        min-height: 100vh;
     }
 
-    .school-logo-container {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 72px;
-        height: 72px;
-        background: #ffffff;
-        border-radius: 20px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04), 0 8px 24px -8px rgba(79, 70, 229, 0.12);
-        border: 1px solid rgba(226, 232, 240, 0.8);
-        flex-shrink: 0;
+    /* Portal Header */
+    .portal-header {
+        text-align: center;
+        margin-bottom: 40px;
+        animation: fadeInDown 0.6s ease-out;
     }
 
-    .school-logo-img {
-        height: 48px;
-        width: 48px;
+    @keyframes fadeInDown {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .school-logo {
+        height: 100px;
+        width: auto;
         object-fit: contain;
+        margin-bottom: 24px;
+        filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.03));
     }
 
-    .school-logo-placeholder {
-        font-size: 2rem;
-        color: #6366f1;
+    .portal-title {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: var(--slate-900);
+        margin: 0 0 8px 0;
+        letter-spacing: -0.03em;
+        line-height: 1.2;
     }
 
-    .brand-text {
+    .portal-subtitle {
+        font-size: 1.15rem;
+        font-weight: 600;
+        color: var(--slate-500);
+        margin: 0;
+        letter-spacing: -0.01em;
+    }
+
+    /* Main Action Card */
+    .panel-card {
+        background: #ffffff;
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        border-radius: 24px;
+        padding: 48px;
+        width: 100%;
+        max-width: 580px;
+        box-sizing: border-box;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.02), 0 10px 10px -5px rgba(0, 0, 0, 0.01), inset 0 1px 0 #ffffff;
+        transition: all 0.3s ease;
+        animation: fadeInUp 0.6s ease-out 0.1s both;
+    }
+
+    .panel-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 25px 40px -10px rgba(0, 0, 0, 0.04);
+    }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Countdown Layout */
+    .countdown-box {
+        background: var(--slate-50);
+        border: 1px solid var(--slate-100);
+        border-radius: 18px;
+        padding: 20px;
+        margin-bottom: 32px;
+        text-align: center;
+    }
+
+    .countdown-box-title {
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: var(--primary);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: 12px;
+    }
+
+    .timer-row {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+    }
+
+    .timer-col {
+        background: var(--slate-900);
+        border-radius: 12px;
+        min-width: 60px;
+        padding: 10px;
+        color: #ffffff;
+    }
+
+    .timer-val {
+        font-size: 1.6rem;
+        font-weight: 800;
+        display: block;
+        line-height: 1;
+        margin-bottom: 2px;
+    }
+
+    .timer-lbl {
+        font-size: 0.55rem;
+        font-weight: 700;
+        color: var(--slate-500);
+        text-transform: uppercase;
+    }
+
+    /* Premium Form Inputs */
+    .input-label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--slate-700);
+        margin-bottom: 8px;
         text-align: left;
     }
 
-    .brand-text h1 {
-        font-size: 1.5rem;
+    .input-group-custom {
+        position: relative;
+        margin-bottom: 24px;
+    }
+
+    .input-group-custom i {
+        position: absolute;
+        left: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--slate-500);
+        font-size: 1.1rem;
+        transition: color 0.2s;
+    }
+
+    .input-field-custom {
+        width: 100%;
+        background: var(--slate-50);
+        border: 1.5px solid var(--slate-100);
+        border-radius: 16px;
+        padding: 16px 20px 16px 52px;
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--slate-900);
+        box-sizing: border-box;
+        outline: none;
+        transition: all 0.2s ease;
+    }
+
+    .input-field-custom:focus {
+        background: #ffffff;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+    }
+
+    .input-field-custom:focus ~ i {
+        color: var(--primary);
+    }
+
+    /* Button Action */
+    .btn-action {
+        width: 100%;
+        background: var(--slate-900);
+        color: #ffffff;
+        border: none;
+        border-radius: 16px;
+        padding: 16px 24px;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.1);
+    }
+
+    .btn-action:hover {
+        background: var(--slate-800);
+        transform: translateY(-1px);
+        box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.15);
+    }
+
+    .btn-action:active {
+        transform: translateY(0);
+    }
+
+    .form-tip {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: var(--slate-500);
+        margin-top: 14px;
+    }
+
+    .spinner-custom {
+        display: none;
+        width: 18px;
+        height: 18px;
+        border: 2.5px solid rgba(255,255,255,0.2);
+        border-radius: 50%;
+        border-top-color: #ffffff;
+        animation: spin 0.6s linear infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    /* Alerts */
+    .alert-custom {
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        border-radius: 16px;
+        padding: 16px 20px;
+        color: #991b1b;
+        font-size: 0.9rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 24px;
+        text-align: left;
+        animation: fadeInUp 0.4s ease-out;
+    }
+
+    /* Student Result Card (WIDE & Elegant) */
+    .result-panel {
+        background: #ffffff;
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        border-radius: 28px;
+        padding: 48px;
+        width: 100%;
+        max-width: 1050px;
+        box-sizing: border-box;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.01), 0 10px 10px -5px rgba(0, 0, 0, 0.01);
+        margin-top: 40px;
+        animation: fadeInUp 0.6s ease-out 0.2s both;
+    }
+
+    .result-head-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+        border-bottom: 1.5px solid var(--slate-100);
+        padding-bottom: 28px;
+        margin-bottom: 32px;
+    }
+
+    .student-info-main h3 {
+        font-size: 1.8rem;
         font-weight: 800;
-        color: #0f172a;
-        margin: 0;
-        line-height: 1.3;
+        color: var(--slate-900);
+        margin: 0 0 6px 0;
         letter-spacing: -0.03em;
     }
 
-    .brand-text .school-address {
-        font-size: 0.8rem;
-        color: #64748b;
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        margin-top: 4px;
-    }
-
-    .brand-text .school-address i {
-        color: #6366f1;
-    }
-
-    .brand-badge {
-        display: inline-block;
-        background: linear-gradient(135deg, #6366f1, #8b5cf6);
-        color: #fff;
-        font-size: 0.65rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        padding: 4px 14px;
-        border-radius: 99px;
-        margin-top: 8px;
-    }
-
-    /* ── Card ── */
-    .card-glass {
-        background: #ffffff;
-        border: 1px solid rgba(226, 232, 240, 0.6);
-        border-radius: 24px;
-        padding: 40px;
-        width: 100%;
-        box-sizing: border-box;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02), 0 20px 40px -12px rgba(79, 70, 229, 0.08);
-        transition: box-shadow 0.25s ease;
-    }
-
-    .card-glass:hover {
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02), 0 24px 48px -12px rgba(79, 70, 229, 0.12);
-    }
-
-    .portal-wrapper {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        gap: 24px;
-    }
-
-    /* ── Search ── */
-    .search-card {
-        text-align: center;
-    }
-
-    .search-card h2 {
-        font-size: 1.3rem;
-        font-weight: 700;
-        color: #0f172a;
-        margin-bottom: 4px;
-    }
-
-    .search-card > p {
-        color: #64748b;
-        font-size: 0.875rem;
-        margin-bottom: 28px;
-    }
-
-    .search-form .input-group {
-        display: flex;
-        align-items: center;
-        background: #f8fafc;
-        border: 1.5px solid #e2e8f0;
-        border-radius: 16px;
-        padding: 4px;
-        transition: all 0.2s ease;
-    }
-
-    .search-form .input-group:focus-within {
-        border-color: #6366f1;
-        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
-        background: #ffffff;
-    }
-
-    .search-icon {
-        color: #94a3b8;
-        font-size: 1rem;
-        margin-left: 16px;
-        flex-shrink: 0;
-    }
-
-    .search-form input {
-        border: none;
-        outline: none;
-        background: transparent;
-        padding: 14px 12px;
+    .student-info-main p {
         font-size: 0.95rem;
-        color: #0f172a;
-        flex-grow: 1;
-        font-family: inherit;
-        font-weight: 500;
-        min-width: 0;
-    }
-
-    .search-form input::placeholder {
-        color: #94a3b8;
-    }
-
-    .search-form button {
-        border-radius: 12px;
-        padding: 14px 28px;
         font-weight: 600;
-        font-size: 0.85rem;
-        background: #6366f1;
-        color: #fff;
-        border: none;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        flex-shrink: 0;
+        color: var(--slate-500);
+        margin: 0;
     }
 
-    .search-form button:hover {
-        background: #4f46e5;
-        transform: translateY(-1px);
-    }
-
-    /* ── Alert ── */
-    .alert {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 14px 18px;
+    .badge-status {
+        font-size: 0.9rem;
+        font-weight: 800;
+        padding: 12px 28px;
         border-radius: 14px;
-        font-weight: 600;
-        font-size: 0.85rem;
-        margin-top: 18px;
-        text-align: left;
-    }
-
-    .alert-danger {
-        background: #fef2f2;
-        border: 1px solid #fecaca;
-        color: #dc2626;
-    }
-
-    .alert-info {
-        background: #f0f4ff;
-        border: 1px solid #c7d2fe;
-        color: #4338ca;
-        justify-content: center;
-    }
-
-    /* ── Student Meta ── */
-    .result-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        gap: 16px;
-        flex-wrap: wrap;
-        margin-bottom: 0;
-    }
-
-    .student-meta .selamat-text {
-        color: #059669;
-        font-weight: 700;
-        font-size: 0.85rem;
-        margin-bottom: 4px;
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-    }
-
-    .student-meta h3 {
-        font-size: 1.5rem;
-        font-weight: 800;
-        color: #0f172a;
-        margin: 0 0 6px 0;
-        letter-spacing: -0.02em;
-    }
-
-    .student-meta .meta-tags {
-        display: flex;
-        gap: 6px;
-        flex-wrap: wrap;
-    }
-
-    .meta-tag {
-        background: #f1f5f9;
-        padding: 4px 12px;
-        border-radius: 8px;
-        border: 1px solid #e2e8f0;
-        font-size: 0.75rem;
-        font-weight: 600;
-        color: #475569;
-    }
-
-    .meta-tag strong {
-        color: #0f172a;
-    }
-
-    .status-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 0.8rem;
-        font-weight: 800;
-        padding: 8px 20px;
-        border-radius: 12px;
-        letter-spacing: 0.03em;
-        text-transform: uppercase;
-        flex-shrink: 0;
-    }
-
-    .status-lulus {
-        background: #d1fae5;
-        color: #065f46;
-        border: 1.5px solid #6ee7b7;
-    }
-
-    .status-tidak-lulus {
-        background: #fee2e2;
-        color: #991b1b;
-        border: 1.5px solid #fca5a5;
-    }
-
-    .divider {
-        border: 0;
-        height: 1px;
-        background: #e2e8f0;
-        margin: 24px 0;
-    }
-
-    /* ── Grades Table ── */
-    .grades-section h4 {
-        font-size: 0.8rem;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        color: #64748b;
-        margin-bottom: 16px;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-    }
-
-    .grades-section h4 i {
-        color: #6366f1;
-    }
-
-    .table-responsive {
-        border-radius: 16px;
-        overflow-x: auto;
-        border: 1px solid #e2e8f0;
-        background: #ffffff;
-    }
-
-    .table-grades {
-        width: 100%;
-        border-collapse: collapse;
-        color: #334155;
-        min-width: 640px;
-    }
-
-    .table-grades th {
-        background: #f8fafc;
-        color: #475569;
-        font-weight: 700;
-        font-size: 0.7rem;
-        text-transform: uppercase;
         letter-spacing: 0.05em;
-        padding: 14px 10px;
-        border-bottom: 1.5px solid #e2e8f0;
-        text-align: left;
-        white-space: nowrap;
+        text-transform: uppercase;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
     }
 
-    .table-grades th.text-center {
-        text-align: center;
+    .badge-status-lulus {
+        background: #ecfdf5;
+        border: 1.5px solid #a7f3d0;
+        color: #065f46;
+        animation: pulse-emerald 2s infinite;
     }
 
-    .table-grades td {
-        padding: 12px 10px;
-        border-bottom: 1px solid #f1f5f9;
-        font-size: 0.85rem;
+    @keyframes pulse-emerald {
+        0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.2); }
+        70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
     }
 
-    .table-grades tbody tr:last-child td {
-        border-bottom: none;
+    .badge-status-tidak {
+        background: #fef2f2;
+        border: 1.5px solid #fecaca;
+        color: #991b1b;
     }
 
-    .table-grades tbody tr:hover {
-        background: #f8fafc;
+    /* Meta Grid */
+    .profile-meta-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 16px;
+        margin-bottom: 32px;
     }
 
-    .subject-name {
-        font-weight: 600;
-        color: #0f172a;
-    }
-
-    .subject-code {
-        font-size: 0.65rem;
-        color: #94a3b8;
-        font-weight: 500;
-    }
-
-    .text-center {
-        text-align: center;
-    }
-
-    .text-right {
-        text-align: right;
-    }
-
-    .td-score-val {
-        font-weight: 700;
-        font-size: 0.85rem;
-        color: #6366f1;
-        text-align: center;
-        background: #f8faff;
-        border-left: 1px solid #e2e8f0;
-    }
-
-    .row-average {
-        background: #f8fafc !important;
-    }
-
-    .row-average td {
-        border-top: 1.5px solid #cbd5e1;
-        padding: 16px 10px;
-        font-weight: 700;
-        color: #0f172a;
-    }
-
-    .score-avg {
-        font-size: 1.1rem;
-        color: #6366f1;
-        font-weight: 900;
-        text-align: center;
-    }
-
-    /* ── Buttons ── */
-    .result-actions {
+    .meta-item-box {
+        background: var(--slate-50);
+        border: 1px solid var(--slate-100);
+        border-radius: 16px;
+        padding: 16px 20px;
         display: flex;
-        justify-content: center;
-        gap: 14px;
-        margin-top: 28px;
-        flex-wrap: wrap;
-    }
-
-    .btn-download {
-        padding: 14px 32px;
-        font-size: 0.85rem;
-        border-radius: 14px;
-        font-weight: 700;
-        display: inline-flex;
         align-items: center;
-        gap: 8px;
-        text-decoration: none;
-        transition: all 0.2s ease;
-        cursor: pointer;
-        border: none;
+        gap: 14px;
+        transition: all 0.2s;
     }
 
-    .btn-download:hover {
+    .meta-item-box:hover {
+        background: var(--slate-100);
         transform: translateY(-2px);
     }
 
-    .btn-download-skl {
-        background: linear-gradient(135deg, #059669, #047857);
-        color: #ffffff;
-        box-shadow: 0 4px 14px rgba(5, 150, 105, 0.25);
-    }
-
-    .btn-download-skl:hover {
-        box-shadow: 0 6px 20px rgba(5, 150, 105, 0.35);
-    }
-
-    .btn-download-transkrip {
-        background: linear-gradient(135deg, #6366f1, #4f46e5);
-        color: #ffffff;
-        box-shadow: 0 4px 14px rgba(99, 102, 241, 0.25);
-    }
-
-    .btn-download-transkrip:hover {
-        box-shadow: 0 6px 20px rgba(99, 102, 241, 0.35);
-    }
-
-    /* ── Countdown ── */
-    .countdown-wrapper {
-        text-align: center;
-    }
-
-    .countdown-wrapper h2 {
-        font-size: 1.3rem;
-        font-weight: 700;
-        color: #0f172a;
-        margin-bottom: 4px;
-    }
-
-    .countdown-wrapper > p {
-        color: #64748b;
-        font-size: 0.875rem;
-        margin-bottom: 28px;
-    }
-
-    .countdown-timer {
+    .meta-item-icon {
+        background: #ffffff;
+        color: var(--primary);
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
         display: flex;
-        justify-content: center;
-        gap: 14px;
-        margin-bottom: 28px;
-    }
-
-    .timer-box {
-        display: flex;
-        flex-direction: column;
         align-items: center;
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 16px;
-        width: 78px;
-        padding: 16px 0 12px;
+        justify-content: center;
+        font-size: 1.1rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
     }
 
-    .timer-num {
-        font-size: 1.8rem;
-        font-weight: 800;
-        color: #6366f1;
-        line-height: 1;
-        margin-bottom: 4px;
-    }
-
-    .timer-label {
+    .meta-item-lbl {
         font-size: 0.65rem;
+        font-weight: 800;
+        color: var(--slate-500);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        display: block;
+        margin-bottom: 2px;
+    }
+
+    .meta-item-val {
+        font-size: 0.95rem;
         font-weight: 700;
-        color: #94a3b8;
+        color: var(--slate-900);
+    }
+
+    /* Grades Table redesign */
+    .table-container-custom {
+        background: #ffffff;
+        border: 1px solid var(--slate-100);
+        border-radius: 18px;
+        overflow-x: auto;
+        margin-bottom: 32px;
+    }
+
+    .table-custom {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+        min-width: 750px;
+    }
+
+    .table-custom th {
+        background: var(--slate-50);
+        color: var(--slate-600);
+        font-size: 0.72rem;
+        font-weight: 800;
         text-transform: uppercase;
         letter-spacing: 0.06em;
+        padding: 18px 16px;
+        border-bottom: 2px solid var(--slate-100);
     }
 
-    .announcement-date-text {
-        font-size: 0.8rem;
-        background: #f8fafc;
-        padding: 10px 20px;
-        border-radius: 99px;
+    .table-custom td {
+        padding: 16px 16px;
+        border-bottom: 1px solid var(--slate-50);
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--slate-700);
+    }
+
+    .table-custom tbody tr:hover {
+        background: var(--slate-50);
+    }
+
+    .table-score-highlight {
+        font-weight: 800 !important;
+        color: var(--primary) !important;
+        text-align: center;
+        background: rgba(99, 102, 241, 0.02);
+        border-left: 1.5px solid var(--slate-100);
+    }
+
+    .table-average-row {
+        background: var(--slate-50) !important;
+    }
+
+    .table-average-row td {
+        border-top: 2px solid var(--slate-100);
+        padding: 20px 16px;
+        font-weight: 800;
+        color: var(--slate-900);
+    }
+
+    .average-val-display {
+        font-size: 1.2rem !important;
+        color: var(--primary) !important;
+        font-weight: 900 !important;
+        text-align: center;
+        background: rgba(99, 102, 241, 0.06);
+    }
+
+    /* Actions Download */
+    .download-row {
+        display: flex;
+        justify-content: center;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .btn-download-premium {
+        padding: 16px 36px;
+        border-radius: 16px;
+        font-size: 0.95rem;
+        font-weight: 700;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    }
+
+    .btn-download-premium:hover {
+        transform: translateY(-2px);
+    }
+
+    .btn-skl-green {
+        background: #10b981;
+        color: #ffffff;
+    }
+
+    .btn-skl-green:hover {
+        background: #059669;
+        box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.2);
+    }
+
+    .btn-transkrip-blue {
+        background: var(--primary);
+        color: #ffffff;
+    }
+
+    .btn-transkrip-blue:hover {
+        background: var(--primary-hover);
+        box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.2);
+    }
+
+    .responsive-hint {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        font-size: 0.72rem;
+        color: var(--slate-500);
+        font-weight: 700;
+        margin-top: 12px;
+    }
+
+    /* Footer styles */
+    .portal-footer {
+        width: 100%;
+        margin-top: 60px;
+        padding-top: 24px;
+        border-top: 1px solid var(--slate-100);
+        text-align: center;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--slate-500);
+        animation: fadeInDown 0.6s ease-out 0.3s both;
+    }
+
+    .visitor-tag {
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        color: #475569;
-        border: 1px solid #e2e8f0;
+        background: rgba(99, 102, 241, 0.06);
+        color: var(--primary);
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-weight: 700;
+        margin-left: 8px;
     }
 
-    .announcement-date-text i {
-        color: #f59e0b;
-    }
-
-    /* ── Result Card (different top radius when stacked) ── */
-    .result-card {
-        border-top-left-radius: 0 !important;
-        border-top-right-radius: 0 !important;
-        margin-top: -24px;
-        padding-top: 36px !important;
-    }
-
-    .search-card + .result-card {
-        margin-top: -28px;
-    }
-
-    /* ── Responsive ── */
+    /* Responsive Breakpoints */
     @media (max-width: 768px) {
-        .public-container {
-            padding: 32px 16px 60px !important;
+        .panel-card {
+            padding: 32px 24px;
         }
 
-        .card-glass {
-            padding: 28px 16px !important;
-            border-radius: 20px !important;
+        .result-panel {
+            padding: 32px 20px;
         }
 
-        .brand-row {
+        .result-head-row {
             flex-direction: column;
+            align-items: center;
             text-align: center;
         }
 
-        .brand-text {
-            text-align: center;
-        }
-
-        .brand-text h1 {
-            font-size: 1.25rem;
-        }
-
-        .result-header {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        .status-badge {
+        .badge-status {
             width: 100%;
             justify-content: center;
-            box-sizing: border-box;
         }
 
-        .result-actions {
+        .profile-meta-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .download-row {
             flex-direction: column;
-            width: 100%;
         }
 
-        .btn-download {
+        .btn-download-premium {
             width: 100%;
             justify-content: center;
-            box-sizing: border-box;
         }
 
-        .result-card {
-            border-top-left-radius: 20px !important;
-            border-top-right-radius: 20px !important;
-            margin-top: 0 !important;
-            padding-top: 28px !important;
+        .responsive-hint {
+            display: flex;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .profile-meta-grid {
+            grid-template-columns: 1fr;
         }
 
-        .countdown-timer {
-            gap: 8px;
+        .timer-row {
+            gap: 6px;
         }
 
-        .timer-box {
-            width: 64px;
-            padding: 12px 0 10px;
+        .timer-col {
+            min-width: 50px;
+            padding: 8px;
         }
 
-        .timer-num {
-            font-size: 1.4rem;
+        .timer-val {
+            font-size: 1.3rem;
         }
     }
 </style>
 @endsection
 
 @section('content')
-<div class="public-container">
-    <!-- Branding -->
-    <header class="public-header">
-        <div class="brand-row">
-            <div class="school-logo-container">
-                @if(!empty($settings['school_logo']) && file_exists(public_path($settings['school_logo'])))
-                    <img src="{{ asset($settings['school_logo']) }}" alt="Logo Sekolah" class="school-logo-img">
-                @else
-                    <div class="school-logo-placeholder">
-                        <i class="fa-solid fa-graduation-cap"></i>
-                    </div>
-                @endif
-            </div>
-            <div class="brand-text">
-                <h1>{{ $settings['school_name'] }}</h1>
-                <p class="school-address"><i class="fa-solid fa-location-dot"></i> {{ $settings['school_address'] ?: 'Kecamatan Banjaran, Kabupaten Bandung, Jawa Barat' }}</p>
-                <span class="brand-badge">Cek Kelulusan</span>
-            </div>
-        </div>
+<div class="public-wrapper">
+    <!-- Header -->
+    <header class="portal-header">
+        @if(!empty($settings['school_logo']))
+            <img src="{{ asset($settings['school_logo']) }}" alt="Logo Sekolah" class="school-logo">
+        @else
+            <img src="https://upload.wikimedia.org/wikipedia/commons/e/e0/Lambang_Kabupaten_Tegal.png" alt="Logo Tegal" class="school-logo">
+        @endif
+        <h1 class="portal-title">Informasi Kelulusan Siswa</h1>
+        <p class="portal-subtitle">{{ $settings['school_name'] ?? 'Sistem Informasi Kelulusan' }}</p>
     </header>
 
-    @if(!$isAnnounced)
-        <!-- Countdown -->
-        <div class="card-glass countdown-wrapper">
-            <h2>Pengumuman Kelulusan</h2>
-            <p>Pengumuman kelulusan siswa kelas IX akan dibuka dalam:</p>
-            <div class="countdown-timer">
-                <div class="timer-box">
-                    <span id="days" class="timer-num">00</span>
-                    <span class="timer-label">Hari</span>
+    <!-- Pengecekan Panel -->
+    <div class="panel-card">
+        <!-- Countdown Section -->
+        @if(!$isAnnounced && $announcementDate)
+            <div class="countdown-box" style="margin-bottom: 0;">
+                <div class="countdown-box-title">
+                    <i class="fa-solid fa-hourglass-start"></i> Pengumuman Dibuka Dalam
                 </div>
-                <div class="timer-box">
-                    <span id="hours" class="timer-num">00</span>
-                    <span class="timer-label">Jam</span>
-                </div>
-                <div class="timer-box">
-                    <span id="minutes" class="timer-num">00</span>
-                    <span class="timer-label">Menit</span>
-                </div>
-                <div class="timer-box">
-                    <span id="seconds" class="timer-num">00</span>
-                    <span class="timer-label">Detik</span>
+                <div class="timer-row">
+                    <div class="timer-col">
+                        <span id="days" class="timer-val">00</span>
+                        <span class="timer-lbl">Hari</span>
+                    </div>
+                    <div class="timer-col">
+                        <span id="hours" class="timer-val">00</span>
+                        <span class="timer-lbl">Jam</span>
+                    </div>
+                    <div class="timer-col">
+                        <span id="minutes" class="timer-val">00</span>
+                        <span class="timer-lbl">Menit</span>
+                    </div>
+                    <div class="timer-col">
+                        <span id="seconds" class="timer-val">00</span>
+                        <span class="timer-lbl">Detik</span>
+                    </div>
                 </div>
             </div>
-            <p class="announcement-date-text">
-                <i class="fa-regular fa-calendar-days"></i>
-                {{ $announcementDate ? $announcementDate->translatedFormat('l, d F Y \p\u\k\u\l H:i') : '-' }} WIB
-            </p>
-        </div>
-    @else
-        <div class="portal-wrapper">
-            <!-- Search Card -->
-            <div class="card-glass search-card">
-                <h2>Cek Status Kelulusan</h2>
-                <p>Masukkan NISN atau NIS Anda untuk memeriksa status kelulusan.</p>
-                <form action="{{ route('public.index') }}" method="GET" class="search-form">
-                    <div class="input-group">
-                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                        <input type="text" name="search" placeholder="Masukkan NISN atau NIS" value="{{ $searchQuery }}" required autocomplete="off">
-                        <button type="submit">Periksa</button>
+
+        @else
+            <form action="{{ route('public.index') }}" method="GET" id="checkerForm">
+                <div style="margin-bottom: 20px;">
+                    <label for="search_input" class="input-label">Nomor Induk Siswa Nasional (NISN)</label>
+                    <div class="input-group-custom">
+                        <input type="text" id="search_input" name="search" class="input-field-custom" placeholder="Masukkan NISN Anda..." value="{{ $searchQuery }}" required autocomplete="off">
+                        <i class="fa-solid fa-user-check"></i>
                     </div>
-                </form>
-                @if($error)
-                    <div class="alert alert-danger">
-                        <i class="fa-solid fa-circle-exclamation"></i> {{ $error }}
+                </div>
+
+                <button type="submit" class="btn-action" id="btnSubmit">
+                    <span class="spinner-custom" id="btnSpinner"></span>
+                    <span id="btnText"><i class="fa-solid fa-magnifying-glass"></i> Periksa Kelulusan</span>
+                </button>
+                <span class="form-tip">Masukkan 10 digit NISN terdaftar Anda untuk melihat hasil kelulusan.</span>
+            </form>
+
+            @if($error)
+                <div class="alert-custom">
+                    <i class="fa-solid fa-circle-exclamation" style="font-size: 1.15rem;"></i> {{ $error }}
+                </div>
+            @endif
+        @endif
+    </div>
+
+    <!-- Student Result Card -->
+    @if($student)
+        <div class="result-panel">
+            <div class="result-head-row">
+                <div class="student-info-main">
+                    <h3>{{ $student->name }}</h3>
+                    <p>Siswa / Siswi Kelas {{ $student->class }}</p>
+                </div>
+                
+                @if($student->status === 'LULUS')
+                    <div class="badge-status badge-status-lulus">
+                        <i class="fa-solid fa-circle-check"></i> LULUS
+                    </div>
+                @else
+                    <div class="badge-status badge-status-tidak">
+                        <i class="fa-solid fa-circle-xmark"></i> TIDAK LULUS
                     </div>
                 @endif
             </div>
 
-            @if($student)
-                <!-- Result Card -->
-                <div class="card-glass result-card">
-                    <div class="result-header">
-                        <div class="student-meta">
-                            @if($student->status === 'LULUS')
-                                <p class="selamat-text">
-                                    <i class="fa-solid fa-check-circle"></i> Selamat! Anda dinyatakan LULUS
-                                </p>
-                            @endif
-                            <h3>{{ $student->name }}</h3>
-                            <div class="meta-tags">
-                                <span class="meta-tag">NISN: <strong>{{ $student->nisn }}</strong></span>
-                                <span class="meta-tag">NIS: <strong>{{ $student->nis ?? '-' }}</strong></span>
-                                <span class="meta-tag">Kelas: <strong>{{ $student->class }}</strong></span>
-                            </div>
-                        </div>
-                        @if($student->status === 'LULUS')
-                            <div class="status-badge status-lulus">
-                                <i class="fa-solid fa-circle-check"></i> LULUS
-                            </div>
-                        @else
-                            <div class="status-badge status-tidak-lulus">
-                                <i class="fa-solid fa-circle-xmark"></i> TIDAK LULUS
-                            </div>
-                        @endif
-                    </div>
-
-                    <hr class="divider">
-
-                    <div class="grades-section">
-                        <h4><i class="fa-solid fa-file-invoice"></i> Nilai Hasil Ujian</h4>
-                        <div class="table-responsive">
-                            <table class="table table-grades">
-                                <thead>
-                                    <tr>
-                                        <th style="width: 40px;">No</th>
-                                        <th>Mata Pelajaran</th>
-                                        <th class="text-center" style="width: 52px;">Smt 1</th>
-                                        <th class="text-center" style="width: 52px;">Smt 2</th>
-                                        <th class="text-center" style="width: 52px;">Smt 3</th>
-                                        <th class="text-center" style="width: 52px;">Smt 4</th>
-                                        <th class="text-center" style="width: 52px;">Smt 5</th>
-                                        <th class="text-center" style="width: 52px;">Smt 6</th>
-                                        <th class="text-center" style="width: 80px;">Nilai Ijazah</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @php $no = 1; @endphp
-                                    @foreach($subjects as $subject)
-                                        @php
-                                            $subGrades = $student->grades->where('subject_id', $subject->id);
-                                            $finalGrade = $student->calculateFinalGradeForSubject($subject->id);
-                                        @endphp
-                                        <tr>
-                                            <td>{{ $no++ }}</td>
-                                            <td>
-                                                <div class="subject-name">{{ $subject->name }}</div>
-                                                <div class="subject-code">{{ $subject->code }}</div>
-                                            </td>
-                                            @for($i = 1; $i <= 6; $i++)
-                                                @php
-                                                    $semGrade = $subGrades->where('semester', "Semester $i")->first();
-                                                @endphp
-                                                <td class="text-center" style="color: #64748b;">{{ $semGrade ? number_format($semGrade->score, 0) : '-' }}</td>
-                                            @endfor
-                                            <td class="text-center td-score-val">
-                                                {{ $finalGrade !== null ? number_format($finalGrade, 1) : '-' }}
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                    <tr class="row-average">
-                                        <td colspan="8" class="text-right" style="font-weight: 700;">Rata-Rata Nilai Ijazah:</td>
-                                        <td class="text-center score-avg">
-                                            <strong>{{ number_format($student->average_score, 2) }}</strong>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div class="result-actions">
-                        @if($student->status === 'LULUS')
-                            <a href="{{ route('public.skl.pdf', $student->id) }}" class="btn-download btn-download-skl" target="_blank">
-                                <i class="fa-solid fa-download"></i> Download SKL
-                            </a>
-                            <a href="{{ route('public.transcript.pdf', $student->id) }}" class="btn-download btn-download-transkrip" target="_blank">
-                                <i class="fa-solid fa-download"></i> Download Transkrip
-                            </a>
-                        @else
-                            <div class="alert alert-info">
-                                <i class="fa-solid fa-circle-info"></i> Silakan hubungi wali kelas atau pihak sekolah untuk informasi lebih lanjut.
-                            </div>
-                        @endif
+            <!-- Profile Meta Grid -->
+            <div class="profile-meta-grid">
+                <div class="meta-item-box">
+                    <div class="meta-item-icon"><i class="fa-solid fa-fingerprint"></i></div>
+                    <div class="meta-text">
+                        <span class="meta-item-lbl">NISN</span>
+                        <span class="meta-item-val">{{ $student->nisn }}</span>
                     </div>
                 </div>
-            @endif
+                <div class="meta-item-box">
+                    <div class="meta-item-icon"><i class="fa-solid fa-id-card-clip"></i></div>
+                    <div class="meta-text">
+                        <span class="meta-item-lbl">NIS</span>
+                        <span class="meta-item-val">{{ $student->nis ?? '-' }}</span>
+                    </div>
+                </div>
+                <div class="meta-item-box">
+                    <div class="meta-item-icon"><i class="fa-solid fa-school"></i></div>
+                    <div class="meta-text">
+                        <span class="meta-item-lbl">Kelas</span>
+                        <span class="meta-item-val">{{ $student->class }}</span>
+                    </div>
+                </div>
+                @if($student->jurusan)
+                <div class="meta-item-box">
+                    <div class="meta-item-icon"><i class="fa-solid fa-compass"></i></div>
+                    <div class="meta-text">
+                        <span class="meta-item-lbl">Jurusan</span>
+                        <span class="meta-item-val">{{ $student->jurusan }}</span>
+                    </div>
+                </div>
+                @endif
+                <div class="meta-item-box">
+                    <div class="meta-item-icon"><i class="fa-solid fa-cake-candles"></i></div>
+                    <div class="meta-text">
+                        <span class="meta-item-lbl">TTL</span>
+                        <span class="meta-item-val" style="font-size: 0.85rem;">{{ $student->birth_place }}, {{ $student->birth_date_formatted }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grades Table -->
+            <div style="margin-bottom: 24px;">
+                <h4 style="font-size: 0.95rem; font-weight: 800; text-transform: uppercase; color: var(--slate-800); letter-spacing: 0.05em; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-clipboard-list" style="color: var(--primary);"></i> Transkrip Nilai Rapor
+                </h4>
+                
+                <div class="table-container-custom">
+                    <table class="table-custom">
+                        <thead>
+                            <tr>
+                                <th style="width: 50px; text-align: center;">No</th>
+                                <th>Mata Pelajaran</th>
+                                <th style="text-align: center; width: 62px;">Smt 1</th>
+                                <th style="text-align: center; width: 62px;">Smt 2</th>
+                                <th style="text-align: center; width: 62px;">Smt 3</th>
+                                <th style="text-align: center; width: 62px;">Smt 4</th>
+                                <th style="text-align: center; width: 62px;">Smt 5</th>
+                                <th style="text-align: center; width: 62px;">Smt 6</th>
+                                <th style="text-align: center; width: 110px;">Nilai Akhir</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @php $no = 1; @endphp
+                            @foreach($subjects as $subject)
+                                @php
+                                    $subGrades = $student->grades->where('subject_id', $subject->id);
+                                    $finalGrade = $student->calculateFinalGradeForSubject($subject->id);
+                                @endphp
+                                <tr>
+                                    <td style="text-align: center; font-weight: 700; color: var(--slate-500);">{{ $no++ }}</td>
+                                    <td>
+                                        <div style="font-weight: 700; color: var(--slate-900);">{{ $subject->name }}</div>
+                                        <div style="font-size: 0.72rem; color: var(--slate-500); font-weight: 600;">{{ $subject->code }}</div>
+                                    </td>
+                                    @for($i = 1; $i <= 6; $i++)
+                                        @php
+                                            $semGrade = $subGrades->where('semester', "Semester $i")->first();
+                                        @endphp
+                                        <td style="text-align: center; font-weight: 600; color: var(--slate-600);">{{ $semGrade ? number_format($semGrade->score, 0) : '-' }}</td>
+                                    @endfor
+                                    <td class="table-score-highlight">
+                                        {{ $finalGrade !== null ? number_format($finalGrade, 1) : '-' }}
+                                    </td>
+                                </tr>
+                            @endforeach
+                            <tr class="table-average-row">
+                                <td colspan="8" style="text-align: right; font-weight: 800; color: var(--slate-900);">Rata-Rata Nilai Akhir:</td>
+                                <td class="average-val-display">
+                                    {{ number_format($student->average_score, 2) }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="responsive-hint">
+                    <i class="fa-solid fa-left-right"></i> Geser tabel ke kanan untuk melihat rincian semester
+                </div>
+            </div>
+
+            <!-- Actions row -->
+            <div class="download-row">
+                @if($student->status === 'LULUS')
+                    <a href="{{ route('public.skl.pdf', $student->id) }}" class="btn-download-premium btn-skl-green" target="_blank">
+                        <i class="fa-solid fa-file-pdf"></i> Cetak SKL (PDF)
+                    </a>
+                    <a href="{{ route('public.transcript.pdf', $student->id) }}" class="btn-download-premium btn-transkrip-blue" target="_blank">
+                        <i class="fa-solid fa-file-lines"></i> Download Transkrip Nilai
+                    </a>
+                @else
+                    <div style="width: 100%; padding: 18px 24px; background: #fffbeb; border: 1.5px solid #fef3c7; border-radius: 16px; color: #b45309; font-size: 0.92rem; font-weight: 600; text-align: center; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                        <i class="fa-solid fa-triangle-exclamation" style="font-size: 1.2rem;"></i> Informasi kelulusan belum lengkap. Silakan berkonsultasi langsung dengan wali kelas atau pihak sekolah.
+                    </div>
+                @endif
+            </div>
         </div>
     @endif
+
+    <!-- Footer -->
+    <footer class="portal-footer">
+        <div>
+            © {{ date('Y') }} {{ $settings['school_name'] ?? 'Sistem Informasi Kelulusan' }} - All Rights Reserved
+        </div>
+    </footer>
 </div>
 @endsection
 
 @section('scripts')
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const checkerForm = document.getElementById("checkerForm");
+        const btnSubmit = document.getElementById("btnSubmit");
+        const btnSpinner = document.getElementById("btnSpinner");
+        const btnText = document.getElementById("btnText");
+
+        if (checkerForm && btnSubmit) {
+            checkerForm.addEventListener("submit", function() {
+                btnSubmit.disabled = true;
+                btnSubmit.style.opacity = "0.8";
+                btnSubmit.style.cursor = "not-allowed";
+                btnSpinner.style.display = "inline-block";
+                btnText.innerHTML = "Memproses Data...";
+            });
+        }
+    });
+</script>
+
 @if(!$isAnnounced && $announcementDate)
 <script>
     document.addEventListener("DOMContentLoaded", function() {
