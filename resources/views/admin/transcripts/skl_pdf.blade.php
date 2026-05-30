@@ -176,6 +176,7 @@
 <body>
     @foreach($students ?? [$student] as $student)
     <div class="modern-container" style="{{ $loop->last ? '' : 'page-break-after: always;' }}">
+        <table class="print-kop">
             <tr>
                 @if($logo_path)
                     <td width="75" align="center" valign="middle">
