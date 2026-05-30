@@ -410,6 +410,9 @@ class AdminController extends Controller
             'skl_signature_text' => 'nullable|string',
             'skl_after_lulus_text' => 'nullable|string',
             'skl_before_ttd_text' => 'nullable|string',
+            'skl_opening_text' => 'nullable|string',
+            'skl_body_text' => 'nullable|string',
+            'skl_footer_text' => 'nullable|string',
         ]);
 
         Setting::set('skl_header', $request->input('skl_header'));

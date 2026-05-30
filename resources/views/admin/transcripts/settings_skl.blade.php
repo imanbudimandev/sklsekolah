@@ -203,29 +203,29 @@
                         
                         <div class="form-group">
                             <label>Teks Pembuka (Sebelum Data Siswa)</label>
-                            <textarea name="skl_opening_text" id="skl_opening_text" class="form-control" rows="2" placeholder="Yang bertanda tangan di bawah ini, Kepala Sekolah...">{{ old('skl_opening_text', $settings['skl_opening_text']) }}</textarea>
+                            <textarea name="skl_opening_text" id="skl_opening_text" class="form-control rich-text" rows="2" placeholder="Yang bertanda tangan di bawah ini, Kepala Sekolah...">{{ old('skl_opening_text', $settings['skl_opening_text']) }}</textarea>
                             <small class="text-muted">Variabel yang tersedia: <code>[NAMA_SEKOLAH]</code></small>
                         </div>
                         
                         <div class="form-group">
                             <label>Teks Pernyataan (Setelah Data Siswa)</label>
-                            <textarea name="skl_body_text" id="skl_body_text" class="form-control" rows="3" placeholder="Berdasarkan Kriteria Kelulusan Peserta Didik...">{{ old('skl_body_text', $settings['skl_body_text']) }}</textarea>
+                            <textarea name="skl_body_text" id="skl_body_text" class="form-control rich-text" rows="3" placeholder="Berdasarkan Kriteria Kelulusan Peserta Didik...">{{ old('skl_body_text', $settings['skl_body_text']) }}</textarea>
                             <small class="text-muted">Variabel yang tersedia: <code>[NAMA_SEKOLAH]</code>, <code>[TAHUN_PELAJARAN]</code>, <code>[TANGGAL_PENGUMUMAN]</code></small>
                         </div>
                         
                         <div class="form-group">
                             <label>Catatan Kaki (Bawah Surat)</label>
-                            <textarea name="skl_footer_text" id="skl_footer_text" class="form-control" rows="2" placeholder="* Surat Keterangan Lulus ini berlaku sementara...">{{ old('skl_footer_text', $settings['skl_footer_text']) }}</textarea>
+                            <textarea name="skl_footer_text" id="skl_footer_text" class="form-control rich-text" rows="2" placeholder="* Surat Keterangan Lulus ini berlaku sementara...">{{ old('skl_footer_text', $settings['skl_footer_text']) }}</textarea>
                         </div>
 
                         <div class="form-group">
                             <label>Teks Setelah Status Kelulusan (Sebelum Tabel Nilai)</label>
-                            <textarea name="skl_after_lulus_text" id="skl_after_lulus_text" class="form-control" rows="2" placeholder="Teks yang muncul setelah kotak LULUS/TIDAK LULUS...">{{ old('skl_after_lulus_text', $settings['skl_after_lulus_text']) }}</textarea>
+                            <textarea name="skl_after_lulus_text" id="skl_after_lulus_text" class="form-control rich-text" rows="2" placeholder="Teks yang muncul setelah kotak LULUS/TIDAK LULUS...">{{ old('skl_after_lulus_text', $settings['skl_after_lulus_text']) }}</textarea>
                         </div>
 
                         <div class="form-group">
                             <label>Teks Sebelum Tanda Tangan (Setelah Tabel Nilai)</label>
-                            <textarea name="skl_before_ttd_text" id="skl_before_ttd_text" class="form-control" rows="3" placeholder="SKL ini dapat digunakan untuk keperluan Penerimaan Peserta Didik Baru (PPDB)...">{{ old('skl_before_ttd_text', $settings['skl_before_ttd_text']) }}</textarea>
+                            <textarea name="skl_before_ttd_text" id="skl_before_ttd_text" class="form-control rich-text" rows="3" placeholder="SKL ini dapat digunakan untuk keperluan Penerimaan Peserta Didik Baru (PPDB)...">{{ old('skl_before_ttd_text', $settings['skl_before_ttd_text']) }}</textarea>
                             <small class="text-muted">Teks yang muncul setelah tabel nilai, sebelum tanda tangan.</small>
                         </div>
                     </div>
