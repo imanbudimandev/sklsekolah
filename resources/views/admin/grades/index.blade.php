@@ -163,7 +163,7 @@
             <!-- Top Controls -->
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
                 <!-- Search Form -->
-                <form action="{{ route('admin.grades') }}" method="GET" class="admin-search-form" style="margin: 0; flex-grow: 1; max-width: 450px;">
+                <form action="{{ route('admin.grades') }}" method="GET" class="admin-search-form">
                     <input type="hidden" name="semester" value="{{ $semester }}">
                     <div class="input-group">
                         <i class="fa-solid fa-magnifying-glass search-icon"></i>
@@ -178,10 +178,10 @@
                 <!-- Actions -->
                 <div class="control-actions" style="display: flex; gap: 10px;">
                     <a href="{{ route('admin.grades.template', ['semester' => $semester]) }}" class="btn btn-secondary">
-                        <i class="fa-solid fa-download"></i> Unduh Template CSV
+                        <i class="fa-solid fa-download"></i> Unduh Template Excel
                     </a>
                     <button onclick="openModal('importCsvModal')" class="btn btn-primary">
-                        <i class="fa-solid fa-file-import"></i> Impor CSV Nilai
+                        <i class="fa-solid fa-file-import"></i> Impor Excel Nilai
                     </button>
                 </div>
             </div>
@@ -196,6 +196,20 @@
                         </a>
                     @endforeach
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header Info -->
+    <div class="card" style="margin-bottom: 15px; padding: 20px 24px; border-left: 4px solid var(--primary);">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px;">
+            <div>
+                <h3 style="margin: 0 0 4px 0; font-size: 1.1rem; color: var(--text-dark);">DATA NILAI SISWA</h3>
+                <p style="margin: 0; font-size: 0.9rem; color: var(--text-muted);">Tahun Pelajaran: <strong>{{ $schoolYear }}</strong></p>
+            </div>
+            <div style="text-align: right;">
+                <p style="margin: 0; font-size: 0.9rem; color: var(--text-muted);">Semester: <strong>{{ $semester }}</strong></p>
+                <p style="margin: 0; font-size: 0.9rem; color: var(--text-muted);">Tahun Lulus: <strong>{{ date('Y') }}</strong></p>
             </div>
         </div>
     </div>
@@ -274,32 +288,32 @@
     </div>
 </div>
 
-<!-- ================= IMPOR CSV MODAL ================= -->
+<!-- ================= IMPOR EXCEL MODAL ================= -->
 <div id="importCsvModal" class="modal">
     <div class="modal-content card glass">
         <div class="modal-header">
-            <h3>Impor Nilai CSV ({{ $semester }})</h3>
+            <h3>Impor Nilai Excel ({{ $semester }})</h3>
             <span class="close-modal" onclick="closeModal('importCsvModal')">&times;</span>
         </div>
         <form action="{{ route('admin.grades.import') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <input type="hidden" name="semester" value="{{ $semester }}">
             <div class="modal-body">
-                <p>Unggah file CSV berisi nilai mata pelajaran untuk semester <strong>{{ $semester }}</strong>.</p>
+                <p>Unggah file Excel berisi nilai untuk semester <strong>{{ $semester }}</strong>.</p>
                 
                 <div class="form-group py-3">
-                    <label for="csv_file" class="btn-file-upload">
+                    <label for="file_import" class="btn-file-upload">
                         <i class="fa-solid fa-cloud-arrow-up"></i>
-                        <span>Pilih File CSV</span>
-                        <input type="file" id="csv_file" name="csv_file" accept=".csv,.txt" required onchange="displayFileName(this)">
+                        <span>Pilih File Excel</span>
+                        <input type="file" id="file_import" name="file_import" accept=".xlsx,.xls" required onchange="displayFileName(this)">
                     </label>
                     <p id="file-name" class="text-center text-muted mt-2"></p>
                 </div>
 
-                <div class="template-download-section alert alert-info">
-                    <div class="alert-content">
+                <div class="template-download-section alert alert-info" style="text-align: left;">
+                    <div class="alert-content" style="display: block;">
                         <i class="fa-solid fa-circle-info"></i>
-                        <span>Kolom header CSV: <strong>nisn, nama</strong> diikuti dengan kode mata pelajaran (misal: <strong>PAI, MTK, IND</strong>).</span>
+                        <span style="display: block; margin-top: 6px;">Format kolom: <strong>No</strong>, <strong>NIS</strong>, <strong>NAMA SISWA</strong>, diikuti kode mapel urut.</span>
                     </div>
                 </div>
             </div>

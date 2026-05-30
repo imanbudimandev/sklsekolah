@@ -21,6 +21,11 @@
                         <label for="school_address">Alamat Sekolah</label>
                         <textarea id="school_address" name="school_address" rows="3" placeholder="Masukkan alamat lengkap sekolah beserta kode pos...">{{ old('school_address', $settings['school_address']) }}</textarea>
                     </div>
+                    <div class="form-group">
+                        <label for="school_year">Tahun Pelajaran</label>
+                        <input type="text" id="school_year" name="school_year" value="{{ old('school_year', $settings['school_year']) }}" placeholder="Contoh: 2025/2026" autocomplete="off">
+                        <p class="form-help">Digunakan di halaman nilai siswa dan dokumen resmi.</p>
+                    </div>
                 </div>
 
                 <!-- Section 2: Kepala Sekolah -->

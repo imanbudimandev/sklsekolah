@@ -127,7 +127,7 @@
     <div class="card control-card">
         <div class="control-header">
             <!-- Search Form -->
-            <form action="{{ route('admin.transcripts') }}" method="GET" class="admin-search-form" style="margin: 0; width: 100%; max-width: 450px;">
+            <form action="{{ route('admin.transcripts') }}" method="GET" class="admin-search-form">
                 <div class="input-group">
                     <i class="fa-solid fa-magnifying-glass search-icon"></i>
                     <input type="text" name="search" placeholder="Cari siswa..." value="{{ request('search') }}">

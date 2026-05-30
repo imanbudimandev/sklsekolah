@@ -223,6 +223,7 @@ class AdminController extends Controller
         $settings = [
             'school_name' => Setting::get('school_name', 'SMP Nurul Ihsan Banjaran'),
             'school_address' => Setting::get('school_address', ''),
+            'school_year' => Setting::get('school_year', date('Y') . '/' . (date('Y') + 1)),
             'principal_name' => Setting::get('principal_name', ''),
             'principal_nip' => Setting::get('principal_nip', ''),
             'announcement_date' => Setting::get('announcement_date', ''),
@@ -240,6 +241,7 @@ class AdminController extends Controller
         $request->validate([
             'school_name' => 'required',
             'school_address' => 'nullable',
+            'school_year' => 'nullable',
             'principal_name' => 'required',
             'principal_nip' => 'nullable',
             'announcement_date' => 'required',
@@ -251,6 +253,7 @@ class AdminController extends Controller
 
         Setting::set('school_name', $request->input('school_name'));
         Setting::set('school_address', $request->input('school_address'));
+        Setting::set('school_year', $request->input('school_year'));
         Setting::set('principal_name', $request->input('principal_name'));
         Setting::set('principal_nip', $request->input('principal_nip'));
         
@@ -793,8 +796,9 @@ class AdminController extends Controller
         }])->orderBy('name')->paginate(20);
 
         $subjects = Subject::orderBy('order_number')->orderBy('code')->get();
+        $schoolYear = Setting::get('school_year', date('Y') . '/' . (date('Y') + 1));
 
-        return view('admin.grades.index', compact('students', 'subjects', 'semester', 'validSemesters'));
+        return view('admin.grades.index', compact('students', 'subjects', 'semester', 'validSemesters', 'schoolYear'));
     }
 
     public function storeGrades(Request $request)
@@ -833,7 +837,7 @@ class AdminController extends Controller
     public function importGradesCsv(Request $request)
     {
         $request->validate([
-            'csv_file' => 'required|file|mimes:txt,csv',
+            'file_import' => 'required|file|mimes:xlsx,xls',
             'semester' => 'required'
         ]);
 
@@ -843,97 +847,113 @@ class AdminController extends Controller
             return redirect()->back()->with('error', 'Semester tidak valid.');
         }
 
-        $file = $request->file('csv_file');
-        $delimiter = ',';
+        $file = $request->file('file_import');
+        $extension = strtolower($file->getClientOriginalExtension());
         $successCount = 0;
 
-        if (($handle = fopen($file->getRealPath(), 'r')) !== false) {
-            $firstLine = fgets($handle);
-            rewind($handle);
-            
-            if (strpos($firstLine, ';') !== false && strpos($firstLine, ',') === false) {
-                $delimiter = ';';
-            } elseif (strpos($firstLine, ';') !== false && strpos($firstLine, ',') !== false) {
-                $semicolons = substr_count($firstLine, ';');
-                $commas = substr_count($firstLine, ',');
-                if ($semicolons > $commas) {
-                    $delimiter = ';';
+        $tmpPath = $file->getPathname();
+        if (!file_exists($tmpPath) || !is_readable($tmpPath)) {
+            return redirect()->back()->with('error', 'File upload tidak ditemukan atau tidak bisa dibaca.');
+        }
+
+        try {
+            $reader = IOFactory::createReader(ucfirst($extension));
+            $reader->setReadDataOnly(true);
+            $spreadsheet = $reader->load($tmpPath);
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal membaca file Excel: ' . $e->getMessage());
+        }
+
+        $worksheet = $spreadsheet->getActiveSheet();
+        $rows = $worksheet->toArray();
+
+        if (empty($rows) || count($rows) < 2) {
+            return redirect()->back()->with('error', 'File Excel kosong atau tidak valid.');
+        }
+
+        $header = array_map(function($val) {
+            return strtolower(trim(preg_replace('/[\x00-\x1F\x7F-\x9F\xEF\xBB\xBF]/', '', (string)$val)));
+        }, $rows[0]);
+        unset($rows[0]);
+
+        $headerMap = [
+            'no' => ['no', 'nomor', 'no.'],
+            'nis' => ['nis', 'nisn', 'n i s', 'no induk'],
+            'nama' => ['nama', 'nama siswa', 'nama_siswa', 'name', 'nama lengkap'],
+        ];
+
+        $colMap = [];
+        foreach ($headerMap as $field => $aliases) {
+            $colMap[$field] = false;
+            foreach ($aliases as $alias) {
+                $idx = array_search($alias, $header);
+                if ($idx !== false) {
+                    $colMap[$field] = $idx;
+                    break;
                 }
             }
+        }
 
-            $header = fgetcsv($handle, 0, $delimiter);
-            
-            if (!$header) {
-                return redirect()->back()->with('error', 'Format CSV tidak valid.');
+        if ($colMap['nis'] === false && $colMap['nama'] === false) {
+            return redirect()->back()->with('error', 'Kolom identitas siswa (NIS atau NAMA SISWA) tidak ditemukan.');
+        }
+
+        $allSubjects = Subject::all()->keyBy(function($item) {
+            return strtolower($item->code);
+        });
+
+        $subjectColumns = [];
+        foreach ($header as $index => $colName) {
+            if ($index === $colMap['no'] || $index === $colMap['nis'] || $index === $colMap['nama']) {
+                continue;
+            }
+            $cleanColName = strtolower($colName);
+            if (isset($allSubjects[$cleanColName])) {
+                $subjectColumns[$index] = $allSubjects[$cleanColName]->id;
+            }
+        }
+
+        foreach ($rows as $row) {
+            $row = array_pad($row, max(array_filter($colMap)), null);
+
+            $nis = $colMap['nis'] !== false ? trim((string)($row[$colMap['nis']] ?? '')) : '';
+            $nama = $colMap['nama'] !== false ? trim((string)($row[$colMap['nama']] ?? '')) : '';
+
+            if (empty($nis) && empty($nama)) {
+                continue;
             }
 
-            $header = array_map(function($val) {
-                return strtolower(trim(preg_replace('/[\x00-\x1F\x7F-\x9F\xEF\xBB\xBF]/', '', $val)));
-            }, $header);
-
-            $nisnIdx = array_search('nisn', $header);
-            $namaIdx = array_search('nama', $header);
-
-            if ($nisnIdx === false && $namaIdx === false) {
-                return redirect()->back()->with('error', 'Kolom identitas siswa (nisn atau nama) tidak ditemukan dalam CSV.');
+            $student = null;
+            if (!empty($nis)) {
+                $student = Student::where('nisn', $nis)->orWhere('nis', $nis)->first();
+            }
+            if (!$student && !empty($nama)) {
+                $student = Student::where('name', $nama)->first();
             }
 
-            $subjectColumns = [];
-            $allSubjects = Subject::all()->keyBy(function($item) {
-                return strtolower($item->code);
-            });
-
-            foreach ($header as $index => $colName) {
-                if ($index === $nisnIdx || $index === $namaIdx) {
-                    continue;
-                }
-                
-                $cleanColName = strtolower($colName);
-                if (isset($allSubjects[$cleanColName])) {
-                    $subjectColumns[$index] = $allSubjects[$cleanColName]->id;
-                }
+            if (!$student) {
+                continue;
             }
 
-            while (($row = fgetcsv($handle, 0, $delimiter)) !== false) {
-                if (count($row) < 2) continue;
-
-                if (count($row) < count($header)) {
-                    $row = array_pad($row, count($header), null);
+            foreach ($subjectColumns as $index => $subjectId) {
+                $scoreValue = trim((string)($row[$index] ?? ''));
+                if ($scoreValue !== '' && $scoreValue !== null) {
+                    Grade::updateOrCreate(
+                        [
+                            'student_id' => $student->id,
+                            'subject_id' => $subjectId,
+                            'semester' => $semester
+                        ],
+                        ['score' => floatval($scoreValue)]
+                    );
+                } else {
+                    Grade::where('student_id', $student->id)
+                         ->where('subject_id', $subjectId)
+                         ->where('semester', $semester)
+                         ->delete();
                 }
-
-                $student = null;
-                if ($nisnIdx !== false && !empty(trim($row[$nisnIdx]))) {
-                    $student = Student::where('nisn', trim($row[$nisnIdx]))->first();
-                }
-                if (!$student && $namaIdx !== false && !empty(trim($row[$namaIdx]))) {
-                    $student = Student::where('name', trim($row[$namaIdx]))->first();
-                }
-
-                if (!$student) {
-                    continue;
-                }
-
-                foreach ($subjectColumns as $index => $subjectId) {
-                    $scoreValue = trim($row[$index]);
-                    if ($scoreValue !== '' && $scoreValue !== null) {
-                        Grade::updateOrCreate(
-                            [
-                                'student_id' => $student->id,
-                                'subject_id' => $subjectId,
-                                'semester' => $semester
-                            ],
-                            ['score' => floatval($scoreValue)]
-                        );
-                    } else {
-                        Grade::where('student_id', $student->id)
-                             ->where('subject_id', $subjectId)
-                             ->where('semester', $semester)
-                             ->delete();
-                    }
-                }
-                $successCount++;
             }
-            fclose($handle);
+            $successCount++;
         }
 
         return redirect()->back()->with('success', "Berhasil mengimpor {$successCount} data nilai untuk {$semester}.");
@@ -943,52 +963,55 @@ class AdminController extends Controller
     {
         $semester = $request->input('semester', 'Semester 1');
         $subjects = Subject::orderBy('order_number')->orderBy('code')->get();
-        $headers = ['nisn', 'nama'];
-        
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $headers = ['No', 'NIS', 'NAMA SISWA'];
         foreach ($subjects as $subject) {
             $headers[] = $subject->code;
         }
+        $sheet->fromArray([$headers], null, 'A1');
 
         $students = Student::orderBy('name')->get();
+        $rowNum = 2;
 
-        $callback = function() use ($headers, $students, $subjects, $semester) {
-            $file = fopen('php://output', 'w');
-            fputcsv($file, $headers);
-            
-            foreach ($students as $student) {
-                $gradesMap = Grade::where('student_id', $student->id)
-                    ->where('semester', $semester)
-                    ->pluck('score', 'subject_id');
+        foreach ($students as $student) {
+            $gradesMap = Grade::where('student_id', $student->id)
+                ->where('semester', $semester)
+                ->pluck('score', 'subject_id');
 
-                $row = [$student->nisn, $student->name];
-                foreach ($subjects as $subject) {
-                    $row[] = $gradesMap->get($subject->id) ?? '';
-                }
-                fputcsv($file, $row);
+            $rowData = [$rowNum - 1, $student->nisn, $student->name];
+            foreach ($subjects as $subject) {
+                $rowData[] = $gradesMap->get($subject->id) ?? '';
             }
-            
-            if ($students->isEmpty()) {
-                $exampleRow = ['1234567890', 'Ahmad Fauzi'];
-                foreach ($subjects as $subject) {
-                    $exampleRow[] = '85';
-                }
-                fputcsv($file, $exampleRow);
+            $sheet->fromArray([$rowData], null, "A{$rowNum}");
+            $rowNum++;
+        }
+
+        if ($students->isEmpty()) {
+            $exampleRow = [1, '1234567890', 'Ahmad Fauzi'];
+            foreach ($subjects as $subject) {
+                $exampleRow[] = '85';
             }
-            
-            fclose($file);
-        };
+            $sheet->fromArray([$exampleRow], null, "A{$rowNum}");
+        }
 
-        $filename = "template_nilai_" . strtolower(str_replace(' ', '_', $semester)) . ".csv";
+        foreach (range('A', chr(ord('A') + count($headers) - 1)) as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
 
-        $headers_response = [
-            "Content-type" => "text/csv",
-            "Content-Disposition" => "attachment; filename={$filename}",
-            "Pragma" => "no-cache",
-            "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
-            "Expires" => "0"
-        ];
+        $writer = new Xlsx($spreadsheet);
+        ob_start();
+        $writer->save('php://output');
+        $content = ob_get_clean();
 
-        return response()->stream($callback, 200, $headers_response);
+        $filename = "template_nilai_" . strtolower(str_replace(' ', '_', $semester)) . ".xlsx";
+
+        return response($content, 200, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ]);
     }
 
     public function transcripts(Request $request)
