@@ -293,11 +293,6 @@
                     <td class="meta-value">{{ $student->nisn }}</td>
                 </tr>
                 <tr>
-                    <td class="meta-label">Nomor Peserta Ujian</td>
-                    <td class="meta-colon">:</td>
-                    <td class="meta-value">{{ $student->exam_number ?? '-' }}</td>
-                </tr>
-                <tr>
                     <td class="meta-label">Sekolah Asal</td>
                     <td class="meta-colon">:</td>
                     <td class="meta-value">{{ $settings['school_name'] }}</td>
