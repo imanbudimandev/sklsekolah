@@ -25,9 +25,12 @@ class Student extends Model
         'tahun_lulus',
         'photo',
         'transcript_grade',
+        'last_login_at',
     ];
 
-    protected $casts = [];
+    protected $casts = [
+        'last_login_at' => 'datetime',
+    ];
 
     public function getBirthDateFormattedAttribute()
     {

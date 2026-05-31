@@ -92,6 +92,14 @@
                         </span>
                     </label>
                     <label class="clean-checkbox">
+                        <input type="checkbox" name="tables[]" value="photos">
+                        <span class="check-content">
+                            <i class="fa-solid fa-images"></i>
+                            <strong>Foto Siswa</strong>
+                            <small>Hapus semua file foto siswa yang diunggah</small>
+                        </span>
+                    </label>
+                    <label class="clean-checkbox">
                         <input type="checkbox" name="tables[]" value="subjects">
                         <span class="check-content">
                             <i class="fa-solid fa-book"></i>
@@ -113,6 +121,14 @@
                             <i class="fa-solid fa-envelope-open-text"></i>
                             <strong>Surat</strong>
                             <small>Reset data transkrip & SKL (nilai ijazah)</small>
+                        </span>
+                    </label>
+                    <label class="clean-checkbox">
+                        <input type="checkbox" name="tables[]" value="login_history">
+                        <span class="check-content">
+                            <i class="fa-solid fa-clock-rotate-left"></i>
+                            <strong>Riwayat Login Siswa</strong>
+                            <small>Hapus riwayat aktivitas login siswa</small>
                         </span>
                     </label>
                 </div>

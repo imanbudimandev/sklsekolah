@@ -3,52 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Admin Dashboard') - {{ config('app.name', 'Laravel') }}</title>
-    
-    <!-- Google Fonts -->
+    <title>@yield('title', 'Dashboard Siswa') - {{ $settings['school_name'] ?? 'SMP Nurul Ihsan Banjaran' }}</title>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- CSS Styles -->
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}?v={{ time() }}">
-    
-    <!-- Favicon -->
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+
     @php
         $favicon = \App\Models\Setting::get('favicon');
-        $dashboardLogo = \App\Models\Setting::get('dashboard_logo');
     @endphp
     @if($favicon && file_exists(public_path($favicon)))
         <link rel="icon" type="image/png" href="{{ asset($favicon) }}">
     @else
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     @endif
-    
+
     @yield('styles')
 
-    <!-- Avoid Browser Caching: Inline Styles for Sidebar Dropdown & Collapse -->
     <style>
-        .nav-item-dropdown {
-            display: flex;
-            flex-direction: column;
-        }
-        .dropdown-toggle {
-            display: flex;
-            align-items: center;
-            justify-content: space-between !important;
-            width: 100%;
-        }
-        .dropdown-arrow {
-            display: inline-block !important;
-            font-size: 0.8rem !important;
-            transition: transform 0.3s ease;
-        }
-        .nav-item-dropdown.open .dropdown-arrow {
-            transform: rotate(180deg) !important;
-        }
         .sidebar-nav .submenu-list {
             list-style: none !important;
             padding-left: 24px !important;
@@ -71,12 +45,7 @@
             text-decoration: none;
             font-weight: 500;
             transition: var(--transition-fast);
-            background-color: transparent !important; /* Force transparent unless active or hovered */
-        }
-        .sidebar-nav .submenu-list li a i {
-            font-size: 0.95rem !important;
-            width: 18px;
-            text-align: center;
+            background-color: transparent !important;
         }
         .sidebar-nav .submenu-list li:hover a,
         .sidebar-nav .submenu-list li.active-sub a {
@@ -87,17 +56,17 @@
             color: #818cf8 !important;
         }
 
-        /* Colorful Minimalist Sidebar - Admin */
+        /* Colorful Minimalist Sidebar - Student */
         .admin-sidebar {
-            background: linear-gradient(180deg, #090d16 0%, #1e1b4b 100%) !important; /* Deep Dark Indigo Gradient */
-            border-right: 1px solid rgba(99, 102, 241, 0.12) !important;
+            background: linear-gradient(180deg, #090d16 0%, #2e1065 100%) !important; /* Deep Dark Purple Gradient */
+            border-right: 1px solid rgba(139, 92, 246, 0.12) !important;
             transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
         .sidebar-brand {
-            border-bottom: 1px solid rgba(99, 102, 241, 0.12) !important;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.12) !important;
         }
         .sidebar-brand span.brand-text {
-            background: linear-gradient(135deg, #38bdf8, #818cf8);
+            background: linear-gradient(135deg, #f472b6, #c084fc);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             font-weight: 800;
@@ -110,17 +79,17 @@
             margin: 2px 8px !important;
         }
         .sidebar-nav li:hover > a {
-            background-color: rgba(99, 102, 241, 0.08) !important;
+            background-color: rgba(139, 92, 246, 0.08) !important;
             color: #ffffff !important;
         }
         .sidebar-nav li.active > a {
-            background: rgba(37, 99, 235, 0.16) !important;
-            border-left: 3px solid #2563eb !important;
-            color: #38bdf8 !important;
+            background: rgba(139, 92, 246, 0.16) !important;
+            border-left: 3px solid #8b5cf6 !important;
+            color: #c084fc !important;
             font-weight: 700;
         }
         .sidebar-nav li.active > a i {
-            color: #38bdf8 !important;
+            color: #c084fc !important;
         }
         .sidebar-nav li a i {
             transition: color 0.25s ease;
@@ -130,15 +99,15 @@
             margin: 2px 0 !important;
         }
         .sidebar-nav .submenu-list li.active-sub a {
-            background: rgba(37, 99, 235, 0.12) !important;
-            color: #38bdf8 !important;
+            background: rgba(139, 92, 246, 0.12) !important;
+            color: #c084fc !important;
             font-weight: 700;
         }
         .sidebar-nav .submenu-list li.active-sub a i {
-            color: #38bdf8 !important;
+            color: #c084fc !important;
         }
         .sidebar-footer {
-            border-top: 1px solid rgba(99, 102, 241, 0.12) !important;
+            border-top: 1px solid rgba(139, 92, 246, 0.12) !important;
         }
 
         /* Sidebar Collapse (Hide/Unhide) Transitions */
@@ -193,60 +162,11 @@
                 border-radius: 12px !important;
                 display: flex !important;
             }
-            .sidebar-collapsed .sidebar-nav li a span, 
-            .sidebar-collapsed .sidebar-nav .submenu-list li a span {
+            .sidebar-collapsed .sidebar-nav li a span {
                 display: none !important;
             }
             .sidebar-collapsed .sidebar-nav li a i {
                 font-size: 0.92rem !important;
-            }
-            .sidebar-collapsed .sidebar-nav .submenu-list {
-                padding: 0 !important;
-                background-color: rgba(99, 102, 241, 0.05) !important;
-                border-radius: 10px;
-                margin: 4px auto !important;
-                width: 50px !important;
-                display: none !important;
-            }
-            .sidebar-collapsed .sidebar-nav .submenu-list.show {
-                display: flex !important;
-                flex-direction: column !important;
-                align-items: center !important;
-                justify-content: center !important;
-            }
-            .sidebar-collapsed .sidebar-nav .submenu-list li {
-                width: 100% !important;
-                display: flex !important;
-                justify-content: center !important;
-            }
-            .sidebar-collapsed .sidebar-nav .submenu-list li a {
-                width: 42px !important;
-                height: 42px !important;
-                margin: 2px auto !important;
-                border-radius: 8px !important;
-            }
-            .sidebar-collapsed .sidebar-nav .submenu-list li a i {
-                font-size: 0.92rem !important;
-            }
-            
-            /* Collapsed Dropdown Specific Styles */
-            .sidebar-collapsed .sidebar-nav li.nav-item-dropdown {
-                flex-direction: column !important;
-                align-items: center !important;
-                justify-content: center !important;
-            }
-            .sidebar-collapsed .nav-item-dropdown .dropdown-toggle {
-                flex-direction: column !important;
-                justify-content: center !important;
-                align-items: center !important;
-                gap: 2px !important;
-            }
-            .sidebar-collapsed .dropdown-arrow {
-                display: block !important;
-                font-size: 0.65rem !important;
-                color: rgba(148, 163, 184, 0.75) !important;
-                margin: 0 !important;
-                transition: transform 0.3s ease !important;
             }
             .sidebar-collapsed .sidebar-footer {
                 padding: 15px 0 !important;
@@ -304,98 +224,93 @@
             background-color: #e0e7ff;
             color: #4f46e5;
         }
+
+        @media (max-width: 768px) {
+            .doc-grid {
+                grid-template-columns: 1fr !important;
+            }
+            .profile-wrap {
+                grid-template-columns: 1fr !important;
+            }
+            .info-card.full .info-row {
+                flex-direction: column;
+                gap: 2px;
+            }
+            .info-card.full .info-row .label {
+                width: auto;
+            }
+            .grades-table-wrap {
+                overflow-x: auto;
+            }
+            .grades-table-wrap table {
+                min-width: 700px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .admin-main {
+                padding: 16px !important;
+            }
+            .topbar-right .user-profile span {
+                display: none;
+            }
+            .profile-card {
+                flex-direction: column !important;
+                text-align: center !important;
+                padding: 20px !important;
+            }
+            .profile-card .details {
+                justify-content: center;
+            }
+            .doc-card .doc-preview iframe {
+                height: 350px !important;
+            }
+        }
     </style>
 </head>
 <body class="admin-body">
     <div class="admin-layout">
         <script>
-            if (localStorage.getItem('sidebar-collapsed') === 'true') {
+            if (localStorage.getItem('student-sidebar') === 'true') {
                 document.querySelector('.admin-layout').classList.add('sidebar-collapsed');
             }
         </script>
-        <!-- Sidebar Navigation -->
         <aside class="admin-sidebar">
             <div class="sidebar-brand">
+                @php $dashboardLogo = \App\Models\Setting::get('dashboard_logo'); @endphp
                 @if($dashboardLogo && file_exists(public_path($dashboardLogo)))
-                    <img src="{{ asset($dashboardLogo) }}" alt="Logo" class="sidebar-logo" style="max-height: 32px; max-width: 32px; border-radius: 4px; object-fit: contain; margin-right: 4px;">
+                    <img src="{{ asset($dashboardLogo) }}" alt="Logo" class="sidebar-logo" style="max-height:32px;max-width:32px;border-radius:4px;object-fit:contain;margin-right:4px;">
                 @else
-                    <i class="fa-solid fa-user-shield"></i>
+                    <i class="fa-solid fa-graduation-cap"></i>
                 @endif
-                <span>{{ \App\Models\Setting::get('admin_panel_name', 'Panel Admin') }}</span>
+                <span class="brand-text">Portal Siswa</span>
             </div>
-            
+
             <nav class="sidebar-nav">
                 <ul>
-                    <li class="{{ Route::is('admin.dashboard') ? 'active' : '' }}">
-                        <a href="{{ route('admin.dashboard') }}">
+                    <li class="{{ request()->routeIs('student.dashboard') ? 'active' : '' }}">
+                        <a href="{{ route('student.dashboard') }}">
                             <i class="fa-solid fa-chart-line" style="color: #10b981;"></i>
                             <span>Dashboard</span>
                         </a>
                     </li>
-                    <li class="{{ Route::is('admin.students') ? 'active' : '' }}">
-                        <a href="{{ route('admin.students') }}">
+                    <li class="{{ request()->routeIs('student.profile') ? 'active' : '' }}">
+                        <a href="{{ route('student.profile') }}">
                             <i class="fa-solid fa-user-graduate" style="color: #3b82f6;"></i>
-                            <span>Data Siswa</span>
+                            <span>Data Saya</span>
                         </a>
                     </li>
-                    <li class="{{ Route::is('admin.subjects') ? 'active' : '' }}">
-                        <a href="{{ route('admin.subjects') }}">
-                            <i class="fa-solid fa-book" style="color: #f59e0b;"></i>
-                            <span>Mata Pelajaran</span>
-                        </a>
-                    </li>
-                    <li class="{{ Route::is('admin.grades') ? 'active' : '' }}">
-                        <a href="{{ route('admin.grades') }}">
-                            <i class="fa-solid fa-graduation-cap" style="color: #8b5cf6;"></i>
-                            <span>Manajemen Nilai</span>
-                        </a>
-                    </li>
-                    <li class="nav-item-dropdown {{ Route::is('admin.transcripts*') || Route::is('admin.skl.*') ? 'open active' : '' }}">
-                        <a href="#" class="dropdown-toggle">
-                            <div style="display: flex; align-items: center; gap: 12px;">
-                                <i class="fa-solid fa-envelope-open-text" style="color: #ec4899;"></i>
-                                <span>Manajemen Surat</span>
-                            </div>
-                            <i class="fa-solid fa-chevron-down dropdown-arrow" style="color: #94a3b8;"></i>
-                        </a>
-                        <ul class="submenu-list {{ Route::is('admin.transcripts*') || Route::is('admin.skl.*') ? 'show' : '' }}">
-                            <li class="{{ Route::is('admin.transcripts') ? 'active-sub' : '' }}">
-                                <a href="{{ route('admin.transcripts') }}">
-                                    <i class="fa-solid fa-print" style="color: #10b981;"></i>
-                                    <span>Cetak Surat</span>
-                                </a>
-                            </li>
-                            <li class="{{ Route::is('admin.skl.settings') ? 'active-sub' : '' }}">
-                                <a href="{{ route('admin.skl.settings') }}">
-                                    <i class="fa-solid fa-file-signature" style="color: #f59e0b;"></i>
-                                    <span>Setting SKL</span>
-                                </a>
-                            </li>
-                            <li class="{{ Route::is('admin.transcripts.settings') ? 'active-sub' : '' }}">
-                                <a href="{{ route('admin.transcripts.settings') }}">
-                                    <i class="fa-solid fa-file-invoice" style="color: #8b5cf6;"></i>
-                                    <span>Setting Transkrip</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="{{ Route::is('admin.settings') ? 'active' : '' }}">
-                        <a href="{{ route('admin.settings') }}">
-                            <i class="fa-solid fa-gears" style="color: #06b6d4;"></i>
-                            <span>Pengaturan</span>
-                        </a>
-                    </li>
-                    <li class="{{ Route::is('admin.tools*') ? 'active' : '' }}">
-                        <a href="{{ route('admin.tools') }}">
-                            <i class="fa-solid fa-screwdriver-wrench" style="color: #ef4444;"></i>
-                            <span>Database Tools</span>
+                    <li class="{{ request()->routeIs('student.documents') ? 'active' : '' }}">
+                        <a href="{{ route('student.documents') }}">
+                            <i class="fa-solid fa-download" style="color: #f59e0b;"></i>
+                            <span>Unduh Dokumen</span>
                         </a>
                     </li>
                 </ul>
             </nav>
-            
+
             <div class="sidebar-footer">
-                <form action="{{ route('admin.logout') }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin keluar?')">
+                <form action="{{ route('student.logout') }}" method="POST">
                     @csrf
                     <button type="submit" class="btn-logout">
                         <i class="fa-solid fa-right-from-bracket" style="color: #f43f5e;"></i>
@@ -405,29 +320,25 @@
             </div>
         </aside>
 
-        <!-- Main Content Area -->
         <div class="admin-content-wrapper">
-            <!-- Admin Topbar Header -->
             <header class="admin-topbar">
-                <div class="topbar-left" style="display: flex; align-items: center; gap: 15px;">
+                <div class="topbar-left" style="display:flex;align-items:center;gap:15px;">
                     <button type="button" id="sidebar-toggle" class="btn-sidebar-toggle" title="Sembunyikan/Tampilkan Sidebar">
                         <i class="fa-solid fa-bars"></i>
                     </button>
-                    <h2 style="margin: 0;">@yield('page_title', 'Dashboard')</h2>
+                    <h2 style="margin:0;">@yield('page_title', 'Dashboard')</h2>
                 </div>
                 <div class="topbar-right">
-                    <a href="{{ route('public.index') }}" target="_blank" class="btn btn-secondary btn-sm">
-                        <i class="fa-solid fa-globe"></i> Lihat Portal Publik
+                    <a href="{{ route('public.index') }}" class="btn btn-secondary btn-sm">
+                        <i class="fa-solid fa-globe"></i> Beranda
                     </a>
                     <span class="user-profile">
-                        <i class="fa-regular fa-circle-user"></i> {{ Auth::user()->name }}
+                        <i class="fa-regular fa-circle-user"></i> {{ $student->name }}
                     </span>
                 </div>
             </header>
 
-            <!-- Main Panel Body -->
             <main class="admin-main">
-                <!-- Session Alerts -->
                 @if(session('success'))
                     <div class="alert alert-success alert-dismissible fade-in">
                         <div class="alert-content">
@@ -451,38 +362,21 @@
         </div>
     </div>
 
+    @yield('scripts')
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Robust event delegation for dropdown menu toggling
-            document.addEventListener('click', function(e) {
-                const toggle = e.target.closest('.dropdown-toggle');
-                if (toggle) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    const parent = toggle.closest('.nav-item-dropdown');
-                    if (parent) {
-                        const submenu = parent.querySelector('.submenu-list');
-                        parent.classList.toggle('open');
-                        if (submenu) {
-                            submenu.classList.toggle('show');
-                        }
-                    }
-                }
-            });
-
-            // Sidebar Collapse and toggle functionality
             const toggleBtn = document.getElementById('sidebar-toggle');
             const layout = document.querySelector('.admin-layout');
-            
+
             if (toggleBtn && layout) {
                 toggleBtn.addEventListener('click', function() {
                     layout.classList.toggle('sidebar-collapsed');
                     const isCollapsed = layout.classList.contains('sidebar-collapsed');
-                    localStorage.setItem('sidebar-collapsed', isCollapsed);
+                    localStorage.setItem('student-sidebar', isCollapsed);
                 });
             }
         });
     </script>
-    @yield('scripts')
 </body>
 </html>

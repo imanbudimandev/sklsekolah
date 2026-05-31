@@ -117,16 +117,39 @@
                             <input type="file" name="transcript_logo" id="transcript_logo" class="form-control" accept="image/*">
                         </div>
 
-                        <div class="form-group">
-                            <label>Kop Surat / Header (Editor Visual)</label>
-                            @php
-                                $transcript_header_val = old('transcript_header', $settings['transcript_header']);
-                                if (strip_tags($transcript_header_val) === $transcript_header_val) {
-                                    $transcript_header_val = nl2br($transcript_header_val);
-                                }
-                            @endphp
-                            <textarea name="transcript_header" id="transcript_header" class="form-control rich-text" rows="5" placeholder="Ketik desain kop surat di sini...">{!! $transcript_header_val !!}</textarea>
-                            <small class="text-muted">Gunakan editor di atas untuk membuat Kop Surat tanpa perlu mengetik kode HTML.</small>
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label>Tipe Kop Surat Transkrip</label>
+                            <select name="transcript_header_type" id="transcript_header_type" class="form-control" onchange="toggleHeaderType(this.value)">
+                                <option value="text" {{ ($settings['transcript_header_type'] ?? 'text') === 'text' ? 'selected' : '' }}>Kop Teks (Editor Visual)</option>
+                                <option value="image" {{ ($settings['transcript_header_type'] ?? 'text') === 'image' ? 'selected' : '' }}>Kop Gambar (Upload File)</option>
+                            </select>
+                        </div>
+
+                        <div id="header-text-container" style="{{ ($settings['transcript_header_type'] ?? 'text') === 'text' ? 'display: block;' : 'display: none;' }}">
+                            <div class="form-group">
+                                <label>Kop Surat / Header (Editor Visual)</label>
+                                @php
+                                    $transcript_header_val = old('transcript_header', $settings['transcript_header']);
+                                    if (strip_tags($transcript_header_val) === $transcript_header_val) {
+                                        $transcript_header_val = nl2br($transcript_header_val);
+                                    }
+                                @endphp
+                                <textarea name="transcript_header" id="transcript_header" class="form-control rich-text" rows="5" placeholder="Ketik desain kop surat di sini...">{!! $transcript_header_val !!}</textarea>
+                                <small class="text-muted">Gunakan editor di atas untuk membuat Kop Surat tanpa perlu mengetik kode HTML.</small>
+                            </div>
+                        </div>
+
+                        <div id="header-image-container" style="{{ ($settings['transcript_header_type'] ?? 'text') === 'image' ? 'display: block;' : 'display: none;' }}">
+                            <div class="form-group">
+                                <label>Kop Gambar Transkrip</label>
+                                @if(!empty($settings['transcript_header_image']) && file_exists(public_path($settings['transcript_header_image'])))
+                                    <div class="logo-preview-wrapper"><img id="preview-header-image" src="{{ asset($settings['transcript_header_image']) }}" alt="kop_gambar" style="max-height: 100px; border-radius: 4px; display: block; margin-bottom: 8px; border: 1px solid #e2e8f0;"></div>
+                                @else
+                                    <div class="logo-preview-wrapper"><img id="preview-header-image" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="kop_gambar" style="max-height: 100px; border-radius: 4px; display: none; margin-bottom: 8px; border: 1px solid #e2e8f0;"></div>
+                                @endif
+                                <input type="file" name="transcript_header_image" id="transcript_header_image" class="form-control" accept="image/*" onchange="previewHeaderImage(this)">
+                                <small class="text-muted">Rekomendasi ukuran: 800px x 150px (proporsional 16:3). Format: JPG, PNG, JPEG, SVG.</small>
+                            </div>
                         </div>
                     </div>
 
@@ -317,6 +340,29 @@ document.addEventListener('DOMContentLoaded', function() {
         defaultHeader.style.display = 'block';
         previewHeader.style.display = 'none';
     }
+    window.toggleHeaderType = function(type) {
+        const textContainer = document.getElementById('header-text-container');
+        const imageContainer = document.getElementById('header-image-container');
+        if (type === 'image') {
+            textContainer.style.display = 'none';
+            imageContainer.style.display = 'block';
+        } else {
+            textContainer.style.display = 'block';
+            imageContainer.style.display = 'none';
+        }
+    };
+    
+    window.previewHeaderImage = function(input) {
+        const preview = document.getElementById('preview-header-image');
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    };
 });
 </script>
 @endsection

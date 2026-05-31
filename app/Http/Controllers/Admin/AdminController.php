@@ -34,6 +34,7 @@ class AdminController extends Controller
         $settings = [
             'school_name' => Setting::get('school_name', 'SMP Nurul Ihsan Banjaran'),
             'school_logo' => Setting::get('school_logo'),
+            'admin_panel_name' => Setting::get('admin_panel_name', 'Admin Portal'),
         ];
         return view('admin.login', compact('settings'));
     }
@@ -69,18 +70,33 @@ class AdminController extends Controller
         $total_lulus = Student::where('status', 'LULUS')->count();
         $total_tidak_lulus = Student::where('status', 'TIDAK LULUS')->count();
         $total_subjects = Subject::count();
+        $total_classes = Student::distinct('class')->count('class');
         $average_score = round(Grade::avg('score') ?? 0, 2);
+
+        // Per-semester stats
+        $semesters = Grade::select('semester')
+            ->selectRaw('ROUND(AVG(score), 2) as avg_score')
+            ->selectRaw('COUNT(*) as total_grades')
+            ->groupBy('semester')
+            ->orderByRaw("FIELD(semester, 'Semester 1', 'Semester 2', 'Semester 3', 'Semester 4', 'Semester 5', 'Semester 6', 'Ujian Sekolah', 'Nilai Ijazah')")
+            ->get();
 
         // Recent students
         $recent_students = Student::orderBy('updated_at', 'desc')->take(5)->get();
+
+        // Recent student logins
+        $recent_logins = Student::whereNotNull('last_login_at')->orderBy('last_login_at', 'desc')->take(5)->get();
 
         return view('admin.dashboard', compact(
             'total_students',
             'total_lulus',
             'total_tidak_lulus',
             'total_subjects',
+            'total_classes',
             'average_score',
-            'recent_students'
+            'semesters',
+            'recent_students',
+            'recent_logins'
         ));
     }
 
@@ -118,7 +134,18 @@ class AdminController extends Controller
             'status' => 'required|in:LULUS,TIDAK LULUS',
             'password' => 'nullable',
             'tahun_lulus' => 'nullable',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
+
+        if ($request->hasFile('photo')) {
+            if (!File::exists(public_path('uploads/photos'))) {
+                File::makeDirectory(public_path('uploads/photos'), 0755, true);
+            }
+            $file = $request->file('photo');
+            $name = 'student_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('uploads/photos'), $name);
+            $data['photo'] = 'uploads/photos/' . $name;
+        }
 
         Student::create($data);
 
@@ -139,15 +166,148 @@ class AdminController extends Controller
             'status' => 'required|in:LULUS,TIDAK LULUS',
             'password' => 'nullable',
             'tahun_lulus' => 'nullable',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
+
+        if ($request->hasFile('photo')) {
+            if (!File::exists(public_path('uploads/photos'))) {
+                File::makeDirectory(public_path('uploads/photos'), 0755, true);
+            }
+            if ($student->photo && file_exists(public_path($student->photo))) {
+                File::delete(public_path($student->photo));
+            }
+            $file = $request->file('photo');
+            $name = 'student_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('uploads/photos'), $name);
+            $data['photo'] = 'uploads/photos/' . $name;
+        }
 
         $student->update($data);
 
         return redirect()->route('admin.students')->with('success', 'Data siswa berhasil diperbarui.');
     }
 
+    public function importStudentPhotosZip(Request $request)
+    {
+        $request->validate([
+            'zip_file' => 'required|file|mimes:zip|max:51200',
+        ]);
+
+        if (!$request->hasFile('zip_file')) {
+            return redirect()->back()->with('error', 'Tidak ada file ZIP yang diterima oleh server.');
+        }
+
+        $zipFile = $request->file('zip_file');
+
+        if (!$zipFile->isValid()) {
+            $errorMsg = 'Gagal mengunggah file ZIP. ';
+            switch ($zipFile->getError()) {
+                case UPLOAD_ERR_INI_SIZE:
+                    $errorMsg .= 'Ukuran file melebihi batas upload_max_filesize di php.ini server web Anda.';
+                    break;
+                case UPLOAD_ERR_FORM_SIZE:
+                    $errorMsg .= 'Ukuran file melebihi batas form HTML.';
+                    break;
+                case UPLOAD_ERR_PARTIAL:
+                    $errorMsg .= 'File ZIP hanya terunggah sebagian. Silakan coba lagi.';
+                    break;
+                case UPLOAD_ERR_NO_FILE:
+                    $errorMsg .= 'Tidak ada file ZIP yang diunggah.';
+                    break;
+                case UPLOAD_ERR_NO_TMP_DIR:
+                    $errorMsg .= 'Folder sementara (temp folder) server PHP tidak ditemukan atau tidak dikonfigurasi.';
+                    break;
+                case UPLOAD_ERR_CANT_WRITE:
+                    $errorMsg .= 'Gagal menulis file ZIP ke disk server (penyimpanan penuh atau izin akses folder temp salah).';
+                    break;
+                default:
+                    $errorMsg .= 'Kode error upload: ' . $zipFile->getError();
+            }
+            return redirect()->back()->with('error', $errorMsg);
+        }
+
+        $realPath = $zipFile->getRealPath() ?: $zipFile->getPathname();
+
+        if (empty($realPath)) {
+            return redirect()->back()->with('error', 'File ZIP tidak dapat ditemukan di server.');
+        }
+
+        if (!File::exists(public_path('uploads/photos'))) {
+            File::makeDirectory(public_path('uploads/photos'), 0755, true);
+        }
+
+        $zip = new \ZipArchive;
+        $res = $zip->open($realPath);
+
+        if ($res !== true) {
+            return redirect()->back()->with('error', 'Gagal membuka file ZIP.');
+        }
+
+        $imported = 0;
+        $notFound = [];
+
+        for ($i = 0; $i < $zip->numFiles; $i++) {
+            $filename = $zip->getNameIndex($i);
+            $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+            if (!in_array($ext, ['jpg', 'jpeg', 'png'])) continue;
+
+            $nameWithoutExt = pathinfo($filename, PATHINFO_FILENAME);
+
+            $student = Student::where('nis', $nameWithoutExt)
+                ->orWhere('nisn', $nameWithoutExt)
+                ->first();
+
+            if (!$student) {
+                $notFound[] = $filename;
+                continue;
+            }
+
+            $destName = 'student_' . $student->id . '_' . time() . '_' . uniqid() . '.' . $ext;
+            $destPath = public_path('uploads/photos/' . $destName);
+
+            copy("zip://" . $realPath . "#" . $filename, $destPath);
+            $student->update(['photo' => 'uploads/photos/' . $destName]);
+            $imported++;
+        }
+
+        $zip->close();
+
+        $message = "Berhasil mengimpor {$imported} foto.";
+        if (!empty($notFound)) {
+            $message .= " Tidak ditemukan siswa untuk: " . implode(', ', array_slice($notFound, 0, 10));
+            if (count($notFound) > 10) $message .= " dan " . (count($notFound) - 10) . " file lainnya.";
+        }
+
+        return redirect()->route('admin.students')->with('success', $message);
+    }
+
+    public function uploadStudentPhoto(Request $request, Student $student)
+    {
+        $request->validate([
+            'photo' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        if (!File::exists(public_path('uploads/photos'))) {
+            File::makeDirectory(public_path('uploads/photos'), 0755, true);
+        }
+
+        if ($student->photo && file_exists(public_path($student->photo))) {
+            File::delete(public_path($student->photo));
+        }
+
+        $file = $request->file('photo');
+        $name = 'student_' . $student->id . '_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+        $file->move(public_path('uploads/photos'), $name);
+        $student->update(['photo' => 'uploads/photos/' . $name]);
+
+        return redirect()->route('admin.students')->with('success', 'Foto ' . $student->name . ' berhasil diperbarui.');
+    }
+
     public function destroyStudent(Student $student)
     {
+        if ($student->photo && file_exists(public_path($student->photo))) {
+            File::delete(public_path($student->photo));
+        }
         $student->delete();
         return redirect()->route('admin.students')->with('success', 'Data siswa berhasil dihapus.');
     }
@@ -232,6 +392,8 @@ class AdminController extends Controller
             'dashboard_logo' => Setting::get('dashboard_logo'),
             'favicon' => Setting::get('favicon'),
             'admin_panel_name' => Setting::get('admin_panel_name', 'Panel Admin'),
+            'student_login_bg' => Setting::get('student_login_bg'),
+            'admin_login_bg' => Setting::get('admin_login_bg'),
         ];
 
         return view('admin.settings', compact('settings'));
@@ -251,6 +413,8 @@ class AdminController extends Controller
             'dashboard_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'favicon' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,ico|max:1024',
             'admin_panel_name' => 'required|string|max:100',
+            'student_login_bg' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'admin_login_bg' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         Setting::set('school_name', $request->input('school_name'));
@@ -325,6 +489,34 @@ class AdminController extends Controller
             Setting::set('principal_signature', 'uploads/' . $sigName);
         }
 
+        // Handle student login background
+        if ($request->hasFile('student_login_bg')) {
+            // Delete old if exists
+            $oldStudentBg = Setting::get('student_login_bg');
+            if ($oldStudentBg && File::exists(public_path($oldStudentBg))) {
+                File::delete(public_path($oldStudentBg));
+            }
+
+            $studentBgFile = $request->file('student_login_bg');
+            $studentBgName = 'student_bg_' . time() . '.' . $studentBgFile->getClientOriginalExtension();
+            $studentBgFile->move(public_path('uploads'), $studentBgName);
+            Setting::set('student_login_bg', 'uploads/' . $studentBgName);
+        }
+
+        // Handle admin login background
+        if ($request->hasFile('admin_login_bg')) {
+            // Delete old if exists
+            $oldAdminBg = Setting::get('admin_login_bg');
+            if ($oldAdminBg && File::exists(public_path($oldAdminBg))) {
+                File::delete(public_path($oldAdminBg));
+            }
+
+            $adminBgFile = $request->file('admin_login_bg');
+            $adminBgName = 'admin_bg_' . time() . '.' . $adminBgFile->getClientOriginalExtension();
+            $adminBgFile->move(public_path('uploads'), $adminBgName);
+            Setting::set('admin_login_bg', 'uploads/' . $adminBgName);
+        }
+
         return redirect()->route('admin.settings')->with('success', 'Pengaturan berhasil diperbarui.');
     }
 
@@ -333,12 +525,14 @@ class AdminController extends Controller
     {
         $settings = [
             'transcript_logo' => Setting::get('transcript_logo'),
-            'transcript_header' => Setting::get('transcript_header', "LEMBAGA PENDIDIKAN ISLAM \"RIYADHUL JANNAH\"\nSMP NURUL IHSAN\nNSS: 202000012010 | NPSN: 20233628 | Akreditasi: \"B\"\nWebsite: smpnurulihsanbanjaran.sch.id | E-mail: smpnurulihsanbanjaran@gmail.com\nJl. Raya Banjaran No. 123, Banjaran, Bandung, Jawa Barat"),
+            'transcript_header' => Setting::get('transcript_header', "LEMBAGA PENDIDIKAN ISLAM \"RIYADHUL JANNAH\"\nSMP NURUL IHSAN\nNSS: 202000012010 | NPSN: 20233628 | Akreditasi: \"B\"\nWebsite: smpnurulihsanbanjaran.sch.id | E-mail: smpnurulihsanbanjaran@gmail.com\nJl. Raya Lempar KM 06 Desa Cirangkong Kec. Cijambe Kab. Subang"),
             'transcript_footer' => Setting::get('transcript_footer', 'Catatan: Nilai akhir merupakan rata-rata dari semester I hingga VI.'),
             'transcript_letter_number' => Setting::get('transcript_letter_number', '421.3/[NUMBER]/SMP.NI/[YEAR]'),
             'transcript_place' => Setting::get('transcript_place', 'Subang'),
             'transcript_date_format' => Setting::get('transcript_date_format', 'd F Y'),
             'transcript_signature_text' => Setting::get('transcript_signature_text', 'Surat transkrip ini merupakan dokumen resmi yang sah.'),
+            'transcript_header_type' => Setting::get('transcript_header_type', 'text'),
+            'transcript_header_image' => Setting::get('transcript_header_image'),
         ];
 
         return view('admin.transcripts.settings', compact('settings'));
@@ -354,6 +548,8 @@ class AdminController extends Controller
             'transcript_place' => 'nullable|string',
             'transcript_date_format' => 'nullable|string',
             'transcript_signature_text' => 'nullable|string',
+            'transcript_header_type' => 'required|in:text,image',
+            'transcript_header_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:5120',
         ]);
 
         Setting::set('transcript_header', $request->input('transcript_header'));
@@ -362,6 +558,7 @@ class AdminController extends Controller
         Setting::set('transcript_place', $request->input('transcript_place'));
         Setting::set('transcript_date_format', $request->input('transcript_date_format', 'd F Y'));
         Setting::set('transcript_signature_text', $request->input('transcript_signature_text'));
+        Setting::set('transcript_header_type', $request->input('transcript_header_type', 'text'));
 
         // Ensure upload directory exists
         if (!File::exists(public_path('uploads'))) {
@@ -379,6 +576,17 @@ class AdminController extends Controller
             Setting::set('transcript_logo', 'uploads/' . $name);
         }
 
+        if ($request->hasFile('transcript_header_image')) {
+            $old = Setting::get('transcript_header_image');
+            if ($old && File::exists(public_path($old))) {
+                File::delete(public_path($old));
+            }
+            $file = $request->file('transcript_header_image');
+            $name = 'transcript_header_image_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('uploads'), $name);
+            Setting::set('transcript_header_image', 'uploads/' . $name);
+        }
+
         return redirect()->route('admin.transcripts.settings')->with('success', 'Pengaturan transkrip berhasil diperbarui.');
     }
 
@@ -387,16 +595,18 @@ class AdminController extends Controller
     {
         $settings = [
             'skl_logo' => Setting::get('skl_logo'),
-            'skl_header' => Setting::get('skl_header', "YAYASAN NURUL IHSAN BANJARAN\nSMP NURUL IHSAN\nJl. Raya Banjaran No. 123, Banjaran, Bandung, Jawa Barat\nWebsite: smpnurulihsanbanjaran.sch.id | E-mail: smpnurulihsanbanjaran@gmail.com"),
+            'skl_header' => Setting::get('skl_header', "YAYASAN NURUL IHSAN BANJARAN\nSMP NURUL IHSAN\nJl. Raya Lempar KM 06 Desa Cirangkong Kec. Cijambe Kab. Subang\nWebsite: smpnurulihsanbanjaran.sch.id | E-mail: smpnurulihsanbanjaran@gmail.com"),
             'skl_letter_number' => Setting::get('skl_letter_number', '421.3/[NUMBER]/SMP.NI/[YEAR]'),
             'skl_place' => Setting::get('skl_place', 'Banjaran'),
             'skl_date_format' => Setting::get('skl_date_format', 'd F Y'),
             'skl_signature_text' => Setting::get('skl_signature_text', 'Kepala Sekolah,'),
             'skl_opening_text' => Setting::get('skl_opening_text', 'Yang bertanda tangan di bawah ini, Kepala Sekolah [NAMA_SEKOLAH] Kecamatan Banjaran Kabupaten Bandung, menerangkan bahwa:'),
-            'skl_body_text' => Setting::get('skl_body_text', 'Berdasarkan Kriteria Kelulusan Peserta Didik yang diatur dalam kurikulum yang berlaku dan Rapat Pleno Dewan Guru [NAMA_SEKOLAH] tentang Kelulusan Siswa Kelas IX Tahun Pelajaran [TAHUN_PELAJARAN] pada tanggal [TANGGAL_PENGUMUMAN], dengan ini menyatakan bahwa siswa tersebut di atas:'),
+            'skl_body_text' => Setting::get('skl_body_text', 'Berdasarkan Kriteria Kelulusan Peserta Didik yang diatur dalam kurikulum yang berlaku and Rapat Pleno Dewan Guru [NAMA_SEKOLAH] tentang Kelulusan Siswa Kelas IX Tahun Pelajaran [TAHUN_PELAJARAN] pada tanggal [TANGGAL_PENGUMUMAN], dengan ini menyatakan bahwa siswa tersebut di atas:'),
             'skl_footer_text' => Setting::get('skl_footer_text', '* Surat Keterangan Lulus ini berlaku sementara sampai diterbitkannya Ijazah asli bagi peserta didik yang dinyatakan lulus, guna melengkapi syarat pendaftaran jenjang pendidikan selanjutnya.'),
             'skl_after_lulus_text' => Setting::get('skl_after_lulus_text', ''),
             'skl_before_ttd_text' => Setting::get('skl_before_ttd_text', ''),
+            'skl_header_type' => Setting::get('skl_header_type', 'text'),
+            'skl_header_image' => Setting::get('skl_header_image'),
         ];
 
         return view('admin.transcripts.settings_skl', compact('settings'));
@@ -416,6 +626,8 @@ class AdminController extends Controller
             'skl_opening_text' => 'nullable|string',
             'skl_body_text' => 'nullable|string',
             'skl_footer_text' => 'nullable|string',
+            'skl_header_type' => 'required|in:text,image',
+            'skl_header_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:5120',
         ]);
 
         Setting::set('skl_header', $request->input('skl_header'));
@@ -423,6 +635,7 @@ class AdminController extends Controller
         Setting::set('skl_place', $request->input('skl_place', 'Banjaran'));
         Setting::set('skl_date_format', $request->input('skl_date_format', 'd F Y'));
         Setting::set('skl_signature_text', $request->input('skl_signature_text', 'Kepala Sekolah'));
+        Setting::set('skl_header_type', $request->input('skl_header_type', 'text'));
         
         Setting::set('skl_opening_text', $request->input('skl_opening_text'));
         Setting::set('skl_body_text', $request->input('skl_body_text'));
@@ -445,6 +658,17 @@ class AdminController extends Controller
             $name = 'skl_logo_' . time() . '.' . $file->getClientOriginalExtension();
             $file->move(public_path('uploads'), $name);
             Setting::set('skl_logo', 'uploads/' . $name);
+        }
+
+        if ($request->hasFile('skl_header_image')) {
+            $old = Setting::get('skl_header_image');
+            if ($old && File::exists(public_path($old))) {
+                File::delete(public_path($old));
+            }
+            $file = $request->file('skl_header_image');
+            $name = 'skl_header_image_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('uploads'), $name);
+            Setting::set('skl_header_image', 'uploads/' . $name);
         }
 
         return redirect()->route('admin.skl.settings')->with('success', 'Pengaturan SKL berhasil diperbarui.');
@@ -1677,6 +1901,15 @@ class AdminController extends Controller
             $cleaned[] = 'Data Siswa';
         }
 
+        if (in_array('photos', $selected)) {
+            DB::table('students')->update(['photo' => null]);
+            $photoDir = public_path('uploads/photos');
+            if (File::exists($photoDir)) {
+                File::cleanDirectory($photoDir);
+            }
+            $cleaned[] = 'Foto Siswa';
+        }
+
         if (in_array('subjects', $selected)) {
             DB::table('subjects')->truncate();
             $cleaned[] = 'Mata Pelajaran';
@@ -1685,6 +1918,11 @@ class AdminController extends Controller
         if (in_array('letters', $selected)) {
             DB::table('students')->update(['transcript_grade' => null]);
             $cleaned[] = 'Surat (nilai ijazah)';
+        }
+
+        if (in_array('login_history', $selected)) {
+            DB::table('students')->update(['last_login_at' => null]);
+            $cleaned[] = 'Riwayat Login Siswa';
         }
 
         DB::statement('SET FOREIGN_KEY_CHECKS=1');

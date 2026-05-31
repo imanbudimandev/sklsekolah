@@ -10,8 +10,8 @@
         }
         body, table, tr, td, th {
             font-family: 'Times New Roman', 'Times', serif;
-            font-size: 10pt;
-            line-height: 1.3;
+            font-size: 9pt;
+            line-height: 1.25;
             color: #1f2937;
             margin: 0;
             padding: 0;
@@ -23,7 +23,7 @@
         }
         .modern-container {
             position: relative;
-            padding: 8px 18px;
+            padding: 4px 8px;
             border-top: 4px solid #0d9488;
             background-color: #ffffff;
         }
@@ -33,13 +33,14 @@
             margin-bottom: 4px;
         }
         .kop-logo {
-            width: 50px;
-            height: 50px;
+            width: 70px;
+            height: 70px;
             object-fit: contain;
         }
         .kop-text {
-            text-align: left;
-            padding-left: 12px;
+            text-align: center;
+            padding-left: 8px;
+            padding-right: 8px;
         }
         .kop-text .kop-yayasan {
             font-size: 7.5pt;
@@ -82,19 +83,19 @@
         }
         .print-divider {
             border: none;
-            height: 0.5px;
-            background-color: #e5e7eb;
-            margin: 6px 0 10px 0;
+            height: 2.5px;
+            background-color: #111827;
+            margin: 4px 0 6px 0;
         }
         .footer-divider {
             border: none;
             height: 0.5px;
             background-color: #e5e7eb;
-            margin: 15px 0 10px 0;
+            margin: 8px 0 6px 0;
         }
         .cert-title {
             text-align: center;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
         .cert-title h3 {
             font-size: 10pt;
@@ -105,20 +106,20 @@
             letter-spacing: 0.5px;
         }
         .cert-title .subtitle {
-            font-size: 10pt;
+            font-size: 9.5pt;
             color: #000000;
-            margin-top: 2px;
+            margin-top: 1px;
             font-weight: bold;
         }
         .table-print-meta {
             width: 100%;
             border-collapse: collapse;
-            margin: 6px 0 10px 0;
+            margin: 3px 0 5px 0;
             background-color: transparent;
             border: none;
         }
         .table-print-meta td {
-            padding: 3px 0;
+            padding: 2px 0;
             vertical-align: middle;
         }
         .meta-label {
@@ -138,7 +139,7 @@
         .table-print-grades {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 8px;
+            margin-top: 4px;
             border: 1px solid #115e59;
         }
         .table-print-grades th {
@@ -146,16 +147,17 @@
             text-align: center;
             background-color: #115e59;
             color: #ffffff;
-            font-size: 9.5pt;
+            font-size: 8pt;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            padding: 7.5px 8px;
+            letter-spacing: 0.3px;
+            padding: 8.5px 6px;
             border: 1px solid #0f766e;
         }
         .table-print-grades td {
-            padding: 7.5px 8px;
+            padding: 8.5px 6px;
             border: 1px solid #cbd5e1;
             color: #374151;
+            font-size: 8pt;
         }
         .table-print-grades tr:nth-child(even) {
             background-color: #f8fafc;
@@ -168,14 +170,14 @@
             font-weight: 800;
             background-color: #f1f5f9;
             color: #0f172a;
-            padding: 6px 8px;
+            padding: 7px 6px;
             border: 1px solid #cbd5e1;
             text-transform: uppercase;
-            font-size: 9.5pt;
-            letter-spacing: 0.5px;
+            font-size: 8pt;
+            letter-spacing: 0.3px;
         }
         .cert-footer {
-            margin-top: 15px;
+            margin-top: 6px;
             width: 100%;
         }
         .footer-table {
@@ -195,16 +197,16 @@
         }
         .footer-right p {
             margin: 0 0 1px 0;
-            font-size: 10pt;
+            font-size: 8.5pt;
             color: #000000;
         }
         .sig-img {
-            height: 70px;
+            height: 45px;
             width: auto;
-            margin: 4px 0;
+            margin: 2px 0;
         }
         .signature-space {
-            height: 70px;
+            height: 45px;
         }
         .photo-box {
             width: 75px;
@@ -238,47 +240,58 @@
 </head>
 <body>
     @foreach($students as $student)
+        @php
+            $headerType = \App\Models\Setting::get('transcript_header_type', 'text');
+            $headerImage = \App\Models\Setting::get('transcript_header_image');
+            $hasImageHeader = ($headerType === 'image' && !empty($headerImage) && file_exists(public_path($headerImage)));
+        @endphp
         <div class="page-break" style="{{ $loop->last ? 'page-break-after: avoid;' : 'page-break-after: always;' }}">
-            <div class="modern-container">
+            <div class="modern-container" style="{{ $hasImageHeader ? 'border-top: none;' : '' }}">
                 <!-- Kop Surat -->
-                <table class="print-kop">
-                    <tr>
-                        @if($logo_path)
-                            <td width="60" align="center" valign="middle">
-                                <img src="{{ $logo_path }}" class="kop-logo" alt="Logo">
-                            </td>
-                        @endif
-                        <td class="kop-text" valign="middle">
-                            @if(!empty($settings['transcript_header']))
-                                <div style="font-size: 9pt; font-weight: bold; line-height: 1.25;">
-                                    {!! $settings['transcript_header'] !!}
-                                </div>
-                            @else
-                                <p class="kop-yayasan">LEMBAGA PENDIDIKAN ISLAM &ldquo;RIYADHUL JANNAH&rdquo;</p>
-                                <h1>{{ $settings['school_name'] }}</h1>
-                                <p class="kop-info">
-                                    NSS : <strong>{{ $settings['nss'] ?? '202000012010' }}</strong> 
-                                    &bull; 
-                                    NPSN : <strong>{{ $settings['npsn'] ?? '20233628' }}</strong> 
-                                    &bull; 
-                                    Akreditasi : <strong>&ldquo;{{ $settings['accreditation'] ?? 'B' }}&rdquo;</strong>
-                                </p>
-                                <p class="kop-detail">
-                                    Website: <a href="http://smpnurulihsanbanjaran.sch.id/">smpnurulihsanbanjaran.sch.id</a>
-                                    &bull; 
-                                    E-mail: <a href="mailto:smpnurulihsanbanjaran@gmail.com">smpnurulihsanbanjaran@gmail.com</a>
-                                </p>
-                                <p class="kop-detail" style="color: #4b5563; font-weight: 500;">{{ $settings['school_address'] }}</p>
+
+                @if($hasImageHeader)
+                    <div style="width: 100%; text-align: center; margin-bottom: 8px;">
+                        <img src="{{ public_path($headerImage) }}" style="width: 100%; height: auto; display: block; max-height: 120px; object-fit: contain;">
+                    </div>
+                @else
+                    <table class="print-kop">
+                        <tr>
+                            @if($logo_path)
+                                <td width="80" align="center" valign="middle">
+                                    <img src="{{ $logo_path }}" class="kop-logo" alt="Logo">
+                                </td>
                             @endif
-                        </td>
-                        @if(isset($qr_codes[$student->id]))
-                            <td class="kop-qr" valign="middle">
-                                <img src="data:image/png;base64,{{ $qr_codes[$student->id] }}" alt="QR Code">
+                            <td class="kop-text" valign="middle">
+                                @if(!empty($settings['transcript_header']))
+                                    <div style="font-size: 9pt; font-weight: bold; line-height: 1.25;">
+                                        {!! $settings['transcript_header'] !!}
+                                    </div>
+                                @else
+                                    <p class="kop-yayasan">LEMBAGA PENDIDIKAN ISLAM &ldquo;RIYADHUL JANNAH&rdquo;</p>
+                                    <h1>{{ strtoupper($settings['school_name']) }}</h1>
+                                    <p class="kop-info">
+                                        NSS : <strong>{{ $settings['nss'] ?? '202000012010' }}</strong> 
+                                        &bull; 
+                                        NPSN : <strong>{{ $settings['npsn'] ?? '20233628' }}</strong> 
+                                        &bull; 
+                                        Akreditasi : <strong>&ldquo;{{ $settings['accreditation'] ?? 'B' }}&rdquo;</strong>
+                                    </p>
+                                    <p class="kop-detail">
+                                        Website: <a href="http://smpnurulihsanbanjaran.sch.id/">smpnurulihsanbanjaran.sch.id</a>
+                                        &bull; 
+                                        E-mail: <a href="mailto:smpnurulihsanbanjaran@gmail.com">smpnurulihsanbanjaran@gmail.com</a>
+                                    </p>
+                                    <p class="kop-detail" style="color: #4b5563; font-weight: 500;">{{ $settings['school_address'] }}</p>
+                                @endif
                             </td>
-                        @endif
-                    </tr>
-                </table>
-                <div class="print-divider"></div>
+                            @if(isset($qr_codes[$student->id]))
+                                <td class="kop-qr" valign="middle">
+                                    <img src="data:image/png;base64,{{ $qr_codes[$student->id] }}" alt="QR Code">
+                                </td>
+                            @endif
+                    </table>
+                    <div class="print-divider"></div>
+                @endif
 
                 <!-- Title -->
                 <div class="cert-title">
@@ -380,10 +393,10 @@
                             </td>
                             <td class="footer-right">
                                 @if(!empty($settings['transcript_signature_text']))
-                                    <p style="font-size: 9.5pt; color: #000000; white-space: pre-wrap; margin-bottom: 10px; font-style: italic; line-height: 1.35;">{{ $settings['transcript_signature_text'] }}</p>
+                                    <p style="font-size: 8.5pt; color: #000000; white-space: pre-wrap; margin-bottom: 10px; font-style: italic; line-height: 1.35;">{{ $settings['transcript_signature_text'] }}</p>
                                 @endif
-                                <p style="color: #000000; font-weight: bold;">{{ $settings['transcript_place'] ?? 'Subang' }}, {{ $announcementDate ? $announcementDate->locale('id')->translatedFormat($settings['transcript_date_format'] ?? 'd F Y') : \Carbon\Carbon::now()->locale('id')->translatedFormat($settings['transcript_date_format'] ?? 'd F Y') }}</p>
-                                <p style="font-weight: bold; color: #000000;">Kepala {{ $settings['school_name'] }}</p>
+                                <p style="color: #000000; font-weight: normal;">{{ $settings['transcript_place'] ?? 'Subang' }}, {{ $announcementDate ? $announcementDate->locale('id')->translatedFormat($settings['transcript_date_format'] ?? 'd F Y') : \Carbon\Carbon::now()->locale('id')->translatedFormat($settings['transcript_date_format'] ?? 'd F Y') }}</p>
+                                <p style="font-weight: normal; color: #000000;">Kepala {{ $settings['school_name'] }}</p>
                                 
                                 @if($signature_path)
                                     <table style="width: 140px; border-collapse: collapse; margin: 4px auto; background: transparent; border: none;">
@@ -418,9 +431,9 @@
                                     </div>
                                 @endif
                                 
-                                <p style="font-size: 10pt; font-weight: bold; color: #000000; margin-bottom: 1px;"><u>{{ $settings['principal_name'] }}</u></p>
+                                <p style="font-size: 9pt; font-weight: bold; color: #000000; margin-bottom: 1px;"><u>{{ $settings['principal_name'] }}</u></p>
                                 @if(!empty($settings['principal_nip']))
-                                    <p style="font-size: 9.5pt; color: #000000;">NIP. {{ $settings['principal_nip'] }}</p>
+                                    <p style="font-size: 8.5pt; color: #000000;">NIP. {{ $settings['principal_nip'] }}</p>
                                 @endif
                             </td>
                         </tr>

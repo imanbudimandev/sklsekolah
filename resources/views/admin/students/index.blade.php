@@ -28,6 +28,9 @@
                 <button onclick="openModal('importCsvModal')" class="btn btn-secondary">
                     <i class="fa-solid fa-file-import"></i> Impor Excel
                 </button>
+                <button onclick="openModal('importPhotoModal')" class="btn btn-info">
+                    <i class="fa-solid fa-images"></i> Impor Foto (ZIP)
+                </button>
                 <a href="{{ route('admin.students.export') }}" class="btn btn-success">
                     <i class="fa-solid fa-file-export"></i> Ekspor Excel
                 </a>
@@ -41,6 +44,7 @@
             <table class="table table-hover">
                 <thead>
                     <tr>
+                        <th class="col-photo">Foto</th>
                         <th>NIS</th>
                         <th>NISN</th>
                         <th>Nama Siswa</th>
@@ -56,11 +60,27 @@
                 <tbody>
                     @if($students->isEmpty())
                         <tr>
-                            <td colspan="10" class="text-center py-4 text-muted">Data siswa tidak ditemukan.</td>
+                            <td colspan="11" class="text-center py-4 text-muted">Data siswa tidak ditemukan.</td>
                         </tr>
                     @else
                         @foreach($students as $student)
                             <tr>
+                                <td class="col-photo">
+                                    <div class="photo-upload-wrapper">
+                                        @if($student->photo)
+                                            <img src="{{ asset($student->photo) }}" alt="{{ $student->name }}" class="student-photo-thumb">
+                                        @else
+                                            <span class="photo-placeholder"><i class="fa-solid fa-user"></i></span>
+                                        @endif
+                                        <form action="{{ route('admin.students.photo', $student->id) }}" method="POST" enctype="multipart/form-data" class="photo-upload-form">
+                                            @csrf
+                                            <label class="photo-upload-label" title="Upload foto">
+                                                <i class="fa-solid fa-camera"></i>
+                                                <input type="file" name="photo" accept="image/jpeg,image/png,image/jpg" class="photo-upload-input" onchange="this.form.submit()">
+                                            </label>
+                                        </form>
+                                    </div>
+                                </td>
                                 <td>{{ $student->nis ?? '-' }}</td>
                                 <td>{{ $student->nisn }}</td>
                                 <td><strong>{{ $student->name }}</strong></td>
@@ -119,7 +139,7 @@
             <h3>Tambah Siswa Baru</h3>
             <span class="close-modal" onclick="closeModal('addStudentModal')">&times;</span>
         </div>
-        <form action="{{ route('admin.students.store') }}" method="POST">
+        <form action="{{ route('admin.students.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="modal-body scrollable-y">
                 <!-- Meta data siswa -->
@@ -172,6 +192,12 @@
                         <label for="add_tahun_lulus">Tahun Lulus</label>
                         <input type="text" id="add_tahun_lulus" name="tahun_lulus" placeholder="Contoh: 2026" autocomplete="off">
                     </div>
+                    <div class="form-group col-span-2">
+                        <label for="add_photo">Foto Siswa</label>
+                        <input type="file" id="add_photo" name="photo" accept="image/jpeg,image/png,image/jpg" onchange="previewAddPhoto(this)">
+                        <p class="form-hint">Format: JPG/PNG, maks. 2MB</p>
+                        <div id="addPhotoPreview" class="photo-preview mt-2"></div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -189,7 +215,7 @@
             <h3>Edit Data Siswa</h3>
             <span class="close-modal" onclick="closeModal('editStudentModal')">&times;</span>
         </div>
-        <form id="editStudentForm" method="POST">
+        <form id="editStudentForm" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
             <div class="modal-body scrollable-y">
@@ -243,13 +269,56 @@
                         <label for="edit_tahun_lulus">Tahun Lulus</label>
                         <input type="text" id="edit_tahun_lulus" name="tahun_lulus" autocomplete="off">
                     </div>
+                    <div class="form-group col-span-2">
+                        <label for="edit_photo">Foto Siswa</label>
+                        <input type="file" id="edit_photo" name="photo" accept="image/jpeg,image/png,image/jpg" onchange="previewEditPhoto(this)">
+                        <p class="form-hint">Format: JPG/PNG, maks. 2MB. Biarkan kosong jika tidak diubah.</p>
+                        <div id="editPhotoPreview" class="photo-preview mt-2"></div>
+                        <div id="editCurrentPhoto" class="photo-preview mt-2"></div>
+                    </div>
                 </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('editStudentModal')">Batal</button>
+                <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
             </div>
         </form>
     </div>
 </div>
 
-<!-- IMPORT CSV MODAL -->
+<!-- IMPORT PHOTO ZIP MODAL -->
+<div id="importPhotoModal" class="modal">
+    <div class="modal-content card glass">
+        <div class="modal-header">
+            <h3>Impor Foto Siswa (ZIP)</h3>
+            <span class="close-modal" onclick="closeModal('importPhotoModal')">&times;</span>
+        </div>
+        <form action="{{ route('admin.students.import_photos') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <div class="modal-body">
+                <p>Unggah file ZIP berisi foto siswa. Nama file foto akan dicocokkan dengan <strong>NIS</strong> atau <strong>NISN</strong> siswa.</p>
+                
+                <div class="form-group py-3">
+                    <label for="zip_file" class="btn-file-upload">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <span>Pilih File ZIP</span>
+                        <input type="file" id="zip_file" name="zip_file" accept=".zip" required onchange="displayZipFileName(this)">
+                    </label>
+                    <p id="zip-file-name" class="text-center text-muted mt-2"></p>
+                </div>
+
+                <div class="alert alert-info">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <span>Pastikan nama file foto sesuai dengan NIS atau NISN siswa. Contoh: <strong>1234567890.jpg</strong> atau <strong>12345.png</strong>. Format yang didukung: JPG, JPEG, PNG.</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('importPhotoModal')">Batal</button>
+                <button type="submit" class="btn btn-primary">Mulai Impor</button>
+            </div>
+        </form>
+    </div>
+</div>
 <div id="importCsvModal" class="modal">
     <div class="modal-content card glass">
         <div class="modal-header">
@@ -308,6 +377,47 @@
         }
     }
 
+    function displayZipFileName(input) {
+        const file = input.files[0];
+        if (file) {
+            document.getElementById('zip-file-name').innerText = "File terpilih: " + file.name;
+        }
+    }
+
+    function previewAddPhoto(input) {
+        const preview = document.getElementById('addPhotoPreview');
+        preview.innerHTML = '';
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.style.maxWidth = '120px';
+                img.style.maxHeight = '120px';
+                img.style.borderRadius = '8px';
+                preview.appendChild(img);
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function previewEditPhoto(input) {
+        const preview = document.getElementById('editPhotoPreview');
+        preview.innerHTML = '';
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.style.maxWidth = '120px';
+                img.style.maxHeight = '120px';
+                img.style.borderRadius = '8px';
+                preview.appendChild(img);
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
     // Open Edit Modal and Populate Fields
     function openEditModal(student) {
         const formAction = `/admin/students/${student.id}`;
@@ -324,6 +434,17 @@
         document.getElementById('edit_password').value = student.password || '';
         document.getElementById('edit_tahun_lulus').value = student.tahun_lulus || '';
         document.getElementById('edit_birth_date').value = student.birth_date || '';
+
+        // Show current photo
+        const currentPhotoDiv = document.getElementById('editCurrentPhoto');
+        const previewDiv = document.getElementById('editPhotoPreview');
+        previewDiv.innerHTML = '';
+        currentPhotoDiv.innerHTML = '';
+        if (student.photo) {
+            currentPhotoDiv.innerHTML = '<p class="form-hint">Foto saat ini:</p><img src="' + window.location.origin + '/' + student.photo + '" style="max-width:120px;max-height:120px;border-radius:8px;">';
+        } else {
+            currentPhotoDiv.innerHTML = '<p class="text-muted">Belum ada foto.</p>';
+        }
 
         openModal('editStudentModal');
     }

@@ -2,18 +2,27 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PublicController;
+use App\Http\Controllers\StudentController;
 use App\Http\Controllers\Admin\AdminController;
-use App\Http\Controllers\Admin\StudentController;
+use App\Http\Controllers\Admin\StudentController as AdminStudentController;
 
 // Public Routes
-Route::get('/', [PublicController::class, 'index'])->name('public.index');
+Route::get('/', [StudentController::class, 'showLogin'])->name('public.index');
 Route::get('/skl/{student}/pdf', [PublicController::class, 'downloadSklPdf'])->name('public.skl.pdf');
 Route::get('/transkrip/{student}/pdf', [PublicController::class, 'downloadTranscriptPdf'])->name('public.transcript.pdf');
 
-// Redirect for default Laravel auth middleware
-Route::get('/login', function () {
-    return redirect()->route('admin.login');
-})->name('login');
+// Student Auth Routes
+Route::post('/login', [StudentController::class, 'login'])->name('student.login');
+
+// Student Dashboard (Protected by session)
+Route::middleware(['web'])->group(function () {
+    Route::get('/dashboard', [StudentController::class, 'dashboard'])->name('student.dashboard');
+    Route::get('/profile', [StudentController::class, 'profile'])->name('student.profile');
+    Route::get('/documents', [StudentController::class, 'documents'])->name('student.documents');
+    Route::get('/documents/skl-preview', [StudentController::class, 'previewSkl'])->name('student.preview.skl');
+    Route::get('/documents/transcript-preview', [StudentController::class, 'previewTranscript'])->name('student.preview.transcript');
+    Route::post('/logout', [StudentController::class, 'logout'])->name('student.logout');
+});
 
 // Admin Auth Routes
 Route::get('/admin/login', [AdminController::class, 'showLogin'])->name('admin.login');
@@ -29,7 +38,9 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::post('/students', [AdminController::class, 'storeStudent'])->name('students.store');
     Route::put('/students/{student}', [AdminController::class, 'updateStudent'])->name('students.update');
     Route::delete('/students/{student}', [AdminController::class, 'destroyStudent'])->name('students.destroy');
+    Route::post('/students/{student}/photo', [AdminController::class, 'uploadStudentPhoto'])->name('students.photo');
     Route::post('/students/import', [AdminController::class, 'importStudentsExcel'])->name('students.import');
+    Route::post('/students/import-photos', [AdminController::class, 'importStudentPhotosZip'])->name('students.import_photos');
     Route::get('/students/export', [AdminController::class, 'exportStudentsExcel'])->name('students.export');
     Route::get('/students/template', [AdminController::class, 'downloadStudentTemplate'])->name('students.template');
 
@@ -52,10 +63,10 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::get('/grades/template', [AdminController::class, 'downloadGradesTemplate'])->name('grades.template');
 
     // Transcript Grades (Nilai Ijazah)
-    Route::get('/students/{student}/transcript-grade', [StudentController::class, 'getTranscriptGrade'])->name('students.transcript_grade');
-    Route::put('/students/{student}/transcript-grade', [StudentController::class, 'updateTranscriptGrade'])->name('students.update_transcript_grade');
-    Route::get('/students/transcript-grades/list', [StudentController::class, 'listTranscriptGrades'])->name('students.list_transcript_grades');
-    Route::post('/students/transcript-grades/update-all', [StudentController::class, 'updateAllTranscriptGrades'])->name('students.update_all_transcript_grades');
+    Route::get('/students/{student}/transcript-grade', [AdminStudentController::class, 'getTranscriptGrade'])->name('students.transcript_grade');
+    Route::put('/students/{student}/transcript-grade', [AdminStudentController::class, 'updateTranscriptGrade'])->name('students.update_transcript_grade');
+    Route::get('/students/transcript-grades/list', [AdminStudentController::class, 'listTranscriptGrades'])->name('students.list_transcript_grades');
+    Route::post('/students/transcript-grades/update-all', [AdminStudentController::class, 'updateAllTranscriptGrades'])->name('students.update_all_transcript_grades');
 
     // Transkrip Settings
     Route::get('/transcripts/settings', [AdminController::class, 'transcriptSettings'])->name('transcripts.settings');

@@ -159,16 +159,39 @@
                             <small class="text-muted">Jika dikosongkan, sistem akan otomatis menggunakan Logo Sekolah Global.</small>
                         </div>
 
-                        <div class="form-group" style="margin-top: 15px;">
-                            <label>Kop Surat / Header SKL (Editor Visual)</label>
-                            @php
-                                $skl_header_val = old('skl_header', $settings['skl_header']);
-                                if (strip_tags($skl_header_val) === $skl_header_val) {
-                                    $skl_header_val = nl2br($skl_header_val);
-                                }
-                            @endphp
-                            <textarea name="skl_header" id="skl_header" class="form-control rich-text" rows="5" placeholder="Ketik desain kop surat di sini...">{!! $skl_header_val !!}</textarea>
-                            <small class="text-muted">Gunakan editor di atas atau biarkan kosong untuk menggunakan layout Kop Surat formal bawaan.</small>
+                        <div class="form-group" style="margin-top: 15px; margin-bottom: 15px;">
+                            <label>Tipe Kop Surat SKL</label>
+                            <select name="skl_header_type" id="skl_header_type" class="form-control" onchange="toggleHeaderType(this.value)">
+                                <option value="text" {{ ($settings['skl_header_type'] ?? 'text') === 'text' ? 'selected' : '' }}>Kop Teks (Editor Visual)</option>
+                                <option value="image" {{ ($settings['skl_header_type'] ?? 'text') === 'image' ? 'selected' : '' }}>Kop Gambar (Upload File)</option>
+                            </select>
+                        </div>
+
+                        <div id="header-text-container" style="{{ ($settings['skl_header_type'] ?? 'text') === 'text' ? 'display: block;' : 'display: none;' }}">
+                            <div class="form-group">
+                                <label>Kop Surat / Header SKL (Editor Visual)</label>
+                                @php
+                                    $skl_header_val = old('skl_header', $settings['skl_header']);
+                                    if (strip_tags($skl_header_val) === $skl_header_val) {
+                                        $skl_header_val = nl2br($skl_header_val);
+                                    }
+                                @endphp
+                                <textarea name="skl_header" id="skl_header" class="form-control rich-text" rows="5" placeholder="Ketik desain kop surat di sini...">{!! $skl_header_val !!}</textarea>
+                                <small class="text-muted">Gunakan editor di atas atau biarkan kosong untuk menggunakan layout Kop Surat formal bawaan.</small>
+                            </div>
+                        </div>
+
+                        <div id="header-image-container" style="{{ ($settings['skl_header_type'] ?? 'text') === 'image' ? 'display: block;' : 'display: none;' }}">
+                            <div class="form-group">
+                                <label>Kop Gambar SKL</label>
+                                @if(!empty($settings['skl_header_image']) && file_exists(public_path($settings['skl_header_image'])))
+                                    <div class="logo-preview-wrapper"><img id="preview-header-image" src="{{ asset($settings['skl_header_image']) }}" alt="kop_gambar" style="max-height: 100px; border-radius: 4px; display: block; margin-bottom: 8px; border: 1px solid #e2e8f0;"></div>
+                                @else
+                                    <div class="logo-preview-wrapper"><img id="preview-header-image" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="kop_gambar" style="max-height: 100px; border-radius: 4px; display: none; margin-bottom: 8px; border: 1px solid #e2e8f0;"></div>
+                                @endif
+                                <input type="file" name="skl_header_image" id="skl_header_image" class="form-control" accept="image/*" onchange="previewHeaderImage(this)">
+                                <small class="text-muted">Rekomendasi ukuran: 800px x 150px (proporsional 16:3). Format: JPG, PNG, JPEG, SVG.</small>
+                            </div>
                         </div>
                     </div>
 
@@ -419,6 +442,29 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     });
+    window.toggleHeaderType = function(type) {
+        const textContainer = document.getElementById('header-text-container');
+        const imageContainer = document.getElementById('header-image-container');
+        if (type === 'image') {
+            textContainer.style.display = 'none';
+            imageContainer.style.display = 'block';
+        } else {
+            textContainer.style.display = 'block';
+            imageContainer.style.display = 'none';
+        }
+    };
+    
+    window.previewHeaderImage = function(input) {
+        const preview = document.getElementById('preview-header-image');
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    };
 });
 </script>
 @endsection

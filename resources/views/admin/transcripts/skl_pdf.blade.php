@@ -5,13 +5,13 @@
     <title>Surat Keterangan Lulus</title>
     <style>
         @page {
-            margin: 10mm 15mm;
+            margin: 6mm 10mm;
             size: A4;
         }
         body, table, tr, td, th, p, h1, h2, h3, h4, div, span {
             font-family: 'Times New Roman', 'Times', serif;
             font-size: 9pt;
-            line-height: 1.35;
+            line-height: 1.3;
             color: #1f2937;
             margin: 0;
             padding: 0;
@@ -19,7 +19,7 @@
         }
     .modern-container {
         position: relative;
-        padding: 8px 18px;
+        padding: 4px 8px;
         border-top: 4px solid #0d9488;
         background-color: #ffffff;
     }
@@ -29,8 +29,8 @@
         margin-bottom: 3px;
     }
     .kop-logo {
-        width: 55px;
-        height: 55px;
+        width: 70px;
+        height: 70px;
         object-fit: contain;
     }
     .kop-text {
@@ -71,13 +71,13 @@
     }
     .print-divider {
         border: none;
-        height: 0.5px;
-        background-color: #e5e7eb;
-        margin: 6px 0 10px 0;
+        height: 2.5px;
+        background-color: #111827;
+        margin: 4px 0 6px 0;
     }
     .cert-title {
         text-align: center;
-        margin-bottom: 8px;
+        margin-bottom: 5px;
     }
     .cert-title h3 {
         font-size: 10pt;
@@ -94,7 +94,7 @@
         margin: 0;
     }
     .cert-body {
-        font-size: 8.5pt;
+        font-size: 9pt;
         text-align: justify;
     }
     .cert-body p {
@@ -107,7 +107,7 @@
     }
     .table-print-meta {
         width: 80%;
-        margin: 6px auto 8px auto;
+        margin: 3px auto 5px auto;
         border-collapse: collapse;
     }
     .table-print-meta td {
@@ -130,8 +130,8 @@
     }
     .print-status-box {
         width: 180px;
-        margin: 6px auto;
-        padding: 4px;
+        margin: 3px auto;
+        padding: 3px;
         border: 2px solid #059669;
         background-color: #ecfdf5;
         color: #065f46;
@@ -147,32 +147,62 @@
         color: #991b1b;
     }
     .cert-note {
-        font-size: 7pt;
+        font-size: 8pt;
         color: #4b5563;
         margin-top: 6px;
         font-style: italic;
         line-height: 1.25;
     }
     .cert-footer {
-        margin-top: 10px;
+        margin-top: 5px;
         width: 100%;
     }
     .footer-table {
         width: 100%;
         border-collapse: collapse;
     }
-    .footer-right {
-        width: 100%;
-        text-align: right;
+    .footer-left {
+        width: 65%;
+        vertical-align: middle;
+        padding: 0;
     }
-    .footer-right .signature-block {
-        display: inline-block;
-        text-align: left;
-        margin-right: 20px;
+    .footer-right {
+        width: 35%;
+        text-align: center;
+        vertical-align: middle;
+        padding: 0;
     }
     .footer-right p {
         margin: 0 0 1px 0;
-        font-size: 8pt;
+        font-size: 8.5pt;
+    }
+    .photo-box {
+        width: 75px;
+        height: 100px;
+        border-radius: 4px;
+        border: 1.5px solid #e5e7eb;
+        overflow: hidden;
+        display: inline-block;
+        background-color: #f9fafb;
+    }
+    .photo-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .photo-placeholder {
+        width: 100%;
+        height: 100%;
+        display: table;
+        background: #f3f4f6;
+    }
+    .photo-placeholder-text {
+        display: table-cell;
+        vertical-align: middle;
+        text-align: center;
+        font-size: 6.5pt;
+        color: #9ca3af;
+        font-weight: 600;
     }
     .sig-img {
         height: 40px;
@@ -185,24 +215,26 @@
     .table-skl-grades {
         width: 100%;
         border-collapse: collapse;
-        margin: 6px 0;
+        margin: 4px 0;
         border: 1px solid #115e59;
-        font-size: 7pt;
+        font-size: 8pt;
     }
     .table-skl-grades th {
         font-weight: 700;
         text-align: center;
         background-color: #115e59;
         color: #ffffff;
-        font-size: 6.5pt;
+        font-size: 8pt;
         text-transform: uppercase;
-        padding: 4px 3px;
+        letter-spacing: 0.3px;
+        padding: 4.5px 5px;
         border: 1px solid #0f766e;
     }
     .table-skl-grades td {
-        padding: 3px 4px;
+        padding: 4.5px 5px;
         border: 1px solid #cbd5e1;
         color: #374151;
+        font-size: 8pt;
     }
     .table-skl-grades tr:nth-child(even) {
         background-color: #f8fafc;
@@ -214,56 +246,69 @@
         font-weight: 800;
         background-color: #f1f5f9;
         color: #0f172a;
-        padding: 3px 4px;
+        padding: 3.5px 5px;
         border: 1px solid #cbd5e1;
         text-transform: uppercase;
-        font-size: 6.5pt;
+        font-size: 8pt;
+        letter-spacing: 0.3px;
     }
     .table-skl-grades .avg-row td {
         font-weight: 800;
         background-color: #e2e8f0;
         color: #0f172a;
-        padding: 3px 4px;
+        padding: 4.5px 5px;
         border: 1px solid #cbd5e1;
     }
     </style>
 </head>
 <body>
     @foreach($students ?? [$student] as $student)
-    <div class="modern-container" style="{{ $loop->last ? '' : 'page-break-after: always;' }}">
-        <table class="print-kop">
-            <tr>
-                @if($logo_path)
-                    <td width="60" align="center" valign="middle">
-                        <img src="{{ $logo_path }}" class="kop-logo" alt="Logo">
-                    </td>
-                @endif
-                <td class="kop-text" valign="middle">
-                    @if(!empty($settings['skl_header']))
-                        <div style="font-size: 9pt; font-weight: bold; line-height: 1.25;">
-                            {!! $settings['skl_header'] !!}
-                        </div>
-                    @else
-                        <p class="kop-yayasan">LEMBAGA PENDIDIKAN ISLAM &ldquo;RIYADHUL JANNAH&rdquo;</p>
-                        <h1>{{ strtoupper($settings['school_name']) }}</h1>
-                        <p class="kop-info">
-                            NSS : <strong>{{ $settings['nss'] ?? '202000012010' }}</strong> 
-                            &bull; 
-                            NPSN : <strong>{{ $settings['npsn'] ?? '20233628' }}</strong> 
-                            &bull; 
-                            Akreditasi : <strong>&ldquo;{{ $settings['accreditation'] ?? 'B' }}&rdquo;</strong>
-                        </p>
-                        <p class="kop-detail">
-                            Website: <a href="http://smpnurulihsanbanjaran.sch.id/">smpnurulihsanbanjaran.sch.id</a>
-                            &bull; 
-                            E-mail: <a href="mailto:smpnurulihsanbanjaran@gmail.com">smpnurulihsanbanjaran@gmail.com</a>
-                        </p>
-                        <p class="kop-detail" style="color: #4b5563; font-weight: 500;">{{ $settings['school_address'] }}</p>
+        @php
+            $headerType = \App\Models\Setting::get('skl_header_type', 'text');
+            $headerImage = \App\Models\Setting::get('skl_header_image');
+            $hasImageHeader = ($headerType === 'image' && !empty($headerImage) && file_exists(public_path($headerImage)));
+        @endphp
+        <div class="modern-container" style="{{ $loop->last ? '' : 'page-break-after: always;' }}{{ $hasImageHeader ? ' border-top: none;' : '' }}">
+
+        @if($hasImageHeader)
+            <div style="width: 100%; text-align: center; margin-bottom: 8px;">
+                <img src="{{ public_path($headerImage) }}" style="width: 100%; height: auto; display: block; max-height: 120px; object-fit: contain;">
+            </div>
+        @else
+            <table class="print-kop">
+                <tr>
+                    @if($logo_path)
+                        <td width="80" align="center" valign="middle">
+                            <img src="{{ $logo_path }}" class="kop-logo" alt="Logo">
+                        </td>
                     @endif
-                </td>
-            </tr>
-        </table>
-        <div class="print-divider"></div>
+                    <td class="kop-text" valign="middle">
+                        @if(!empty($settings['skl_header']))
+                            <div style="font-size: 9pt; font-weight: bold; line-height: 1.25;">
+                                {!! $settings['skl_header'] !!}
+                            </div>
+                        @else
+                            <p class="kop-yayasan">LEMBAGA PENDIDIKAN ISLAM &ldquo;RIYADHUL JANNAH&rdquo;</p>
+                            <h1>{{ strtoupper($settings['school_name']) }}</h1>
+                            <p class="kop-info">
+                                NSS : <strong>{{ $settings['nss'] ?? '202000012010' }}</strong> 
+                                &bull; 
+                                NPSN : <strong>{{ $settings['npsn'] ?? '20233628' }}</strong> 
+                                &bull; 
+                                Akreditasi : <strong>&ldquo;{{ $settings['accreditation'] ?? 'B' }}&rdquo;</strong>
+                            </p>
+                            <p class="kop-detail">
+                                Website: <a href="http://smpnurulihsanbanjaran.sch.id/">smpnurulihsanbanjaran.sch.id</a>
+                                &bull; 
+                                E-mail: <a href="mailto:smpnurulihsanbanjaran@gmail.com">smpnurulihsanbanjaran@gmail.com</a>
+                            </p>
+                            <p class="kop-detail" style="color: #4b5563; font-weight: 500;">{{ $settings['school_address'] }}</p>
+                        @endif
+                    </td>
+                </tr>
+            </table>
+            <div class="print-divider"></div>
+        @endif
 
         <!-- Title -->
         <div class="cert-title">
@@ -340,7 +385,7 @@
                 <tr>
                     <th width="18">No</th>
                     <th>Mata Pelajaran</th>
-                    <th width="60">Nilai Ijazah</th>
+                    <th width="60">Nilai</th>
                 </tr>
             </thead>
             <tbody>
@@ -387,49 +432,59 @@
         <div class="cert-footer">
             <table class="footer-table">
                 <tr>
-                    <td class="footer-right">
-                        <div class="signature-block">
-                            <p>{{ $settings['skl_place'] ?? 'Banjaran' }}, {{ $announcementDate ? $announcementDate->locale('id')->translatedFormat($settings['skl_date_format'] ?? 'd F Y') : \Carbon\Carbon::now()->locale('id')->translatedFormat($settings['skl_date_format'] ?? 'd F Y') }}</p>
-                            <p>{{ $settings['skl_signature_text'] ?? 'Kepala Sekolah,' }}</p>
-
-                            @if($signature_path)
-                                <table style="width: 140px; border-collapse: collapse; margin: 4px 0; background: transparent; border: none;">
-                                    <tr>
-                                        <td style="vertical-align: middle; padding: 0; border: none; background: transparent; text-align: left; width: 60%;">
-                                            <img src="{{ $signature_path }}" class="sig-img" alt="Tanda Tangan" style="height: 50px; width: auto; margin: 0;">
-                                        </td>
-                                        <td style="vertical-align: middle; padding: 0; border: none; background: transparent; text-align: left; width: 40%;">
-                                            @php
-                                                $qrText = "VERIFIKASI TANDATANGAN DIGITAL\n"
-                                                        . "Nama: " . $settings['principal_name'] . "\n"
-                                                        . "Jabatan: Kepala Sekolah\n"
-                                                        . "Sekolah: " . $settings['school_name'] . "\n"
-                                                        . "NIP: " . ($settings['principal_nip'] ?? '-');
-                                                $qrCode = base64_encode(\SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')->size(40)->generate($qrText));
-                                            @endphp
-                                            <img src="data:image/svg+xml;base64,{{ $qrCode }}" style="width: 40px; height: 40px; display: inline-block; vertical-align: middle;" alt="QR Code">
-                                        </td>
-                                    </tr>
-                                </table>
+                    <td class="footer-left" valign="bottom">
+                        <!-- Student Photo -->
+                        <div class="photo-box">
+                            @if($student->photo && file_exists(public_path($student->photo)))
+                                <img src="{{ public_path($student->photo) }}" alt="Foto {{ $student->name }}">
                             @else
-                                <div style="margin: 6px 0; padding-left: 10px;">
-                                    @php
-                                        $qrText = "VERIFIKASI TANDATANGAN DIGITAL\n"
-                                                . "Nama: " . $settings['principal_name'] . "\n"
-                                                . "Jabatan: Kepala Sekolah\n"
-                                                . "Sekolah: " . $settings['school_name'] . "\n"
-                                                . "NIP: " . ($settings['principal_nip'] ?? '-');
-                                        $qrCode = base64_encode(\SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')->size(55)->generate($qrText));
-                                    @endphp
-                                    <img src="data:image/svg+xml;base64,{{ $qrCode }}" style="width: 55px; height: 55px; display: inline-block;" alt="QR Code">
+                                <div class="photo-placeholder">
+                                    <span class="photo-placeholder-text">Pas Foto<br>3x4</span>
                                 </div>
                             @endif
-
-                            <p style="font-weight: bold; text-decoration: underline; margin-bottom: 2px;">{{ $settings['principal_name'] }}</p>
-                            @if(!empty($settings['principal_nip']))
-                                <p style="color: #4b5563; font-size: 8.5pt;">NIP. {{ $settings['principal_nip'] }}</p>
-                            @endif
                         </div>
+                    </td>
+                    <td class="footer-right" valign="bottom">
+                        <p>{{ $settings['skl_place'] ?? 'Banjaran' }}, {{ $announcementDate ? $announcementDate->locale('id')->translatedFormat($settings['skl_date_format'] ?? 'd F Y') : \Carbon\Carbon::now()->locale('id')->translatedFormat($settings['skl_date_format'] ?? 'd F Y') }}</p>
+                        <p>{{ $settings['skl_signature_text'] ?? 'Kepala Sekolah,' }}</p>
+
+                        @if($signature_path)
+                            <table style="width: 140px; border-collapse: collapse; margin: 4px auto; background: transparent; border: none;">
+                                <tr>
+                                    <td style="vertical-align: middle; padding: 0; border: none; background: transparent; text-align: left; width: 60%;">
+                                        <img src="{{ $signature_path }}" class="sig-img" alt="Tanda Tangan" style="height: 50px; width: auto; margin: 0;">
+                                    </td>
+                                    <td style="vertical-align: middle; padding: 0; border: none; background: transparent; text-align: left; width: 40%;">
+                                        @php
+                                            $qrText = "VERIFIKASI TANDATANGAN DIGITAL\n"
+                                                    . "Nama: " . $settings['principal_name'] . "\n"
+                                                    . "Jabatan: Kepala Sekolah\n"
+                                                    . "Sekolah: " . $settings['school_name'] . "\n"
+                                                    . "NIP: " . ($settings['principal_nip'] ?? '-');
+                                            $qrCode = base64_encode(\SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')->size(40)->generate($qrText));
+                                        @endphp
+                                        <img src="data:image/svg+xml;base64,{{ $qrCode }}" style="width: 40px; height: 40px; display: inline-block; vertical-align: middle;" alt="QR Code">
+                                    </td>
+                                </tr>
+                            </table>
+                        @else
+                            <div style="margin: 6px auto;">
+                                @php
+                                    $qrText = "VERIFIKASI TANDATANGAN DIGITAL\n"
+                                            . "Nama: " . $settings['principal_name'] . "\n"
+                                            . "Jabatan: Kepala Sekolah\n"
+                                            . "Sekolah: " . $settings['school_name'] . "\n"
+                                            . "NIP: " . ($settings['principal_nip'] ?? '-');
+                                    $qrCode = base64_encode(\SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')->size(55)->generate($qrText));
+                                @endphp
+                                <img src="data:image/svg+xml;base64,{{ $qrCode }}" style="width: 55px; height: 55px; display: inline-block;" alt="QR Code">
+                            </div>
+                        @endif
+
+                        <p style="font-weight: bold; text-decoration: underline; margin-bottom: 2px;">{{ $settings['principal_name'] }}</p>
+                        @if(!empty($settings['principal_nip']))
+                            <p style="color: #4b5563; font-size: 8.5pt; margin-top: 2px;">NIP. {{ $settings['principal_nip'] }}</p>
+                        @endif
                     </td>
                 </tr>
             </table>

@@ -146,6 +146,46 @@
                             </label>
                             <p class="form-help text-center">Format: PNG transparan (Max 2MB)</p>
                         </div>
+
+                        <!-- Student Login Background Upload -->
+                        <div class="upload-box">
+                            <label>Background Login Siswa</label>
+                            <div class="image-preview-container">
+                                @if(!empty($settings['student_login_bg']) && file_exists(public_path($settings['student_login_bg'])))
+                                    <img id="student_bg_preview" src="{{ asset($settings['student_login_bg']) }}" alt="Background Login Siswa" class="setting-img-preview" style="object-fit: cover;">
+                                @else
+                                    <div id="student_bg_placeholder" class="setting-img-placeholder">
+                                        <i class="fa-solid fa-image"></i>
+                                    </div>
+                                    <img id="student_bg_preview" src="#" alt="BG Siswa Preview" class="setting-img-preview" style="display:none; object-fit: cover;">
+                                @endif
+                            </div>
+                            <label for="student_login_bg" class="btn btn-secondary btn-sm mt-2 btn-block file-input-label">
+                                <i class="fa-solid fa-upload"></i> Unggah BG Siswa
+                                <input type="file" id="student_login_bg" name="student_login_bg" accept="image/*" class="file-input-hidden" onchange="previewImage(this, 'student_bg_preview', 'student_bg_placeholder')">
+                            </label>
+                            <p class="form-help text-center">Format: JPG/PNG (Max 2MB)</p>
+                        </div>
+
+                        <!-- Admin Login Background Upload -->
+                        <div class="upload-box">
+                            <label>Background Login Admin</label>
+                            <div class="image-preview-container">
+                                @if(!empty($settings['admin_login_bg']) && file_exists(public_path($settings['admin_login_bg'])))
+                                    <img id="admin_bg_preview" src="{{ asset($settings['admin_login_bg']) }}" alt="Background Login Admin" class="setting-img-preview" style="object-fit: cover;">
+                                @else
+                                    <div id="admin_bg_placeholder" class="setting-img-placeholder">
+                                        <i class="fa-solid fa-image"></i>
+                                    </div>
+                                    <img id="admin_bg_preview" src="#" alt="BG Admin Preview" class="setting-img-preview" style="display:none; object-fit: cover;">
+                                @endif
+                            </div>
+                            <label for="admin_login_bg" class="btn btn-secondary btn-sm mt-2 btn-block file-input-label">
+                                <i class="fa-solid fa-upload"></i> Unggah BG Admin
+                                <input type="file" id="admin_login_bg" name="admin_login_bg" accept="image/*" class="file-input-hidden" onchange="previewImage(this, 'admin_bg_preview', 'admin_bg_placeholder')">
+                            </label>
+                            <p class="form-help text-center">Format: JPG/PNG (Max 2MB)</p>
+                        </div>
                     </div>
                 </div>
             </div>

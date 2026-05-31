@@ -2,6 +2,11 @@
 
 @section('title', 'Info Kelulusan Online')
 
+@php
+    $studentBg = \App\Models\Setting::get('student_login_bg');
+    $hasStudentBg = !empty($studentBg) && file_exists(public_path($studentBg));
+@endphp
+
 @section('styles')
 <style>
     :root {
@@ -133,26 +138,34 @@
     }
 
     .timer-col {
-        background: var(--slate-900);
-        border-radius: 12px;
-        min-width: 60px;
-        padding: 10px;
+        border-radius: 16px;
+        min-width: 75px;
+        padding: 14px 10px;
         color: #ffffff;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .timer-col:hover {
+        transform: scale(1.05) translateY(-3px);
     }
 
     .timer-val {
-        font-size: 1.6rem;
-        font-weight: 800;
+        font-size: 2.1rem;
+        font-weight: 900;
         display: block;
         line-height: 1;
-        margin-bottom: 2px;
+        margin-bottom: 4px;
+        color: #ffffff;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.15);
     }
 
     .timer-lbl {
-        font-size: 0.55rem;
-        font-weight: 700;
-        color: var(--slate-500);
+        font-size: 0.65rem;
+        font-weight: 800;
+        color: rgba(255, 255, 255, 0.95);
         text-transform: uppercase;
+        letter-spacing: 0.05em;
     }
 
     /* Premium Form Inputs */
@@ -602,40 +615,59 @@
 @endsection
 
 @section('content')
-<div class="public-wrapper">
-    <!-- Header -->
-    <header class="portal-header">
-        @if(!empty($settings['school_logo']))
-            <img src="{{ asset($settings['school_logo']) }}" alt="Logo Sekolah" class="school-logo">
-        @else
-            <img src="https://upload.wikimedia.org/wikipedia/commons/e/e0/Lambang_Kabupaten_Tegal.png" alt="Logo Tegal" class="school-logo">
-        @endif
-        <h1 class="portal-title">Informasi Kelulusan Siswa</h1>
-        <p class="portal-subtitle">{{ $settings['school_name'] ?? 'Sistem Informasi Kelulusan' }}</p>
-    </header>
+<div style="{{ $hasStudentBg ? 'background-image: url(' . asset($studentBg) . '); background-size: cover; background-position: center; background-repeat: no-repeat; position: relative; min-height: 100vh; width: 100%; display: flex; align-items: center; justify-content: center;' : '' }}">
+    @if($hasStudentBg)
+        <!-- Blur and Dark overlay -->
+        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 1;"></div>
+    @endif
+    <div class="public-wrapper" style="position: relative; z-index: 2; width: 100%;">
+        <!-- Header -->
+        <header class="portal-header">
+            @if(!empty($settings['school_logo']))
+                <img src="{{ asset($settings['school_logo']) }}" alt="Logo Sekolah" class="school-logo">
+            @else
+                <img src="https://upload.wikimedia.org/wikipedia/commons/e/e0/Lambang_Kabupaten_Tegal.png" alt="Logo Tegal" class="school-logo">
+            @endif
+            <h1 class="portal-title" style="{{ $hasStudentBg ? 'color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.3);' : '' }}">{{ \App\Models\Setting::get('admin_panel_name', 'Informasi Kelulusan Siswa') }}</h1>
+            <p class="portal-subtitle" style="{{ $hasStudentBg ? 'color: rgba(255,255,255,0.85); text-shadow: 0 1px 2px rgba(0,0,0,0.2);' : '' }} text-transform: uppercase;">{{ $settings['school_name'] ?? 'SMP NURUL IHSAN BANJARAN' }}</p>
+        </header>
 
-    <!-- Pengecekan Panel -->
-    <div class="panel-card">
+        <!-- Pengecekan Panel -->
+        <div class="panel-card" style="{{ $hasStudentBg ? 'background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.4); box-shadow: 0 20px 45px rgba(0, 0, 0, 0.15);' : '' }}">
         <!-- Countdown Section -->
         @if(!$isAnnounced && $announcementDate)
-            <div class="countdown-box" style="margin-bottom: 0;">
-                <div class="countdown-box-title">
-                    <i class="fa-solid fa-hourglass-start"></i> Pengumuman Dibuka Dalam
+            <!-- Real-time Current Clock Card (Vibrant Gradient) -->
+            <div style="background: linear-gradient(135deg, #4f46e5, #ec4899); border-radius: 20px; padding: 14px 20px; margin-bottom: 24px; text-align: center; color: #ffffff; box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.35); animation: fadeInUp 0.6s ease-out; position: relative; overflow: hidden;">
+                <!-- Decorative background elements -->
+                <div style="position: absolute; top: -20px; left: -20px; width: 80px; height: 80px; background: rgba(255,255,255,0.12); border-radius: 50%;"></div>
+                <div style="position: absolute; bottom: -30px; right: -30px; width: 120px; height: 120px; background: rgba(255,255,255,0.08); border-radius: 50%;"></div>
+                
+                <div id="live-date" style="font-size: 1rem; font-weight: 700; color: #ffffff; margin-bottom: 4px; text-shadow: 0 1px 2px rgba(0,0,0,0.15);">
+                    Loading tanggal...
+                </div>
+                <div id="live-time" style="font-size: 2.2rem; font-weight: 900; color: #ffffff; letter-spacing: 1.5px; font-family: monospace; text-shadow: 0 2px 4px rgba(0,0,0,0.25);">
+                    00:00:00 WIB
+                </div>
+            </div>
+
+            <div class="countdown-box" style="margin-bottom: 0; {{ $hasStudentBg ? 'background: rgba(255, 255, 255, 0.45); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.5);' : '' }}">
+                <div class="countdown-box-title" style="color: var(--slate-800); font-weight: 800; font-size: 0.85rem;">
+                    <i class="fa-solid fa-hourglass-start" style="color: #4f46e5;"></i> PENGUMUMAN DIBUKA DALAM
                 </div>
                 <div class="timer-row">
-                    <div class="timer-col">
+                    <div class="timer-col" style="background: linear-gradient(135deg, #f59e0b, #ef4444); box-shadow: 0 6px 16px rgba(239, 68, 68, 0.25);">
                         <span id="days" class="timer-val">00</span>
                         <span class="timer-lbl">Hari</span>
                     </div>
-                    <div class="timer-col">
+                    <div class="timer-col" style="background: linear-gradient(135deg, #8b5cf6, #6366f1); box-shadow: 0 6px 16px rgba(99, 102, 241, 0.25);">
                         <span id="hours" class="timer-val">00</span>
                         <span class="timer-lbl">Jam</span>
                     </div>
-                    <div class="timer-col">
+                    <div class="timer-col" style="background: linear-gradient(135deg, #0ea5e9, #3b82f6); box-shadow: 0 6px 16px rgba(59, 130, 246, 0.25);">
                         <span id="minutes" class="timer-val">00</span>
                         <span class="timer-lbl">Menit</span>
                     </div>
-                    <div class="timer-col">
+                    <div class="timer-col" style="background: linear-gradient(135deg, #10b981, #06b6d4); box-shadow: 0 6px 16px rgba(16, 185, 129, 0.25);">
                         <span id="seconds" class="timer-val">00</span>
                         <span class="timer-lbl">Detik</span>
                     </div>
@@ -807,11 +839,12 @@
     @endif
 
     <!-- Footer -->
-    <footer class="portal-footer">
+    <footer class="portal-footer" style="{{ $hasStudentBg ? 'border-top: none !important; color: #ffffff !important; text-shadow: 0 1px 3px rgba(0,0,0,0.5);' : '' }}">
         <div>
             © {{ date('Y') }} {{ $settings['school_name'] ?? 'Sistem Informasi Kelulusan' }} - All Rights Reserved
         </div>
     </footer>
+    </div>
 </div>
 @endsection
 
@@ -863,6 +896,24 @@
         
         updateTimer();
         const timerInterval = setInterval(updateTimer, 1000);
+
+        // Live Running Clock (WIB)
+        const updateLiveClock = function() {
+            const optionsDate = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Jakarta' };
+            const optionsTime = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: 'Asia/Jakarta' };
+            
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('id-ID', optionsDate);
+            const timeStr = now.toLocaleTimeString('id-ID', optionsTime);
+            
+            const liveDateEl = document.getElementById("live-date");
+            const liveTimeEl = document.getElementById("live-time");
+            
+            if (liveDateEl) liveDateEl.innerText = dateStr;
+            if (liveTimeEl) liveTimeEl.innerText = timeStr + " WIB";
+        };
+        updateLiveClock();
+        setInterval(updateLiveClock, 1000);
     });
 </script>
 @endif
