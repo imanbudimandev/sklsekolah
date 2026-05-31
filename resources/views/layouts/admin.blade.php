@@ -134,7 +134,7 @@
                 @else
                     <i class="fa-solid fa-user-shield"></i>
                 @endif
-                <span>Panel Admin</span>
+                <span>{{ \App\Models\Setting::get('admin_panel_name', 'Panel Admin') }}</span>
             </div>
             
             <nav class="sidebar-nav">

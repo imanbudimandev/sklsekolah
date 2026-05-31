@@ -231,6 +231,7 @@ class AdminController extends Controller
             'principal_signature' => Setting::get('principal_signature'),
             'dashboard_logo' => Setting::get('dashboard_logo'),
             'favicon' => Setting::get('favicon'),
+            'admin_panel_name' => Setting::get('admin_panel_name', 'Panel Admin'),
         ];
 
         return view('admin.settings', compact('settings'));
@@ -249,6 +250,7 @@ class AdminController extends Controller
             'principal_signature' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'dashboard_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'favicon' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,ico|max:1024',
+            'admin_panel_name' => 'required|string|max:100',
         ]);
 
         Setting::set('school_name', $request->input('school_name'));
@@ -256,6 +258,7 @@ class AdminController extends Controller
         Setting::set('school_year', $request->input('school_year'));
         Setting::set('principal_name', $request->input('principal_name'));
         Setting::set('principal_nip', $request->input('principal_nip'));
+        Setting::set('admin_panel_name', $request->input('admin_panel_name', 'Panel Admin'));
         
         // Save date format properly
         $announcementDate = Carbon::parse($request->input('announcement_date'))->format('Y-m-d H:i:s');

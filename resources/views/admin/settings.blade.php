@@ -18,6 +18,11 @@
                         <input type="text" id="school_name" name="school_name" value="{{ old('school_name', $settings['school_name']) }}" required autocomplete="off">
                     </div>
                     <div class="form-group">
+                        <label for="admin_panel_name">Nama Panel Admin <span class="required">*</span></label>
+                        <input type="text" id="admin_panel_name" name="admin_panel_name" value="{{ old('admin_panel_name', $settings['admin_panel_name'] ?? 'Panel Admin') }}" required autocomplete="off">
+                        <p class="form-help">Nama yang akan tampil di bagian atas sidebar menu admin.</p>
+                    </div>
+                    <div class="form-group">
                         <label for="school_address">Alamat Sekolah</label>
                         <textarea id="school_address" name="school_address" rows="3" placeholder="Masukkan alamat lengkap sekolah beserta kode pos...">{{ old('school_address', $settings['school_address']) }}</textarea>
                     </div>
