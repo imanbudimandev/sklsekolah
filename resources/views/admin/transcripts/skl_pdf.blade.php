@@ -392,28 +392,38 @@
                             <p>{{ $settings['skl_place'] ?? 'Banjaran' }}, {{ $announcementDate ? $announcementDate->locale('id')->translatedFormat($settings['skl_date_format'] ?? 'd F Y') : \Carbon\Carbon::now()->locale('id')->translatedFormat($settings['skl_date_format'] ?? 'd F Y') }}</p>
                             <p>{{ $settings['skl_signature_text'] ?? 'Kepala Sekolah,' }}</p>
 
-                            <table style="width: 180px; border-collapse: collapse; margin: 4px 0; background: transparent; border: none;">
-                                <tr>
-                                    <td style="vertical-align: middle; padding: 0; border: none; background: transparent; text-align: left; width: 50%;">
-                                        @if($signature_path)
+                            @if($signature_path)
+                                <table style="width: 140px; border-collapse: collapse; margin: 4px 0; background: transparent; border: none;">
+                                    <tr>
+                                        <td style="vertical-align: middle; padding: 0; border: none; background: transparent; text-align: left; width: 60%;">
                                             <img src="{{ $signature_path }}" class="sig-img" alt="Tanda Tangan" style="height: 50px; width: auto; margin: 0;">
-                                        @else
-                                            <div style="height: 50px;"></div>
-                                        @endif
-                                    </td>
-                                    <td style="vertical-align: middle; padding: 0; border: none; background: transparent; text-align: right; width: 50%;">
-                                        @php
-                                            $qrText = "VERIFIKASI TANDATANGAN DIGITAL\n"
-                                                    . "Nama: " . $settings['principal_name'] . "\n"
-                                                    . "Jabatan: Kepala Sekolah\n"
-                                                    . "Sekolah: " . $settings['school_name'] . "\n"
-                                                    . "NIP: " . ($settings['principal_nip'] ?? '-');
-                                            $qrCode = base64_encode(\SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')->size(50)->generate($qrText));
-                                        @endphp
-                                        <img src="data:image/svg+xml;base64,{{ $qrCode }}" style="width: 50px; height: 50px; display: inline-block; vertical-align: middle;" alt="QR Code">
-                                    </td>
-                                </tr>
-                            </table>
+                                        </td>
+                                        <td style="vertical-align: middle; padding: 0; border: none; background: transparent; text-align: left; width: 40%;">
+                                            @php
+                                                $qrText = "VERIFIKASI TANDATANGAN DIGITAL\n"
+                                                        . "Nama: " . $settings['principal_name'] . "\n"
+                                                        . "Jabatan: Kepala Sekolah\n"
+                                                        . "Sekolah: " . $settings['school_name'] . "\n"
+                                                        . "NIP: " . ($settings['principal_nip'] ?? '-');
+                                                $qrCode = base64_encode(\SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')->size(40)->generate($qrText));
+                                            @endphp
+                                            <img src="data:image/svg+xml;base64,{{ $qrCode }}" style="width: 40px; height: 40px; display: inline-block; vertical-align: middle;" alt="QR Code">
+                                        </td>
+                                    </tr>
+                                </table>
+                            @else
+                                <div style="margin: 6px 0; padding-left: 10px;">
+                                    @php
+                                        $qrText = "VERIFIKASI TANDATANGAN DIGITAL\n"
+                                                . "Nama: " . $settings['principal_name'] . "\n"
+                                                . "Jabatan: Kepala Sekolah\n"
+                                                . "Sekolah: " . $settings['school_name'] . "\n"
+                                                . "NIP: " . ($settings['principal_nip'] ?? '-');
+                                        $qrCode = base64_encode(\SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')->size(55)->generate($qrText));
+                                    @endphp
+                                    <img src="data:image/svg+xml;base64,{{ $qrCode }}" style="width: 55px; height: 55px; display: inline-block;" alt="QR Code">
+                                </div>
+                            @endif
 
                             <p style="font-weight: bold; text-decoration: underline; margin-bottom: 2px;">{{ $settings['principal_name'] }}</p>
                             @if(!empty($settings['principal_nip']))
