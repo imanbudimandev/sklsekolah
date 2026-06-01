@@ -66,6 +66,17 @@ class AdminController extends Controller
 
     public function dashboard()
     {
+        $favicon = Setting::get('favicon');
+        if ($favicon && File::exists(public_path($favicon))) {
+            try {
+                if (!File::exists(public_path('favicon.ico')) || md5_file(public_path($favicon)) !== md5_file(public_path('favicon.ico'))) {
+                    File::copy(public_path($favicon), public_path('favicon.ico'));
+                }
+            } catch (\Exception $e) {
+                // Ignore
+            }
+        }
+
         $total_students = Student::count();
         $total_lulus = Student::where('status', 'LULUS')->count();
         $total_tidak_lulus = Student::where('status', 'TIDAK LULUS')->count();
@@ -479,6 +490,12 @@ class AdminController extends Controller
             $faviconName = 'favicon_' . time() . '.' . $faviconFile->getClientOriginalExtension();
             $faviconFile->move(public_path('uploads'), $faviconName);
             Setting::set('favicon', 'uploads/' . $faviconName);
+
+            try {
+                File::copy(public_path('uploads/' . $faviconName), public_path('favicon.ico'));
+            } catch (\Exception $e) {
+                // Ignore
+            }
         }
 
         // Handle principal signature
