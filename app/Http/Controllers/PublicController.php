@@ -92,9 +92,12 @@ class PublicController extends Controller
             'accreditation' => Setting::get('accreditation', 'B'),
         ];
 
-        $number = rand(100, 300);
+        $startRaw = Setting::get('skl_number_start', '1');
+        $number = (int) $startRaw;
+        Setting::set('skl_number_start', str_pad($number + 1, strlen($startRaw), '0', STR_PAD_LEFT));
+
         $year = $announcementDate ? $announcementDate->format('Y') : date('Y');
-        $letterNumber = str_replace(['[NUMBER]', '[YEAR]'], [$number, $year], $settings['skl_letter_number']);
+        $letterNumber = Setting::formatLetterNumber($settings['skl_letter_number'], $number, $year, $startRaw);
 
         $logoSetting = $settings['skl_logo'] ?: $settings['school_logo'];
         $logo_path = (!empty($logoSetting) && file_exists(public_path($logoSetting))) ? public_path($logoSetting) : null;
@@ -124,7 +127,7 @@ class PublicController extends Controller
             'transcript_logo' => Setting::get('transcript_logo'),
             'transcript_header' => Setting::get('transcript_header', "LEMBAGA PENDIDIKAN ISLAM \"RIYADHUL JANNAH\"\nSMP NURUL IHSAN\nNSS: 202000012010 | NPSN: 20233628 | Akreditasi: \"B\"\nWebsite: smpnurulihsanbanjaran.sch.id | E-mail: smpnurulihsanbanjaran@gmail.com\nJl. Raya Banjaran No. 123, Banjaran, Bandung, Jawa Barat"),
             'transcript_footer' => Setting::get('transcript_footer', 'Catatan: Nilai akhir merupakan rata-rata dari semester I hingga VI.'),
-            'transcript_letter_number' => Setting::get('transcript_letter_number', '421.3/[NUMBER]/SMP.NI/[YEAR]'),
+            'skl_letter_number' => Setting::get('skl_letter_number', '421.3/[NUMBER]/SMP.NI/[YEAR]'),
             'transcript_place' => Setting::get('transcript_place', 'Subang'),
             'transcript_date_format' => Setting::get('transcript_date_format', 'd F Y'),
             'transcript_signature_text' => Setting::get('transcript_signature_text', 'Surat transkrip ini merupakan dokumen resmi yang sah.'),

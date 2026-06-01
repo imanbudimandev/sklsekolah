@@ -62,7 +62,24 @@
                     </div>
                 </div>
 
-                <!-- Section 4: Logo & Tanda Tangan -->
+                <!-- Section 4: Nomor Surat -->
+                <div class="settings-section">
+                    <h3 class="section-title"><i class="fa-solid fa-file-lines"></i> Nomor Surat (SKL & Transkrip)</h3>
+                    <div class="form-group">
+                        <label for="letter_number_format">Format Nomor Surat</label>
+                        <input type="text" id="letter_number_format" name="letter_number_format" value="{{ old('letter_number_format', $settings['letter_number_format']) }}" placeholder="421.3/[NUMBER:3]/SMP.NI/[YEAR]">
+                        <p class="form-help">
+                            Gunakan <code>[NUMBER]</code> atau <code>[NUMBER:3]</code> (padding digit) untuk nomor urut, <code>[YEAR]</code> untuk tahun.
+                        </p>
+                    </div>
+                    <div class="form-group">
+                        <label for="letter_number_start">Nomor Awal</label>
+                        <input type="text" id="letter_number_start" name="letter_number_start" value="{{ old('letter_number_start', $settings['letter_number_start']) }}" placeholder="1" pattern="[0-9]+">
+                        <p class="form-help">Nomor akan otomatis naik setiap kali surat dicetak.</p>
+                    </div>
+                </div>
+
+                <!-- Section 5: Logo & Tanda Tangan -->
                 <div class="settings-section">
                     <h3 class="section-title"><i class="fa-solid fa-images"></i> Logo, Favicon & Stempel</h3>
                     

@@ -313,7 +313,7 @@
         <!-- Title -->
         <div class="cert-title">
             <h3>SURAT KETERANGAN LULUS</h3>
-            <p class="letter-number">Nomor: {{ $letterNumber }}</p>
+            <p class="letter-number">Nomor: {{ $letterNumbers[$student->id] ?? $letterNumber ?? '-' }}</p>
         </div>
 
         <!-- Body -->

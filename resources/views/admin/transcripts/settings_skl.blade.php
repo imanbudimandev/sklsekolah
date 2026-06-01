@@ -132,13 +132,8 @@
             @endif
 
             <div class="help-card">
-                <i class="fa-solid fa-circle-info"></i> <strong>Petunjuk Pengisian Nomor Surat SKL:</strong>
-                Anda dapat menggunakan kode pengganti (placeholder) berikut untuk menghasilkan nomor surat dinamis:
-                <ul>
-                    <li><code>[NUMBER]</code> - Akan digantikan otomatis dengan nomor acak unik/peserta (misal: 128).</li>
-                    <li><code>[YEAR]</code> - Akan digantikan dengan tahun lulus berjalan (misal: {{ date('Y') }}).</li>
-                </ul>
-                Contoh: <code>421.3/[NUMBER]/SMP.NI/[YEAR]</code> menghasilkan <code>421.3/128/SMP.NI/{{ date('Y') }}</code>.
+                <i class="fa-solid fa-circle-info"></i> <strong>Pengaturan Nomor Surat</strong>
+                Pengaturan format nomor surat dan nomor awal telah dipindah ke <a href="{{ route('admin.settings') }}">Pengaturan Aplikasi</a> &mdash; berlaku untuk SKL dan Transkrip.
             </div>
 
             <form action="{{ route('admin.skl.update_settings') }}" method="POST" enctype="multipart/form-data">
@@ -195,36 +190,7 @@
                         </div>
                     </div>
 
-                    <!-- Document Details Section -->
-                    <div>
-                        <h5><i class="fa-solid fa-file-contract"></i> Parameter Dokumen SKL</h5>
-                        <div class="form-row-flex">
-                            <div class="form-group">
-                                <label>Format Nomor Surat SKL</label>
-                                <input type="text" name="skl_letter_number" id="skl_letter_number" class="form-control" placeholder="421.3/[NUMBER]/SMP.NI/[YEAR]" value="{{ old('skl_letter_number', $settings['skl_letter_number']) }}">
-                            </div>
-                            <div class="form-group">
-                                <label>Tempat Penandatanganan</label>
-                                <input type="text" name="skl_place" id="skl_place" class="form-control" placeholder="Banjaran" value="{{ old('skl_place', $settings['skl_place']) }}">
-                            </div>
-                            <div class="form-group">
-                                <label>Format Tampilan Tanggal</label>
-                                <select name="skl_date_format" id="skl_date_format" class="form-control">
-                                    <option value="d F Y" {{ $settings['skl_date_format'] == 'd F Y' ? 'selected' : '' }}>29 Mei 2026</option>
-                                    <option value="j F Y" {{ $settings['skl_date_format'] == 'j F Y' ? 'selected' : '' }}>29 Mei 2026</option>
-                                    <option value="d M Y" {{ $settings['skl_date_format'] == 'd M Y' ? 'selected' : '' }}>29 Mei 2026</option>
-                                    <option value="d/m/Y" {{ $settings['skl_date_format'] == 'd/m/Y' ? 'selected' : '' }}>29/05/2026</option>
-                                    <option value="d-m-Y" {{ $settings['skl_date_format'] == 'd-m-Y' ? 'selected' : '' }}>29-05-2026</option>
-                                    <option value="Y-m-d" {{ $settings['skl_date_format'] == 'Y-m-d' ? 'selected' : '' }}>2026-05-29</option>
-                                </select>
-                            </div>
-                        </div>
 
-                        <div class="form-group" style="margin-top: 15px;">
-                            <label>Jabatan Penandatangan (Teks Tanda Tangan)</label>
-                            <input type="text" name="skl_signature_text" id="skl_signature_text" class="form-control" placeholder="Kepala Sekolah," value="{{ old('skl_signature_text', $settings['skl_signature_text']) }}">
-                        </div>
-                    </div>
 
                     <!-- Texts Section -->
                     <div style="margin-top: 30px;">
@@ -256,6 +222,33 @@
                             <label>Teks Sebelum Tanda Tangan (Setelah Tabel Nilai)</label>
                             <textarea name="skl_before_ttd_text" id="skl_before_ttd_text" class="form-control rich-text" rows="3" placeholder="SKL ini dapat digunakan untuk keperluan Penerimaan Peserta Didik Baru (PPDB)...">{{ old('skl_before_ttd_text', $settings['skl_before_ttd_text']) }}</textarea>
                             <small class="text-muted">Teks yang muncul setelah tabel nilai, sebelum tanda tangan.</small>
+                        </div>
+                    </div>
+
+                    <!-- Document Details Section -->
+                    <div>
+                        <h5><i class="fa-solid fa-file-contract"></i> Detail Dokumen SKL</h5>
+                        <div class="form-row-flex">
+                            <div class="form-group">
+                                <label>Tempat Penandatanganan</label>
+                                <input type="text" name="skl_place" id="skl_place" class="form-control" placeholder="Banjaran" value="{{ old('skl_place', $settings['skl_place']) }}">
+                            </div>
+                            <div class="form-group">
+                                <label>Format Tampilan Tanggal</label>
+                                <select name="skl_date_format" id="skl_date_format" class="form-control">
+                                    <option value="d F Y" {{ $settings['skl_date_format'] == 'd F Y' ? 'selected' : '' }}>29 Mei 2026</option>
+                                    <option value="j F Y" {{ $settings['skl_date_format'] == 'j F Y' ? 'selected' : '' }}>29 Mei 2026</option>
+                                    <option value="d M Y" {{ $settings['skl_date_format'] == 'd M Y' ? 'selected' : '' }}>29 Mei 2026</option>
+                                    <option value="d/m/Y" {{ $settings['skl_date_format'] == 'd/m/Y' ? 'selected' : '' }}>29/05/2026</option>
+                                    <option value="d-m-Y" {{ $settings['skl_date_format'] == 'd-m-Y' ? 'selected' : '' }}>29-05-2026</option>
+                                    <option value="Y-m-d" {{ $settings['skl_date_format'] == 'Y-m-d' ? 'selected' : '' }}>2026-05-29</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-top: 15px;">
+                            <label>Jabatan Penandatangan (Teks Tanda Tangan)</label>
+                            <input type="text" name="skl_signature_text" id="skl_signature_text" class="form-control" placeholder="Kepala Sekolah," value="{{ old('skl_signature_text', $settings['skl_signature_text']) }}">
                         </div>
                     </div>
 
@@ -382,9 +375,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Handle letter number
         const letterVal = letterInput.value || '421.3/[NUMBER]/SMP.NI/[YEAR]';
-        const numRand = Math.floor(Math.random() * (300 - 100 + 1)) + 100;
+        const start = parseInt(document.getElementById('skl_number_start').value) || 1;
         const yearNow = new Date().getFullYear();
-        previewLetter.textContent = letterVal.replace('[NUMBER]', numRand).replace('[YEAR]', yearNow);
+        previewLetter.textContent = letterVal.replace(/\[NUMBER(?::(\d+))?\]/g, function(m, w) {
+            const num = start.toString();
+            return w ? num.padStart(parseInt(w), '0') : num;
+        }).replace('[YEAR]', yearNow);
 
         // Place and dates
         previewPlace.textContent = placeInput.value || 'Banjaran';

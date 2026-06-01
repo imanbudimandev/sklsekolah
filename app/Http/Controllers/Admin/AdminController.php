@@ -387,6 +387,8 @@ class AdminController extends Controller
             'principal_name' => Setting::get('principal_name', ''),
             'principal_nip' => Setting::get('principal_nip', ''),
             'announcement_date' => Setting::get('announcement_date', ''),
+            'letter_number_format' => Setting::get('skl_letter_number', '421.3/[NUMBER:3]/SMP.NI/[YEAR]'),
+            'letter_number_start' => Setting::get('skl_number_start', '1'),
             'school_logo' => Setting::get('school_logo'),
             'principal_signature' => Setting::get('principal_signature'),
             'dashboard_logo' => Setting::get('dashboard_logo'),
@@ -408,6 +410,8 @@ class AdminController extends Controller
             'principal_name' => 'required',
             'principal_nip' => 'nullable',
             'announcement_date' => 'required',
+            'letter_number_format' => 'nullable|string',
+            'letter_number_start' => 'nullable|string',
             'school_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'principal_signature' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'dashboard_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
@@ -423,6 +427,8 @@ class AdminController extends Controller
         Setting::set('principal_name', $request->input('principal_name'));
         Setting::set('principal_nip', $request->input('principal_nip'));
         Setting::set('admin_panel_name', $request->input('admin_panel_name', 'Panel Admin'));
+        Setting::set('skl_letter_number', $request->input('letter_number_format', '421.3/[NUMBER:3]/SMP.NI/[YEAR]'));
+        Setting::set('skl_number_start', $request->input('letter_number_start', '1'));
         
         // Save date format properly
         $announcementDate = Carbon::parse($request->input('announcement_date'))->format('Y-m-d H:i:s');
@@ -527,7 +533,6 @@ class AdminController extends Controller
             'transcript_logo' => Setting::get('transcript_logo'),
             'transcript_header' => Setting::get('transcript_header', "LEMBAGA PENDIDIKAN ISLAM \"RIYADHUL JANNAH\"\nSMP NURUL IHSAN\nNSS: 202000012010 | NPSN: 20233628 | Akreditasi: \"B\"\nWebsite: smpnurulihsanbanjaran.sch.id | E-mail: smpnurulihsanbanjaran@gmail.com\nJl. Raya Lempar KM 06 Desa Cirangkong Kec. Cijambe Kab. Subang"),
             'transcript_footer' => Setting::get('transcript_footer', 'Catatan: Nilai akhir merupakan rata-rata dari semester I hingga VI.'),
-            'transcript_letter_number' => Setting::get('transcript_letter_number', '421.3/[NUMBER]/SMP.NI/[YEAR]'),
             'transcript_place' => Setting::get('transcript_place', 'Subang'),
             'transcript_date_format' => Setting::get('transcript_date_format', 'd F Y'),
             'transcript_signature_text' => Setting::get('transcript_signature_text', 'Surat transkrip ini merupakan dokumen resmi yang sah.'),
@@ -544,7 +549,6 @@ class AdminController extends Controller
             'transcript_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'transcript_header' => 'nullable|string',
             'transcript_footer' => 'nullable|string',
-            'transcript_letter_number' => 'nullable|string',
             'transcript_place' => 'nullable|string',
             'transcript_date_format' => 'nullable|string',
             'transcript_signature_text' => 'nullable|string',
@@ -554,7 +558,6 @@ class AdminController extends Controller
 
         Setting::set('transcript_header', $request->input('transcript_header'));
         Setting::set('transcript_footer', $request->input('transcript_footer'));
-        Setting::set('transcript_letter_number', $request->input('transcript_letter_number'));
         Setting::set('transcript_place', $request->input('transcript_place'));
         Setting::set('transcript_date_format', $request->input('transcript_date_format', 'd F Y'));
         Setting::set('transcript_signature_text', $request->input('transcript_signature_text'));
@@ -596,7 +599,6 @@ class AdminController extends Controller
         $settings = [
             'skl_logo' => Setting::get('skl_logo'),
             'skl_header' => Setting::get('skl_header', "YAYASAN NURUL IHSAN BANJARAN\nSMP NURUL IHSAN\nJl. Raya Lempar KM 06 Desa Cirangkong Kec. Cijambe Kab. Subang\nWebsite: smpnurulihsanbanjaran.sch.id | E-mail: smpnurulihsanbanjaran@gmail.com"),
-            'skl_letter_number' => Setting::get('skl_letter_number', '421.3/[NUMBER]/SMP.NI/[YEAR]'),
             'skl_place' => Setting::get('skl_place', 'Banjaran'),
             'skl_date_format' => Setting::get('skl_date_format', 'd F Y'),
             'skl_signature_text' => Setting::get('skl_signature_text', 'Kepala Sekolah,'),
@@ -631,8 +633,7 @@ class AdminController extends Controller
         ]);
 
         Setting::set('skl_header', $request->input('skl_header'));
-        Setting::set('skl_letter_number', $request->input('skl_letter_number', '421.3/[NUMBER]/SMP.NI/[YEAR]'));
-        Setting::set('skl_place', $request->input('skl_place', 'Banjaran'));
+        Setting::set('skl_place', 'Banjaran');
         Setting::set('skl_date_format', $request->input('skl_date_format', 'd F Y'));
         Setting::set('skl_signature_text', $request->input('skl_signature_text', 'Kepala Sekolah'));
         Setting::set('skl_header_type', $request->input('skl_header_type', 'text'));
@@ -1489,7 +1490,7 @@ class AdminController extends Controller
             'transcript_logo' => Setting::get('transcript_logo'),
             'transcript_header' => Setting::get('transcript_header', "LEMBAGA PENDIDIKAN ISLAM \"RIYADHUL JANNAH\"\nSMP NURUL IHSAN\nNSS: 202000012010 | NPSN: 20233628 | Akreditasi: \"B\"\nWebsite: smpnurulihsanbanjaran.sch.id | E-mail: smpnurulihsanbanjaran@gmail.com\nJl. Raya Banjaran No. 123, Banjaran, Bandung, Jawa Barat"),
             'transcript_footer' => Setting::get('transcript_footer', 'Catatan: Nilai akhir merupakan rata-rata dari semester I hingga VI.'),
-            'transcript_letter_number' => Setting::get('transcript_letter_number', '421.3/[NUMBER]/SMP.NI/[YEAR]'),
+            'skl_letter_number' => Setting::get('skl_letter_number', '421.3/[NUMBER]/SMP.NI/[YEAR]'),
             'transcript_place' => Setting::get('transcript_place', 'Subang'),
             'transcript_date_format' => Setting::get('transcript_date_format', 'd F Y'),
             'transcript_signature_text' => Setting::get('transcript_signature_text', 'Surat transkrip ini merupakan dokumen resmi yang sah.'),
@@ -1533,7 +1534,7 @@ class AdminController extends Controller
             'transcript_logo' => Setting::get('transcript_logo'),
             'transcript_header' => Setting::get('transcript_header', '<div style="text-align: center; font-family: Arial, sans-serif;"><h4 style="margin: 0; color: #0d9488; font-size: 9pt; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;">LEMBAGA PENDIDIKAN ISLAM &ldquo;RIYADHUL JANNAH&rdquo;</h4><h2 style="margin: 5px 0; font-size: 14pt; font-weight: 800; text-transform: uppercase;">SMP NURUL IHSAN</h2><p style="margin: 0; font-size: 8.5pt; color: #4b5563;">NSS: 202000012010 &bull; NPSN: 20233628 &bull; Akreditasi: &ldquo;B&rdquo;</p><p style="margin: 0; font-size: 8pt; color: #6b7280;">Website: smpnurulihsanbanjaran.sch.id &bull; E-mail: smpnurulihsanbanjaran@gmail.com</p><p style="margin: 3px 0 0 0; font-size: 8.5pt; color: #4b5563; font-weight: 500;">Jl. Raya Banjaran No. 123, Banjaran, Bandung, Jawa Barat</p></div>'),
             'transcript_footer' => Setting::get('transcript_footer', 'Catatan: Nilai akhir merupakan rata-rata dari semester I hingga VI.'),
-            'transcript_letter_number' => Setting::get('transcript_letter_number', '421.3/[NUMBER]/SMP.NI/[YEAR]'),
+            'skl_letter_number' => Setting::get('skl_letter_number', '421.3/[NUMBER]/SMP.NI/[YEAR]'),
             'transcript_place' => Setting::get('transcript_place', 'Subang'),
             'transcript_date_format' => Setting::get('transcript_date_format', 'd F Y'),
             'transcript_signature_text' => Setting::get('transcript_signature_text', 'Surat transkrip ini merupakan dokumen resmi yang sah.'),
@@ -1587,7 +1588,7 @@ class AdminController extends Controller
             'transcript_logo' => Setting::get('transcript_logo'),
             'transcript_header' => Setting::get('transcript_header', '<div style="text-align: center; font-family: Arial, sans-serif;"><h4 style="margin: 0; color: #0d9488; font-size: 9pt; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;">LEMBAGA PENDIDIKAN ISLAM &ldquo;RIYADHUL JANNAH&rdquo;</h4><h2 style="margin: 5px 0; font-size: 14pt; font-weight: 800; text-transform: uppercase;">SMP NURUL IHSAN</h2><p style="margin: 0; font-size: 8.5pt; color: #4b5563;">NSS: 202000012010 &bull; NPSN: 20233628 &bull; Akreditasi: &ldquo;B&rdquo;</p><p style="margin: 0; font-size: 8pt; color: #6b7280;">Website: smpnurulihsanbanjaran.sch.id &bull; E-mail: smpnurulihsanbanjaran@gmail.com</p><p style="margin: 3px 0 0 0; font-size: 8.5pt; color: #4b5563; font-weight: 500;">Jl. Raya Banjaran No. 123, Banjaran, Bandung, Jawa Barat</p></div>'),
             'transcript_footer' => Setting::get('transcript_footer', 'Catatan: Nilai akhir merupakan rata-rata dari semester I hingga VI.'),
-            'transcript_letter_number' => Setting::get('transcript_letter_number', '421.3/[NUMBER]/SMP.NI/[YEAR]'),
+            'skl_letter_number' => Setting::get('skl_letter_number', '421.3/[NUMBER]/SMP.NI/[YEAR]'),
             'transcript_place' => Setting::get('transcript_place', 'Subang'),
             'transcript_date_format' => Setting::get('transcript_date_format', 'd F Y'),
             'transcript_signature_text' => Setting::get('transcript_signature_text', 'Surat transkrip ini merupakan dokumen resmi yang sah.'),
@@ -1642,9 +1643,12 @@ class AdminController extends Controller
         $signature_path = (!empty($settings['principal_signature']) && file_exists(public_path($settings['principal_signature']))) ? public_path($settings['principal_signature']) : null;
 
         // Parse dynamic letter number
-        $number = rand(100, 300);
+        $startRaw = Setting::get('skl_number_start', '1');
+        $number = (int) $startRaw;
+        Setting::set('skl_number_start', str_pad($number + 1, strlen($startRaw), '0', STR_PAD_LEFT));
+
         $year = $announcementDate ? $announcementDate->format('Y') : date('Y');
-        $letterNumber = str_replace(['[NUMBER]', '[YEAR]'], [$number, $year], $settings['skl_letter_number']);
+        $letterNumber = Setting::formatLetterNumber($settings['skl_letter_number'], $number, $year, $startRaw);
 
         $pdf = Pdf::loadView('admin.transcripts.skl_pdf', compact('student', 'subjects', 'announcementDate', 'settings', 'logo_path', 'signature_path', 'letterNumber'));
 
@@ -1690,10 +1694,12 @@ class AdminController extends Controller
         $logo_path = (!empty($logoSetting) && file_exists(public_path($logoSetting))) ? public_path($logoSetting) : null;
         $signature_path = (!empty($settings['principal_signature']) && file_exists(public_path($settings['principal_signature']))) ? public_path($settings['principal_signature']) : null;
 
-        // Parse dynamic letter number
-        $number = rand(100, 300);
+        // Parse dynamic letter number — preview tidak increment
+        $startRaw = Setting::get('skl_number_start', '1');
+        $number = (int) $startRaw;
+
         $year = $announcementDate ? $announcementDate->format('Y') : date('Y');
-        $letterNumber = str_replace(['[NUMBER]', '[YEAR]'], [$number, $year], $settings['skl_letter_number']);
+        $letterNumber = Setting::formatLetterNumber($settings['skl_letter_number'], $number, $year, $startRaw);
 
         $pdf = Pdf::loadView('admin.transcripts.skl_pdf', compact('student', 'subjects', 'announcementDate', 'settings', 'logo_path', 'signature_path', 'letterNumber'));
 
@@ -1746,13 +1752,18 @@ class AdminController extends Controller
         $logo_path = (!empty($logoSetting) && file_exists(public_path($logoSetting))) ? public_path($logoSetting) : null;
         $signature_path = (!empty($settings['principal_signature']) && file_exists(public_path($settings['principal_signature']))) ? public_path($settings['principal_signature']) : null;
 
-        $number = rand(100, 300);
         $year = $announcementDate ? $announcementDate->format('Y') : date('Y');
-        $letterNumber = str_replace(['[NUMBER]', '[YEAR]'], [$number, $year], $settings['skl_letter_number']);
+        $letterNumbers = [];
+        foreach ($students as $stu) {
+            $startRaw = Setting::get('skl_number_start', '1');
+            $num = (int) $startRaw;
+            Setting::set('skl_number_start', str_pad($num + 1, strlen($startRaw), '0', STR_PAD_LEFT));
+            $letterNumbers[$stu->id] = Setting::formatLetterNumber($settings['skl_letter_number'], $num, $year, $startRaw);
+        }
 
         $schoolYear = Setting::get('school_year', date('Y') . '/' . (date('Y') + 1));
 
-        $pdf = Pdf::loadView('admin.transcripts.skl_pdf', compact('students', 'subjects', 'announcementDate', 'settings', 'logo_path', 'signature_path', 'letterNumber', 'schoolYear'));
+        $pdf = Pdf::loadView('admin.transcripts.skl_pdf', compact('students', 'subjects', 'announcementDate', 'settings', 'logo_path', 'signature_path', 'letterNumbers', 'schoolYear'));
 
         $filename = "skl_masal_" . date('Ymd_His') . ".pdf";
         return $pdf->download($filename);

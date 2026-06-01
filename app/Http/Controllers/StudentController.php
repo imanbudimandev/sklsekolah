@@ -182,9 +182,12 @@ class StudentController extends Controller
         $logo_path = (!empty($logoSetting) && file_exists(public_path($logoSetting))) ? public_path($logoSetting) : null;
         $signature_path = (!empty($settings['principal_signature']) && file_exists(public_path($settings['principal_signature']))) ? public_path($settings['principal_signature']) : null;
 
-        $number = rand(100, 300);
+        // Preview — tidak increment nomor
+        $startRaw = Setting::get('skl_number_start', '1');
+        $number = (int) $startRaw;
+
         $year = $announcementDate ? $announcementDate->format('Y') : date('Y');
-        $letterNumber = str_replace(['[NUMBER]', '[YEAR]'], [$number, $year], $settings['skl_letter_number']);
+        $letterNumber = Setting::formatLetterNumber($settings['skl_letter_number'], $number, $year, $startRaw);
 
         $pdf = Pdf::loadView('admin.transcripts.skl_pdf', compact('student', 'subjects', 'announcementDate', 'settings', 'logo_path', 'signature_path', 'letterNumber'));
         return $pdf->stream();
@@ -209,7 +212,7 @@ class StudentController extends Controller
             'transcript_logo' => Setting::get('transcript_logo'),
             'transcript_header' => Setting::get('transcript_header', ''),
             'transcript_footer' => Setting::get('transcript_footer', ''),
-            'transcript_letter_number' => Setting::get('transcript_letter_number', '421.3/[NUMBER]/SMP.NI/[YEAR]'),
+            'skl_letter_number' => Setting::get('skl_letter_number', '421.3/[NUMBER]/SMP.NI/[YEAR]'),
             'transcript_place' => Setting::get('transcript_place', 'Subang'),
             'transcript_date_format' => Setting::get('transcript_date_format', 'd F Y'),
             'transcript_signature_text' => Setting::get('transcript_signature_text', ''),

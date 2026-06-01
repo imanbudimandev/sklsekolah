@@ -172,10 +172,6 @@
                         <h5><i class="fa-solid fa-file-contract"></i> Detail Dokumen</h5>
                         <div class="form-row-flex">
                             <div class="form-group">
-                                <label>Nomor Surat</label>
-                                <input type="text" name="transcript_letter_number" id="transcript_letter_number" class="form-control" placeholder="NO/YY/SMA/001" value="{{ old('transcript_letter_number', $settings['transcript_letter_number']) }}">
-                            </div>
-                            <div class="form-group">
                                 <label>Tempat Penandatangan</label>
                                 <input type="text" name="transcript_place" id="transcript_place" class="form-control" placeholder="Jakarta" value="{{ old('transcript_place', $settings['transcript_place']) }}">
                             </div>
@@ -226,7 +222,6 @@
                     </div>
                     <hr class="preview-divider">
                     <div class="preview-meta">
-                        <strong>Nomor Surat:</strong> <span id="preview-letter-number">-</span><br>
                         <strong>Tempat, Tanggal:</strong> <span id="preview-place">-</span>, <span id="preview-date">-</span>
                     </div>
                     <hr class="preview-divider">
@@ -250,13 +245,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const headerInput = document.getElementById('transcript_header');
     const footerInput = document.getElementById('transcript_footer');
     const signatureTextInput = document.getElementById('transcript_signature_text');
-    const letterInput = document.getElementById('transcript_letter_number');
     const placeInput = document.getElementById('transcript_place');
     const dateFormatInput = document.getElementById('transcript_date_format');
     const previewHeader = document.getElementById('preview-header');
     const previewFooter = document.getElementById('preview-footer');
     const previewSignatureText = document.getElementById('preview-signature-text');
-    const previewLetter = document.getElementById('preview-letter-number');
     const previewPlace = document.getElementById('preview-place');
     const previewDate = document.getElementById('preview-date');
     const logoInput = document.getElementById('transcript_logo');
@@ -276,7 +269,6 @@ document.addEventListener('DOMContentLoaded', function() {
         previewHeader.innerHTML = headerInput.value || previewHeader.innerHTML || '<em>Header akan tampil di sini</em>';
         previewFooter.innerHTML = footerInput.value || previewFooter.innerHTML || '';
         previewSignatureText.innerHTML = signatureTextInput.value ? signatureTextInput.value.replace(/\n/g, '<br>') : '';
-        previewLetter.textContent = letterInput.value || '-';
         previewPlace.textContent = placeInput.value || '-';
         const fmt = dateFormatInput.value || 'd F Y';
         previewDate.textContent = formatDate(fmt);
