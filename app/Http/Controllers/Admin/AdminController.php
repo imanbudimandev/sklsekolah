@@ -650,7 +650,7 @@ class AdminController extends Controller
         ]);
 
         Setting::set('skl_header', $request->input('skl_header'));
-        Setting::set('skl_place', 'Banjaran');
+        Setting::set('skl_place', $request->input('skl_place', 'Banjaran'));
         Setting::set('skl_date_format', $request->input('skl_date_format', 'd F Y'));
         Setting::set('skl_signature_text', $request->input('skl_signature_text', 'Kepala Sekolah'));
         Setting::set('skl_header_type', $request->input('skl_header_type', 'text'));
