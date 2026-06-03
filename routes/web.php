@@ -42,6 +42,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::post('/students/import', [AdminController::class, 'importStudentsExcel'])->name('students.import');
     Route::post('/students/import-photos', [AdminController::class, 'importStudentPhotosZip'])->name('students.import_photos');
     Route::get('/students/export', [AdminController::class, 'exportStudentsExcel'])->name('students.export');
+    Route::get('/students/pdf', [AdminController::class, 'exportStudentsPdf'])->name('students.pdf');
     Route::get('/students/template', [AdminController::class, 'downloadStudentTemplate'])->name('students.template');
 
     // Subjects

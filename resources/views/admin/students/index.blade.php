@@ -31,8 +31,11 @@
                 <button onclick="openModal('importPhotoModal')" class="btn btn-info">
                     <i class="fa-solid fa-images"></i> Impor Foto (ZIP)
                 </button>
-                <a href="{{ route('admin.students.export') }}" class="btn btn-success">
+                <a href="{{ route('admin.students.export', ['search' => request('search')]) }}" class="btn btn-success">
                     <i class="fa-solid fa-file-export"></i> Ekspor Excel
+                </a>
+                <a href="{{ route('admin.students.pdf', ['search' => request('search')]) }}" class="btn btn-danger">
+                    <i class="fa-solid fa-file-pdf"></i> Ekspor PDF
                 </a>
             </div>
         </div>

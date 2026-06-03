@@ -832,9 +832,21 @@ class AdminController extends Controller
         ]);
     }
 
-    public function exportStudentsExcel()
+    public function exportStudentsExcel(Request $request)
     {
-        $students = Student::orderBy('nisn')->get();
+        $query = Student::query();
+
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('nisn', 'like', "%{$search}%")
+                  ->orWhere('nis', 'like', "%{$search}%")
+                  ->orWhere('class', 'like', "%{$search}%");
+            });
+        }
+
+        $students = $query->orderBy('name')->get();
         $headers = ['nis', 'nisn', 'nama', 'tempat', 'tanggal_lahir', 'kelas', 'jurusan', 'kelulusan', 'password', 'tahun_lulus'];
 
         $spreadsheet = new Spreadsheet();
@@ -890,6 +902,37 @@ class AdminController extends Controller
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             'Content-Disposition' => 'attachment; filename="data_siswa.xlsx"',
         ]);
+    }
+
+    public function exportStudentsPdf(Request $request)
+    {
+        $query = Student::query();
+        $search = $request->input('search');
+
+        if ($request->filled('search')) {
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('nisn', 'like', "%{$search}%")
+                  ->orWhere('nis', 'like', "%{$search}%")
+                  ->orWhere('class', 'like', "%{$search}%");
+            });
+        }
+
+        $students = $query->orderBy('name')->get();
+
+        $settings = [
+            'school_name' => Setting::get('school_name', 'SMP Nurul Ihsan Banjaran'),
+            'school_address' => Setting::get('school_address', ''),
+            'school_logo' => Setting::get('school_logo'),
+        ];
+
+        $logo_path = (!empty($settings['school_logo']) && file_exists(public_path($settings['school_logo']))) ? public_path($settings['school_logo']) : null;
+
+        $pdf = Pdf::loadView('admin.students.pdf', compact('students', 'settings', 'logo_path', 'search'));
+        $pdf->setPaper('a4', 'portrait');
+
+        $filename = "data_siswa_" . date('Ymd_His') . ".pdf";
+        return $pdf->download($filename);
     }
 
     public function importSubjectsCsv(Request $request)
@@ -1661,8 +1704,12 @@ class AdminController extends Controller
 
         // Parse dynamic letter number
         $startRaw = Setting::get('skl_number_start', '1');
-        $number = (int) $startRaw;
-        Setting::set('skl_number_start', str_pad($number + 1, strlen($startRaw), '0', STR_PAD_LEFT));
+        $number = $student->skl_number;
+        if (empty($number)) {
+            $number = (int) $startRaw;
+            $student->update(['skl_number' => $number]);
+            Setting::set('skl_number_start', str_pad($number + 1, strlen($startRaw), '0', STR_PAD_LEFT));
+        }
 
         $year = $announcementDate ? $announcementDate->format('Y') : date('Y');
         $letterNumber = Setting::formatLetterNumber($settings['skl_letter_number'], $number, $year, $startRaw);
@@ -1713,7 +1760,7 @@ class AdminController extends Controller
 
         // Parse dynamic letter number — preview tidak increment
         $startRaw = Setting::get('skl_number_start', '1');
-        $number = (int) $startRaw;
+        $number = $student->skl_number ?? (int) $startRaw;
 
         $year = $announcementDate ? $announcementDate->format('Y') : date('Y');
         $letterNumber = Setting::formatLetterNumber($settings['skl_letter_number'], $number, $year, $startRaw);
@@ -1773,8 +1820,12 @@ class AdminController extends Controller
         $letterNumbers = [];
         foreach ($students as $stu) {
             $startRaw = Setting::get('skl_number_start', '1');
-            $num = (int) $startRaw;
-            Setting::set('skl_number_start', str_pad($num + 1, strlen($startRaw), '0', STR_PAD_LEFT));
+            $num = $stu->skl_number;
+            if (empty($num)) {
+                $num = (int) $startRaw;
+                $stu->update(['skl_number' => $num]);
+                Setting::set('skl_number_start', str_pad($num + 1, strlen($startRaw), '0', STR_PAD_LEFT));
+            }
             $letterNumbers[$stu->id] = Setting::formatLetterNumber($settings['skl_letter_number'], $num, $year, $startRaw);
         }
 
@@ -1944,8 +1995,8 @@ class AdminController extends Controller
         }
 
         if (in_array('letters', $selected)) {
-            DB::table('students')->update(['transcript_grade' => null]);
-            $cleaned[] = 'Surat (nilai ijazah)';
+            DB::table('students')->update(['transcript_grade' => null, 'skl_number' => null]);
+            $cleaned[] = 'Surat (nilai ijazah & nomor SKL)';
         }
 
         if (in_array('login_history', $selected)) {

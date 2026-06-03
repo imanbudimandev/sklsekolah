@@ -93,8 +93,12 @@ class PublicController extends Controller
         ];
 
         $startRaw = Setting::get('skl_number_start', '1');
-        $number = (int) $startRaw;
-        Setting::set('skl_number_start', str_pad($number + 1, strlen($startRaw), '0', STR_PAD_LEFT));
+        $number = $student->skl_number;
+        if (empty($number)) {
+            $number = (int) $startRaw;
+            $student->update(['skl_number' => $number]);
+            Setting::set('skl_number_start', str_pad($number + 1, strlen($startRaw), '0', STR_PAD_LEFT));
+        }
 
         $year = $announcementDate ? $announcementDate->format('Y') : date('Y');
         $letterNumber = Setting::formatLetterNumber($settings['skl_letter_number'], $number, $year, $startRaw);

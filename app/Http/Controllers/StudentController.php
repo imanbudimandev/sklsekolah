@@ -184,7 +184,7 @@ class StudentController extends Controller
 
         // Preview — tidak increment nomor
         $startRaw = Setting::get('skl_number_start', '1');
-        $number = (int) $startRaw;
+        $number = $student->skl_number ?? (int) $startRaw;
 
         $year = $announcementDate ? $announcementDate->format('Y') : date('Y');
         $letterNumber = Setting::formatLetterNumber($settings['skl_letter_number'], $number, $year, $startRaw);

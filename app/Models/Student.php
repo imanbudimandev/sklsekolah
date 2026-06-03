@@ -26,6 +26,7 @@ class Student extends Model
         'photo',
         'transcript_grade',
         'last_login_at',
+        'skl_number',
     ];
 
     protected $casts = [
